@@ -99,7 +99,10 @@
   .rslot img{width:100%;border-radius:8px;aspect-ratio:5/7;object-fit:cover}
   .rslot .rn{font-size:10.5px;margin-top:4px;line-height:1.2;min-height:24px}
   .rslot .rtier{font-size:9px;opacity:.6;text-transform:uppercase}
-  .rslot.locked img{filter:grayscale(1) brightness(.4)}
+  .rslot .mystery{width:100%;aspect-ratio:5/7;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    background:repeating-linear-gradient(135deg,#1b2431 0 8px,#18202c 8px 16px);
+    border:2px dashed rgba(217,168,60,.4)}
+  .rslot .mystery span{font-family:'Cinzel',serif;font-size:24px;color:rgba(217,168,60,.7)}
   .rslot.locked{opacity:.55}
   /* ---- Starter picker ---- */
   .starterGrid{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:18px 0}
@@ -174,23 +177,23 @@ const BOSS_CARD = ALL_CARDS.find(c=>c.boss);
    Die 15 Wegpunkte + Endgegner
    ========================================================= */
 const NODES = [
- {name:"Auenland-Grenze", icon:"🗡️", foe:"Ork-Kundschafter", hp:60},
- {name:"Alter Wald", icon:"🐺", foe:"Warg-Welpe", hp:85},
- {name:"Bockland", icon:"🕷️", foe:"Höhlenspinne", hp:110},
- {name:"Bree", icon:"👻", foe:"Sumpfgeist", hp:135},
- {name:"Wetterspitze", icon:"🗿", foe:"Steintroll-Wache", hp:165},
- {name:"Trollshaws", icon:"🌫️", foe:"Nebelork-Trupp", hp:190},
- {name:"Nebeltal", icon:"⚔️", foe:"Klingenwerfer", hp:215},
- {name:"Nebelgebirge-Pass", icon:"🧌", foe:"Höhlentroll", hp:245},
- {name:"Goldwald-Rand", icon:"🕸️", foe:"Riesenspinne", hp:275},
- {name:"Anduin-Ufer", icon:"🐴", foe:"Warg-Reiter", hp:305},
- {name:"Rohan-Ebenen", icon:"🛡️", foe:"Uruk-Hai-Krieger", hp:335},
- {name:"Düsterwald-Rand", icon:"🖤", foe:"Nazgûl-Diener", hp:365},
- {name:"Emyn Muil", icon:"🌑", foe:"Schattenwolf-Rudel", hp:395},
- {name:"Mordor-Grenze", icon:"🔥", foe:"Feuer-Ork-Hauptmann", hp:425},
- {name:"Schwarztor-Vorland", icon:"👹", foe:"Schatten des Balrogs", hp:460},
+ {name:"Auenland-Grenze",     icon:"🗡️", foe:"Ork Krieger",            hp:60,  card:"ork-krieger"},
+ {name:"Alter Wald",          icon:"🐺", foe:"Schattenfell",            hp:85,  card:"schattenfell"},
+ {name:"Bockland",            icon:"🕷️", foe:"Sumpfglanz",              hp:110, card:"sumpfglanz-meister-der-taeuschung"},
+ {name:"Bree",                icon:"👻", foe:"Nazgûl, Schattenbote",    hp:135, card:"nazgul-schattenbote"},
+ {name:"Wetterspitze",        icon:"🗿", foe:"Nazgûl",                  hp:165, card:"nazgul"},
+ {name:"Trollshaws",          icon:"🌫️", foe:"Uruk-hai Machomei",       hp:190, card:"uruk-hai-machomei"},
+ {name:"Nebeltal",            icon:"⚔️", foe:"Orkador",                 hp:215, card:"orkador"},
+ {name:"Nebelgebirge-Pass",   icon:"🧌", foe:"Grond Despotar",          hp:245, card:"grond-despotar"},
+ {name:"Goldwald-Rand",       icon:"🕸️", foe:"Shelob",                  hp:275, card:"shelob"},
+ {name:"Anduin-Ufer",         icon:"🐴", foe:"Fell Beast",              hp:305, card:"fell-beast"},
+ {name:"Rohan-Ebenen",        icon:"🛡️", foe:"Infernage Denethor",      hp:335, card:"infernage-denethor"},
+ {name:"Düsterwald-Rand",     icon:"🖤", foe:"Nazgûl Darkrai",          hp:365, card:"nazgul-darkrai"},
+ {name:"Emyn Muil",           icon:"🌑", foe:"Hexenkönig",              hp:395, card:"hexenkoenig"},
+ {name:"Mordor-Grenze",       icon:"🔥", foe:"Saruman",                 hp:425, card:"saruman"},
+ {name:"Schwarztor-Vorland",  icon:"👹", foe:"Balrog",                  hp:460, card:"balrog"},
 ];
-const BOSS_NODE = {name:"Erebor – Der Einsame Berg", icon:"🐉", foe:"Gluragsmaug", hp:900, isBoss:true};
+const BOSS_NODE = {name:"Erebor – Der Einsame Berg", icon:"🐉", foe:"Smaug", hp:900, isBoss:true, card:"smaug"};
 
 /* =========================================================
    Speicher: eigener Fortschritt + Lesezugriff auf Haupt-App
@@ -198,7 +201,7 @@ const BOSS_NODE = {name:"Erebor – Der Einsame Berg", icon:"🐉", foe:"Glurags
 const OWN_KEY = "mittelerde-reise-v1";
 const MAIN_KEY = "englisch-abenteuer-v4";
 let S = {scope:"all", starter:null, unlockedInApp:[], node:0, nodeHP:null,
-         xp:0, maxStreak:0, stats:{}, defeated:[]};
+         xp:0, maxStreak:0, stats:{}, defeated:[], trophies:[]};
 let storageOK = true;
 
 function browserStore(){
@@ -208,13 +211,20 @@ function browserStore(){
     return localStorage;
   }catch(e){ return null; }
 }
+function normalizeReise(){
+  S.unlockedInApp = Array.isArray(S.unlockedInApp) ? S.unlockedInApp : [];
+  S.defeated      = Array.isArray(S.defeated)      ? S.defeated      : [];
+  S.trophies      = Array.isArray(S.trophies)      ? S.trophies      : [];
+  S.stats = (S.stats && typeof S.stats==="object") ? S.stats : {};
+  S.xp = Number(S.xp)||0; S.maxStreak = Number(S.maxStreak)||0;
+  S.node = Math.min(Math.max(0, Number(S.node)||0), NODES.length);
+  if(!["all","grade5","grade6"].includes(S.scope)) S.scope="all";
+}
 function loadState(){
   try{
     const ls = browserStore();
     if(ls){ const v = ls.getItem(OWN_KEY); if(v) S = Object.assign(S, JSON.parse(v)); }
-    S.stats = S.stats || {};
-    S.unlockedInApp = S.unlockedInApp || [];
-    S.defeated = S.defeated || [];
+    normalizeReise();
   }catch(e){}
 }
 function saveState(){
@@ -232,11 +242,61 @@ function readMainAppCards(){
     return data.cards.map(i=>ALL_CARDS[i]).filter(Boolean).map(c=>c.id);
   }catch(e){ return []; }
 }
+function saveMsg(text, ok){
+  const box = document.getElementById("saveMsg");
+  if(!box) return;
+  box.style.display = "block";
+  box.style.borderColor = ok ? "rgba(90,154,90,.6)" : "rgba(192,69,58,.6)";
+  box.innerHTML = text;
+}
+async function shareState(){
+  try{
+    const name = "Mittelerde-Reise_Spielstand_" + new Date().toISOString().slice(0,10) + ".json";
+    const file = new File([JSON.stringify(S,null,1)], name, {type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:name});
+      saveMsg('✅ Wähle im Teilen-Menü <b>„In Dateien sichern"</b>.', true); return true;
+    }
+  }catch(e){ if(e && e.name==="AbortError"){ saveMsg('Abgebrochen.', false); return true; } }
+  return false;
+}
+async function exportOrShare(){ if(await shareState()) return; exportState(); }
+function showStateText(){
+  saveMsg('📋 Kopiere diesen Text und sichere ihn z. B. in einer Notiz. Zum Wiederherstellen hier einfügen und „Übernehmen" tippen.'
+    +'<textarea id="stateBox" style="width:100%;height:110px;margin-top:8px;font-size:11px;border-radius:8px;padding:8px;'
+    +'background:rgba(0,0,0,.4);color:#f5ead0;border:1px solid rgba(217,168,60,.4)"></textarea>'
+    +'<div class="btnRow" style="margin:8px 0 0"><button class="btn ghost" onclick="copyStateText()">📋 Kopieren</button>'
+    +'<button class="btn ghost" onclick="pasteStateText()">✔ Übernehmen</button></div>', true);
+  const box=document.getElementById("stateBox"); if(box) box.value=JSON.stringify(S);
+}
+function copyStateText(){
+  const box=document.getElementById("stateBox"); if(!box) return;
+  box.select(); box.setSelectionRange(0,999999);
+  try{ navigator.clipboard.writeText(box.value); }catch(e){ try{ document.execCommand("copy"); }catch(e2){} }
+}
+function pasteStateText(){
+  const box=document.getElementById("stateBox"); if(!box) return;
+  try{
+    const data=JSON.parse(box.value);
+    if(typeof data!=="object"||data===null) throw 0;
+    S=Object.assign({scope:"all",starter:null,unlockedInApp:[],node:0,nodeHP:null,xp:0,maxStreak:0,stats:{},defeated:[],trophies:[]},data);
+    normalizeReise(); saveState(); showSettings();
+    saveMsg('✅ Spielstand übernommen: <b>'+S.xp+' XP</b>, Wegpunkt '+(S.node+1)+'.', true);
+  }catch(e){ saveMsg('⚠ Der eingefügte Text ist kein gültiger Spielstand.', false); }
+}
 function exportState(){
-  const a = document.createElement("a");
-  a.href = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(S,null,1));
-  a.download = "Mittelerde-Reise_Spielstand_" + new Date().toISOString().slice(0,10) + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
+  const name = "Mittelerde-Reise_Spielstand_" + new Date().toISOString().slice(0,10) + ".json";
+  try{
+    const blob = new Blob([JSON.stringify(S,null,1)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    saveMsg('✅ Spielstand gesichert als <b>'+name+'</b><br><span style="opacity:.8">Auf dem iPad liegt die Datei jetzt in <b>Dateien → Downloads</b>.</span>', true);
+  }catch(e){
+    saveMsg('⚠ Der Download hat nicht geklappt.', false);
+  }
 }
 function importState(){
   const inp = document.createElement("input");
@@ -247,9 +307,11 @@ function importState(){
     rd.onload = () => {
       try{
         const data = JSON.parse(rd.result);
-        S = Object.assign({scope:"all",starter:null,unlockedInApp:[],node:0,nodeHP:null,xp:0,maxStreak:0,stats:{},defeated:[]}, data);
-        saveState(); showMap();
-      }catch(e){ alert("Diese Datei konnte nicht gelesen werden."); }
+        S = Object.assign({scope:"all",starter:null,unlockedInApp:[],node:0,nodeHP:null,xp:0,maxStreak:0,stats:{},defeated:[],trophies:[]}, data);
+        normalizeReise();
+        saveState(); showSettings();
+        saveMsg('✅ Spielstand geladen: <b>'+S.xp+' XP</b>, Wegpunkt '+(S.node+1)+', '+S.trophies.length+' Gegnerkarten.', true);
+      }catch(e){ saveMsg('⚠ Diese Datei konnte nicht gelesen werden. Bitte die exportierte <b>.json</b>-Datei auswählen.', false); }
     };
     rd.readAsText(f);
   };
@@ -664,6 +726,9 @@ function fleeBattle(){ battle=null; showMap(); }
 
 function winBattle(){
   let newAlly = null;
+  const foeCard = foeMeta().card;
+  const gotTrophy = foeCard && !S.trophies.includes(foeCard);
+  if(gotTrophy) S.trophies.push(foeCard);
   if(battle.isBoss){
     S.defeated.push(999);
   } else {
@@ -681,6 +746,9 @@ function winBattle(){
      <h2>${battle.isBoss?"🏆 Gluragsmaug ist besiegt!":"⚔️ Sieg!"}</h2>
      <p style="opacity:.85">${foe.foe} wurde bezwungen.</p>
      ${battle.isBoss?`<p style="margin-top:14px;font-size:16px">Du hast die Mittelerde-Reise gemeistert! Alle 15 Wegpunkte und der Drache selbst liegen hinter dir. 🎉</p>`:""}
+     ${gotTrophy?`<div class="rewardCard"><img src="cards/${foeCard}.jpg" alt="${foe.foe}"></div>
+        <p style="font-family:'Cinzel',serif;color:var(--gold2)">👹 Gegnerkarte erbeutet: ${foe.foe}</p>
+        <p class="hint-sm">Im Englisch-Abenteuer landet sie in deinem Album.</p>`:""}
      ${newAlly?`<div class="rewardCard"><img src="cards/${newAlly.id}.jpg" alt="${newAlly.name}"></div>
         <p style="font-family:'Cinzel',serif;color:var(--gold2)">Neuer Gefährte: ${newAlly.name}</p>
         <p class="hint-sm">Steht dir ab jetzt als Angreifer zur Verfügung.</p>`
@@ -709,7 +777,7 @@ function showRoster(){
      ${ROSTER.map(c=>{
        const owned = active.has(c.id);
        return `<div class="rslot ${owned?"":"locked"}">
-         <img src="cards/${c.id}.jpg" alt="${owned?c.name:"???"}">
+         ${owned?`<img src="cards/${c.id}.jpg" alt="${c.name}">`:`<div class="mystery"><span>?</span></div>`}
          <div class="rn">${owned?c.name:"???"}</div>
          <div class="rtier">${owned?tierName(c.tier):"🔒"}</div>
        </div>`;
@@ -738,9 +806,13 @@ function showSettings(){
      <div class="cin" style="color:var(--gold2);margin-bottom:6px">Spielstand sichern &amp; übertragen</div>
      <p class="hint-sm" style="margin-top:0">Der Fortschritt wird automatisch im Browser gespeichert. Zum Übertragen auf ein anderes Gerät: exportieren und dort laden.</p>
      <div class="btnRow">
-       <button class="btn ghost" onclick="exportState()">💾 Spielstand exportieren</button>
-       <button class="btn ghost" onclick="importState()">📥 Spielstand laden</button>
+       <button class="btn ghost" onclick="exportOrShare()">📤 Teilen / Sichern</button>
+       <button class="btn ghost" onclick="exportState()">💾 Als Datei laden</button>
+       <button class="btn ghost" onclick="importState()">📥 Datei laden</button>
+       <button class="btn ghost" onclick="showStateText()">📋 Text anzeigen</button>
      </div>
+     <div id="saveMsg" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;
+       background:rgba(0,0,0,.25);font-size:13.5px;line-height:1.5"></div>
    </div>
    <div class="card">
      <div class="cin" style="color:var(--gold2);margin-bottom:6px">Reise neu beginnen</div>
