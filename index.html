@@ -153,7 +153,10 @@
   .albumGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:18px;margin-top:16px}
   .albumSlot{text-align:center}
   .albumSlot img{width:100%;height:auto;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
-  .albumSlot.locked img{filter:grayscale(1) brightness(.35)}
+  .albumSlot .mystery{width:100%;aspect-ratio:63/88;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    background:repeating-linear-gradient(135deg,#1b2431 0 10px,#18202c 10px 20px);
+    border:2px dashed rgba(217,168,60,.45);box-shadow:inset 0 0 26px rgba(0,0,0,.6)}
+  .albumSlot .mystery span{font-family:'Cinzel',serif;font-size:34px;color:rgba(217,168,60,.75)}
   .albumSlot .nm{font-size:13px;font-weight:900;margin-top:6px}
   .albumSlot .lk{font-size:12px;opacity:.65}
   .factRow{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(160deg,var(--ink2),#151d29);border:1px solid rgba(217,168,60,.35);border-radius:14px;padding:12px 16px;margin:8px 0}
@@ -186,6 +189,8 @@
    ========================================================= */
 
 /* ---------- Herr-der-Ringe-Fun-Facts (kindgerecht) ---------- */
+const LOTR_FACT_COUNT = 40;
+function factCat(i){ return i < LOTR_FACT_COUNT ? {label:"MITTELERDE-FAKT", icon:"💍"} : {label:"POKÉMON-FAKT", icon:"⚡"}; }
 const FACTS = [
  "J.R.R. Tolkien war Sprachprofessor. Er hat zuerst die Elbensprachen erfunden – und sich DANACH die Geschichten dazu ausgedacht!",
  "Es gibt zwei große Elbensprachen: Quenya und Sindarin. Tolkien hat für beide eine echte Grammatik geschrieben – so wie du gerade Englisch lernst!",
@@ -226,7 +231,20 @@ const FACTS = [
  "Frodos Nachname Beutlin heißt auf Englisch „Baggins“ – denn „bag“ bedeutet Tasche oder Beutel!",
  "Samweis' Name „Samwise“ bedeutet in alter Sprache so viel wie „der Einfache“ – dabei ist er der treueste Held von allen.",
  "Das Hobbit-Dorf aus den Filmen kann man in Neuseeland bis heute besuchen – mit 44 Hobbit-Höhlen!",
- "Bilbos Geburtstagsfest beginnt die ganze Geschichte – mit einem riesigen Feuerwerk von Gandalf."
+ "Bilbos Geburtstagsfest beginnt die ganze Geschichte – mit einem riesigen Feuerwerk von Gandalf.",
+ "Der Name „Pokémon“ ist die Kurzform des japanischen „Pocket Monsters“ – also „Taschenmonster“.",
+ "Erfinder Satoshi Tajiri sammelte als Kind leidenschaftlich Insekten. Genau daraus entstand die Idee, kleine Kreaturen zu fangen und zu tauschen.",
+ "Die allerersten Spiele hießen in Japan „Pokémon Rot“ und „Pokémon Grün“ und erschienen 1996 für den Game Boy.",
+ "„Pikachu“ setzt sich aus zwei japanischen Lautwörtern zusammen: „pika“ für das Knistern von Elektrizität und „chu“ für das Quieken einer Maus.",
+ "Das Tauschen war von Anfang an Teil des Spiels: Manche Pokémon bekam man nur, wenn man sein Game Boy per Kabel mit einem Freund verband.",
+ "Im Englischen ist „Pokémon“ zugleich Einzahl und Mehrzahl – „one Pokémon, many Pokémon“. Ein „Pokémons“ gibt es nicht!",
+ "Evoli hat mehr Entwicklungen als jedes andere Pokémon – ganze acht verschiedene Formen.",
+ "Karpador gilt als schwächstes Pokémon überhaupt, entwickelt sich aber zum mächtigen Garados.",
+ "Mew wurde ganz zum Schluss heimlich von einem Programmierer ins Spiel eingebaut – eigentlich war dafür gar kein Speicherplatz mehr übrig.",
+ "Rizeros war das erste Pokémon, das jemals gezeichnet wurde – nicht etwa Pikachu.",
+ "Inzwischen gibt es über 1000 verschiedene Pokémon-Arten.",
+ "Mit „Pokémon GO“ wurde 2016 die ganze Stadt zum Spielfeld – man musste tatsächlich rausgehen und laufen, um Pokémon zu finden.",
+ "Die englischen Namen unterscheiden sich oft völlig von den deutschen: Glurak heißt auf Englisch „Charizard“, Enton heißt „Psyduck“ und Smogmog heißt „Weezing“."
 ];
 
 /* ---------- Sammelkarten (eigene Entwürfe des Lehrers, als Bilder eingebettet) ---------- */
@@ -290,8 +308,108 @@ const CARDS = [
  {id:"mewtubaremir", name:"Mewtu-Baremir", sp:9},
  {id:"sauron", name:"Sauron", sp:10},
  {id:"dragoran", name:"Dragoran der Beschützer", sp:11},
+ {id:"zeuktrik", name:"Zeuktrik", q:16},
+ {id:"bibong", name:"Bibong", q:17},
+ {id:"annapsia", name:"Annapsia", q:18},
+ {id:"silenara", name:"Silenara", q:19},
+ {id:"percydor", name:"Percydor", q:20},
 ];
 /* ---------- Sonderkarten: besondere Erfolge ---------- */
+
+/* ---------- Zusatzkarten-Pool (Zufallsfunde ab 95 % und Gegner-Belohnungen) ---------- */
+const EXTRA_CARDS = [
+ {id:"aravereon-erbe-des-koenigs", name:"Aravereon Erbe des Königs", set:"mittelerde"},
+ {id:"balrog", name:"Balrog", set:"mittelerde"},
+ {id:"baumflor-hueter-fangorns", name:"Baumflor Hüter Fangorns", set:"mittelerde"},
+ {id:"blastoise-gaertner-der-ruhe", name:"Blastoise Gärtner der Ruhe", set:"mittelerde"},
+ {id:"blastoise-waechter-der-quellen", name:"Blastoise Wächter der Quellen", set:"mittelerde"},
+ {id:"borimir-waechter-der-freundschaft", name:"Borimir Wächter der Freundschaft", set:"mittelerde"},
+ {id:"boromir", name:"Boromir", set:"mittelerde"},
+ {id:"celebloom", name:"Celebloom", set:"mittelerde"},
+ {id:"entfrau", name:"Entfrau", set:"mittelerde"},
+ {id:"entterra", name:"Entterra", set:"mittelerde"},
+ {id:"eowyn", name:"Éowyn", set:"mittelerde"},
+ {id:"evoli-der-ringtraeger", name:"Evoli der Ringtraeger", set:"mittelerde"},
+ {id:"evoli-der-ringtraeger-l060", name:"Evoli der Ringtraeger (Variante 60)", set:"mittelerde"},
+ {id:"evoli-von-bruchtal", name:"Evoli von Bruchtal", set:"mittelerde"},
+ {id:"fell-beast", name:"Fell Beast", set:"mittelerde"},
+ {id:"flamarod-hueter-des-einen-rings", name:"Flamarod Hüter des Einen Rings", set:"mittelerde"},
+ {id:"frodente-hueter-kleiner-wege", name:"Frodente Hüter Kleiner Wege", set:"mittelerde"},
+ {id:"frolicento-hueter-der-kleinen-wege", name:"Frolicento Hüter der Kleinen Wege", set:"mittelerde"},
+ {id:"galaboard-hueterin-von-lorien", name:"Galaboard Hüterin von Lorien", set:"mittelerde"},
+ {id:"galadeon-weiser-des-lichts", name:"Galadeon Weiser des Lichts", set:"mittelerde"},
+ {id:"galadriot-koenigin-des-lichts", name:"Galadriot Königin des Lichts", set:"mittelerde"},
+ {id:"gandalf-nachtara", name:"Gandalf Nachtara", set:"mittelerde"},
+ {id:"garrchomp", name:"Garrchomp", set:"mittelerde"},
+ {id:"gimli", name:"Gimli", set:"mittelerde"},
+ {id:"gimlross-felsenschild-von-khazad", name:"Gimlross Felsenschild von Khazad", set:"mittelerde"},
+ {id:"gluraksyon", name:"Gluraksyon", set:"mittelerde"},
+ {id:"grond-despotar", name:"Grond Despotar", set:"mittelerde"},
+ {id:"gwalhir-feuerdrache", name:"Gwalhir Feuerdrache", set:"mittelerde"},
+ {id:"gwalhir-himmelsgleiter", name:"Gwalhir Himmelsgleiter", set:"mittelerde"},
+ {id:"hexenkoenig", name:"Hexenkönig", set:"mittelerde"},
+ {id:"infernage-denethor", name:"Infernage Denethor", set:"mittelerde"},
+ {id:"legolas", name:"Legolas", set:"mittelerde"},
+ {id:"lucario", name:"Lucario", set:"mittelerde"},
+ {id:"luthien-lied-des-waldes", name:"Lúthien Lied des Waldes", set:"mittelerde"},
+ {id:"mebuk-zwergenschmied", name:"Mebuk Zwergenschmied", set:"mittelerde"},
+ {id:"mewtu", name:"Mewtu", set:"mittelerde"},
+ {id:"mewtu-baerenmut", name:"Mewtu Bärenmut", set:"mittelerde"},
+ {id:"nazgul", name:"Nazgûl", set:"mittelerde"},
+ {id:"nazgul-darkrai", name:"Nazgûl Darkrai", set:"mittelerde"},
+ {id:"nazgul-schattenbote", name:"Nazgûl Schattenbote", set:"mittelerde"},
+ {id:"nerial-koenigin-der-tiefen", name:"Nerial Königin der Tiefen", set:"mittelerde"},
+ {id:"orgoran-hueter-der-gemeinschaft", name:"Orgoran Hüter der Gemeinschaft", set:"mittelerde"},
+ {id:"ork-krieger", name:"Ork Krieger", set:"mittelerde"},
+ {id:"orkador", name:"Orkador", set:"mittelerde"},
+ {id:"pikalas", name:"Pikalas", set:"mittelerde"},
+ {id:"pippfaxo-unerwarteter-held", name:"Pippfaxo Unerwarteter Held", set:"mittelerde"},
+ {id:"samweis-gamdschie", name:"Samweis Gamdschie", set:"mittelerde"},
+ {id:"samweis-leafu", name:"Samweis Leafu", set:"mittelerde"},
+ {id:"saruman", name:"Saruman", set:"mittelerde"},
+ {id:"saruzam-weise-des-gleichgewichts", name:"Saruzam Weise des Gleichgewichts", set:"mittelerde"},
+ {id:"sauron-s-evoli", name:"Sauron's evoli", set:"mittelerde"},
+ {id:"sauron-s-evoli-entwicklung", name:"Sauron's evoli Entwicklung", set:"mittelerde"},
+ {id:"schattenfell", name:"Schattenfell", set:"mittelerde"},
+ {id:"shelob", name:"Shelob", set:"mittelerde"},
+ {id:"silvarion", name:"Silvarion", set:"mittelerde"},
+ {id:"smaug", name:"Smaug", set:"mittelerde"},
+ {id:"sumpfglanz-meister-der-taeuschung", name:"Sumpfglanz Meister der Täuschung", set:"mittelerde"},
+ {id:"thranduil-herr-der-waldlichtung", name:"Thranduil Herr der Waldlichtung", set:"mittelerde"},
+ {id:"undomiel-x-nachtara", name:"Undómiel × nachtara", set:"mittelerde"},
+ {id:"uruk-hai-machomei", name:"Uruk Hai Machomei", set:"mittelerde"},
+ {id:"voltielon", name:"Voltielon", set:"mittelerde"},
+ {id:"weisser-baum-celebi", name:"Weißer Baum Celebi", set:"mittelerde"},
+ {id:"clariomei", name:"Clariomei", set:"fusion"},
+ {id:"voltfleder", name:"Voltfleder", set:"fusion"},
+ {id:"skorapex", name:"Skorapex", set:"fusion"},
+ {id:"orkabon", name:"Orkabon", set:"fusion"},
+ {id:"saebelchu", name:"Saebelchu", set:"fusion"},
+ {id:"percyana-a", name:"Percyana A", set:"fusion"},
+ {id:"beckendrant", name:"Beckendrant", set:"fusion"},
+ {id:"grovrumm", name:"Grovrumm", set:"fusion"},
+ {id:"skorapod", name:"Skorapod", set:"fusion"},
+ {id:"lukarion", name:"Lukarion", set:"fusion"},
+ {id:"thalenso", name:"Thalenso", set:"fusion"},
+ {id:"solpharos", name:"Solpharos", set:"fusion"},
+ {id:"fenvoli", name:"Fenvoli", set:"fusion"},
+ {id:"nicoroark", name:"Nicoroark", set:"fusion"},
+ {id:"rakkuno", name:"Rakkuno", set:"fusion"},
+ {id:"percyana-b", name:"Percyana B", set:"fusion"},
+ {id:"florikatia", name:"Florikatia", set:"fusion"},
+ {id:"pandarok", name:"Pandarok", set:"fusion"},
+ {id:"pandarokhan", name:"Pandarokhan", set:"fusion"},
+ {id:"aquiladra", name:"Aquiladra", set:"fusion"},
+ {id:"suriko", name:"Suriko", set:"fusion"},
+ {id:"travis-stoll", name:"Travis Stoll", set:"halbgoetter"},
+ {id:"percy-jackson", name:"Percy Jackson", set:"halbgoetter"},
+ {id:"charles-beckendorf", name:"Charles Beckendorf", set:"halbgoetter"},
+ {id:"annabeth-chase", name:"Annabeth Chase", set:"halbgoetter"},
+ {id:"nico-di-angelo", name:"Nico di Angelo", set:"halbgoetter"},
+ {id:"clarisse-la-rue", name:"Clarisse la Rue", set:"halbgoetter"},
+ {id:"thalia-grace", name:"Thalia Grace", set:"halbgoetter"},
+];
+const SET_INFO = {mittelerde:{t:"🗡️ Gefährten von Mittelerde"}, fusion:{t:"✨ Legenden der Fusion"}, halbgoetter:{t:"⚡ Helden der Halbgötter"}};
 const SPECIALS = [
  {card:16, name:"Serienheld I", desc:"Schaffe 10 richtige Antworten am Stück", cond:["streak", 10]},
  {card:17, name:"Meisterprüfung I", desc:"Schließe eine Quest mit 100 % ab", cond:["perfect", 1]},
@@ -921,6 +1039,222 @@ const QUESTS = [
   {"type": "fill", "q": "„das Fahrrad“: ___", "c": ["bike", "bicycle"]},
   {"type": "mc", "q": "„Let's play outside!“ bedeutet:", "opts": ["Lass uns draußen spielen!", "Spiel leiser!", "Lasst uns aufräumen!"], "c": 0},
  ]
+},
+{
+ id:"q13", num:"QUEST 13 · Dol Guldur", title:"Vertiefung: Simple Present vs. Present Progressive",
+ desc:"Der Nekromant verwirrt die Zeiten! Hier lernst du den Unterschied endgültig – mit klaren Regeln, Alltagsbeispielen und den typischen Fallen.",
+ card:28,
+ rules:[
+  {"h": "Die eine Frage, die alles entscheidet", "t": "Frag dich immer: <b>Passiert es GERADE JETZT – oder passiert es IMMER WIEDER?</b><br><br>Stell dir vor, du rufst deinen Freund an:<br>„Was machst du gerade?“ → <b>I'm doing my homework.</b> (jetzt, in diesem Moment)<br>„Was machst du nach der Schule?“ → <b>I do my homework.</b> (jeden Tag, Gewohnheit)", "ex": "Beide Sätze sind richtig – sie bedeuten nur etwas völlig anderes!"},
+  {"h": "So bildest du die beiden Zeiten", "table": [["<b>Simple Present</b> (immer / oft)", "I play · you play · he/she/it play<b>s</b>"], ["<b>Present Progressive</b> (jetzt)", "I <b>am</b> playing · he/she/it <b>is</b> playing · we/you/they <b>are</b> playing"]], "ex": "Merke: Simple Present hat das -s bei he/she/it. Present Progressive hat IMMER eine Form von to be + -ing."},
+  {"h": "Die Signalwörter verraten dir alles", "table": [["<b>→ Simple Present</b>", "every day, every Monday, always, usually, often, sometimes, never, at weekends, twice a week"], ["<b>→ Present Progressive</b>", "now, right now, at the moment, today, Look!, Listen!, still"]], "ex": "Ruby plays tennis <u>every Friday</u>. – Ruby is playing tennis <u>right now</u>."},
+  {"h": "Achtung, Falle: Verben, die (fast) nie -ing bekommen", "t": "Manche Verben beschreiben keine Handlung, sondern einen <b>Zustand</b> – im Kopf, im Gefühl oder beim Besitz. Sie stehen fast immer im simple present, auch wenn es gerade jetzt gilt:<br><b>like, love, hate, want, need, know, understand, believe, remember, have got, be</b>", "ex": "✗ I am knowing the answer. → ✓ <b>I know</b> the answer.<br>✗ She is wanting a drink. → ✓ <b>She wants</b> a drink."},
+  {"h": "Die häufigsten Fehler", "table": [["✗ He play football now.", "✓ He <b>is playing</b> football now."], ["✗ He is playing football every day.", "✓ He <b>plays</b> football every day."], ["✗ I am not liking maths.", "✓ I <b>don't like</b> maths."], ["✗ She is go to school.", "✓ She <b>is going</b> to school."]], "ex": "Wenn du unsicher bist: Suche das Signalwort – es entscheidet fast immer."},
+ ],
+ ex:[
+  {"type": "mc", "q": "Look! Karam ___ his new skateboard.", "opts": ["is riding", "rides", "ride"], "c": 0, "hint": "„Look!“ = gerade jetzt"},
+  {"type": "mc", "q": "Karam ___ his skateboard every afternoon.", "opts": ["rides", "is riding", "ride"], "c": 0},
+  {"type": "mc", "q": "Be quiet! The students ___ a test at the moment.", "opts": ["are writing", "write", "writes"], "c": 0},
+  {"type": "mc", "q": "Our teacher ___ us French twice a week.", "opts": ["teaches", "is teaching", "teach"], "c": 0},
+  {"type": "fill", "q": "Listen! Someone ___ (sing) in the music room.", "c": ["is singing"]},
+  {"type": "fill", "q": "Ruby usually ___ (walk) to school.", "c": ["walks"]},
+  {"type": "fill", "q": "I can't talk now – I ___ (have) lunch.", "c": ["am having", "'m having"]},
+  {"type": "fill", "q": "My dad ___ (work) in a support centre.", "c": ["works"]},
+  {"type": "mc", "q": "Welches Signalwort passt zu „She is doing her homework ___“?", "opts": ["right now", "every evening", "on Mondays"], "c": 0},
+  {"type": "mc", "q": "Welches Signalwort passt zu „He watches TV ___“?", "opts": ["every evening", "at the moment", "Look!"], "c": 0},
+  {"type": "mc", "q": "„at weekends“ – welche Zeit?", "opts": ["Simple Present", "Present Progressive", "beides"], "c": 0},
+  {"type": "mc", "q": "„still“ (immer noch) – welche Zeit?", "opts": ["Present Progressive", "Simple Present", "keine von beiden"], "c": 0},
+  {"type": "mc", "q": "Welcher Satz ist richtig?", "opts": ["I know the answer.", "I am knowing the answer.", "I knowing the answer."], "c": 0, "hint": "know = Zustandsverb"},
+  {"type": "mc", "q": "Welcher Satz ist richtig?", "opts": ["Lily wants a new bike.", "Lily is wanting a new bike.", "Lily want a new bike."], "c": 0},
+  {"type": "mc", "q": "Welches Verb bekommt normalerweise KEIN -ing?", "opts": ["to understand", "to run", "to cook"], "c": 0},
+  {"type": "fill", "q": "Sorry, I ___ (not/understand) this exercise.", "c": ["don't understand", "do not understand"]},
+  {"type": "fill", "q": "Ty ___ (have got) a new hoodie.", "c": ["has got"]},
+  {"type": "mc", "q": "Die -ing-Form von „travel“ (britisches Englisch):", "opts": ["travelling", "travling", "traveled"], "c": 0},
+  {"type": "fill", "q": "begin → ___", "c": ["beginning"], "hint": "Konsonant verdoppeln!"},
+  {"type": "fill", "q": "arrive → ___", "c": ["arriving"], "hint": "Stummes e fällt weg."},
+  {"type": "fill", "q": "study → ___", "c": ["studying"]},
+  {"type": "mc", "q": "Finde den Fehler: „She is go to the fair.“ Richtig ist:", "opts": ["She is going to the fair.", "She go to the fair.", "She is goes to the fair."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „They watching a slide show.“ Richtig ist:", "opts": ["They are watching a slide show.", "They watches a slide show.", "They is watching a slide show."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „I am not liking chemistry.“ Richtig ist:", "opts": ["I don't like chemistry.", "I am not like chemistry.", "I not like chemistry."], "c": 0},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Ryan", "is", "designing", "a", "chair", "today."], "c": "Ryan is designing a chair today."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["We", "often", "raise", "money", "at", "the", "fair."], "c": "We often raise money at the fair."},
+  {"type": "order", "q": "Baue die Frage:", "words": ["What", "are", "you", "doing", "right", "now?"], "c": "What are you doing right now?"},
+  {"type": "fill", "q": "Sherlock always runs around the park, but today he ___ (sleep).", "c": ["is sleeping"], "hint": "„today“ = gerade jetzt"},
+  {"type": "mc", "q": "„Lily is studying geography this year.“ bedeutet:", "opts": ["Sie macht das in dieser Zeit gerade.", "Sie macht das jeden Tag ihres Lebens.", "Sie hat das nie gemacht."], "c": 0},
+  {"type": "mc", "q": "Welcher Satz beschreibt eine Gewohnheit?", "opts": ["Karam cooks for his family on Sundays.", "Karam is cooking for his family.", "Karam is going to cook."], "c": 0},
+ ]
+},
+{
+ id:"q14", num:"QUEST 14 · Esgaroth", title:"Mengen-Meister: much, many, a lot of, some & any",
+ desc:"Auf dem Markt der Seestadt wird gezählt und gewogen. Zuerst die wichtigste Frage: Kann man es zählen oder nicht?",
+ card:29,
+ rules:[
+  {"h": "Schritt 1: Kann man es zählen?", "t": "Das ist die Grundlage für ALLES in dieser Quest.<br><br><b>Zählbar</b> – du kannst 1, 2, 3 … sagen und eine Mehrzahl bilden:<br>one apple – two apple<b>s</b> · one egg – three egg<b>s</b> · a friend – many friend<b>s</b><br><br><b>Nicht zählbar</b> – keine Mehrzahl möglich:<br>milk, water, bread, cheese, money, time, homework, music, information", "ex": "Test: Klingt „two milks“ komisch? Dann ist es nicht zählbar!"},
+  {"h": "Schritt 2: much oder many?", "table": [["<b>much</b> + nicht zählbar", "How much <b>money</b>? – not much <b>time</b>"], ["<b>many</b> + zählbar (Mehrzahl)", "How many <b>eggs</b>? – not many <b>students</b>"], ["<b>a lot of / lots of</b> + beides", "a lot of <b>money</b> · a lot of <b>eggs</b>"]], "ex": "Merkhilfe: <b>many</b> hat ein n wie <b>n</b>ummer (Zahl) – man kann es zählen."},
+  {"h": "Schritt 3: much und many stehen selten allein", "t": "In <b>Aussagesätzen</b> benutzt man meistens <b>a lot of</b>. <b>much</b> und <b>many</b> stehen vor allem in <b>Fragen</b> und <b>Verneinungen</b>.", "table": [["Aussage", "I've got <b>a lot of</b> homework."], ["Verneinung", "I haven't got <b>much</b> homework."], ["Frage", "Have you got <b>much</b> homework?"]], "ex": "✗ I have much homework. → ✓ I have <b>a lot of</b> homework."},
+  {"h": "Schritt 4: some oder any?", "table": [["<b>some</b>", "Aussagesätze: There is <b>some</b> juice."], ["<b>some</b>", "Angebote & Bitten: Would you like <b>some</b> tea? · Can I have <b>some</b> water?"], ["<b>any</b>", "Fragen: Have you got <b>any</b> money?"], ["<b>any</b>", "Verneinungen: There isn't <b>any</b> bread."]], "ex": "Achtung: Bei Angeboten und Bitten steht <b>some</b>, obwohl es eine Frage ist!"},
+ ],
+ ex:[
+  {"type": "mc", "q": "Welches Wort ist NICHT zählbar?", "opts": ["water", "apple", "egg"], "c": 0},
+  {"type": "mc", "q": "Welches Wort ist NICHT zählbar?", "opts": ["information", "student", "subject"], "c": 0},
+  {"type": "mc", "q": "Welches Wort ist zählbar?", "opts": ["classmate", "bread", "music"], "c": 0},
+  {"type": "mc", "q": "„homework“ ist …", "opts": ["nicht zählbar (immer Einzahl)", "zählbar", "beides"], "c": 0, "hint": "Es heißt nie „homeworks“!"},
+  {"type": "mc", "q": "Was ist richtig?", "opts": ["a lot of information", "many informations", "much informations"], "c": 0},
+  {"type": "mc", "q": "How ___ money have you got?", "opts": ["much", "many", "a lot"], "c": 0},
+  {"type": "mc", "q": "How ___ subjects do you have this year?", "opts": ["many", "much", "a lot"], "c": 0},
+  {"type": "mc", "q": "There isn't ___ time before the lesson.", "opts": ["much", "many", "a lot"], "c": 0},
+  {"type": "mc", "q": "There aren't ___ people at the campsite.", "opts": ["many", "much", "a lot"], "c": 0},
+  {"type": "fill", "q": "We haven't got ___ cheese left. (viel)", "c": ["much"]},
+  {"type": "fill", "q": "I haven't got ___ friends in my new class. (viele)", "c": ["many"]},
+  {"type": "fill", "q": "Karam has got ___ of ideas for the fair.", "c": ["a lot", "lots"]},
+  {"type": "mc", "q": "Welcher Aussagesatz klingt am natürlichsten?", "opts": ["We have a lot of homework today.", "We have much homework today.", "We have many homework today."], "c": 0},
+  {"type": "mc", "q": "There is ___ juice in the fridge.", "opts": ["some", "any", "many"], "c": 0},
+  {"type": "mc", "q": "Is there ___ juice in the fridge?", "opts": ["any", "some", "much"], "c": 0},
+  {"type": "mc", "q": "There isn't ___ juice in the fridge.", "opts": ["any", "some", "many"], "c": 0},
+  {"type": "mc", "q": "Would you like ___ cake?", "opts": ["some", "any", "many"], "c": 0, "hint": "Angebot!"},
+  {"type": "mc", "q": "Can I have ___ water, please?", "opts": ["some", "any", "much"], "c": 0, "hint": "Höfliche Bitte!"},
+  {"type": "fill", "q": "We need ___ eggs for the cake. (einige)", "c": ["some"]},
+  {"type": "fill", "q": "Have you got ___ questions? (irgendwelche)", "c": ["any"]},
+  {"type": "fill", "q": "Sorry, I haven't got ___ money. (kein)", "c": ["any"]},
+  {"type": "mc", "q": "___ does a ticket cost?", "opts": ["How much", "How many", "How"], "c": 0},
+  {"type": "mc", "q": "___ students are in your tutor group?", "opts": ["How many", "How much", "How"], "c": 0},
+  {"type": "fill", "q": "How ___ sugar do you need for the recipe?", "c": ["much"]},
+  {"type": "fill", "q": "How ___ postcards did you buy?", "c": ["many"]},
+  {"type": "order", "q": "Baue den Satz:", "words": ["There", "is", "a", "lot", "of", "snow", "in", "the", "mountains."], "c": "There is a lot of snow in the mountains."},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Have", "we", "got", "any", "bread?"], "c": "Have we got any bread?"},
+  {"type": "order", "q": "Baue die Frage:", "words": ["How", "much", "pocket", "money", "do", "you", "get?"], "c": "How much pocket money do you get?"},
+  {"type": "mc", "q": "Finde den Fehler: „I have much friends.“ Richtig ist:", "opts": ["I have a lot of friends.", "I have many friend.", "I have much friend."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „There isn't some milk.“ Richtig ist:", "opts": ["There isn't any milk.", "There isn't much milks.", "There is any milk."], "c": 0},
+ ]
+},
+{
+ id:"q15", num:"QUEST 15 · Der Rat von Elrond", title:"Fragewörter-Meister",
+ desc:"Im Rat wird viel gefragt – und jede Frage braucht das richtige Fragewort. Wer fragt, führt!",
+ card:30,
+ rules:[
+  {"h": "Die wichtigsten Fragewörter", "table": [["<b>who</b> – wer", "<b>Who</b> is your tutor? – Mrs Wilson."], ["<b>what</b> – was", "<b>What</b> is your favourite subject?"], ["<b>where</b> – wo / wohin", "<b>Where</b> do you live? – In Greenwich."], ["<b>when</b> – wann", "<b>When</b> does school start? – At eight."], ["<b>why</b> – warum", "<b>Why</b> are you late? – Because my bus was late."], ["<b>how</b> – wie", "<b>How</b> are you? – I'm fine."]], "ex": "Antwort auf <b>why</b> beginnt fast immer mit <b>because</b>."},
+  {"h": "Die schwierigeren Fragewörter", "table": [["<b>whose</b> – wessen", "<b>Whose</b> bag is this? – It's Ruby's."], ["<b>which</b> – welche/-r/-s (Auswahl!)", "<b>Which</b> T-shirt do you like – the red or the blue one?"], ["<b>how often</b> – wie oft", "<b>How often</b> do you practise? – Twice a week."], ["<b>how old</b> – wie alt", "<b>How old</b> is your brother?"], ["<b>how much / how many</b> – wie viel/-e", "<b>How much</b> is it? · <b>How many</b> pets have you got?"], ["<b>how long</b> – wie lange", "<b>How long</b> is the lesson?"]], "ex": "<b>what</b> oder <b>which</b>? Bei freier Auswahl: what. Wenn du zwischen wenigen Dingen wählst: which."},
+  {"h": "Nicht verwechseln: who's und whose", "t": "<b>who's</b> = who is (wer ist) · <b>whose</b> = wessen", "ex": "<b>Who's</b> that boy? – <b>Whose</b> boy is that? (Zwei ganz verschiedene Fragen!)"},
+  {"h": "So baust du die Frage", "t": "Fragewort zuerst, dann die normale Frage:<br><b>Where</b> + <b>do</b> you live? · <b>What</b> + <b>is</b> she doing? · <b>How often</b> + <b>does</b> he train?", "ex": "Merke: Nach dem Fragewort kommt das Hilfsverb (do/does/is/are/can/has)."},
+ ],
+ ex:[
+  {"type": "mc", "q": "___ is your English teacher? – Mr Bell.", "opts": ["Who", "What", "Which"], "c": 0},
+  {"type": "mc", "q": "___ do you live? – In a small village.", "opts": ["Where", "When", "Who"], "c": 0},
+  {"type": "mc", "q": "___ does the trip start? – On Monday.", "opts": ["When", "Where", "Why"], "c": 0},
+  {"type": "mc", "q": "___ are you sad? – Because I lost my key ring.", "opts": ["Why", "How", "What"], "c": 0},
+  {"type": "mc", "q": "___ bag is this? – It's Karam's.", "opts": ["Whose", "Who's", "Which"], "c": 0},
+  {"type": "mc", "q": "___ that girl over there? – That's Lily.", "opts": ["Who's", "Whose", "Which"], "c": 0},
+  {"type": "mc", "q": "___ subject do you like better – biology or physics?", "opts": ["Which", "What", "Who"], "c": 0, "hint": "Auswahl zwischen zwei!"},
+  {"type": "mc", "q": "___ do you go swimming? – Twice a week.", "opts": ["How often", "How much", "How long"], "c": 0},
+  {"type": "mc", "q": "___ is your little sister? – She's seven.", "opts": ["How old", "How much", "How many"], "c": 0},
+  {"type": "mc", "q": "___ is this necklace? – Ten pounds.", "opts": ["How much", "How many", "How old"], "c": 0},
+  {"type": "mc", "q": "___ is the flight to New York? – About eight hours.", "opts": ["How long", "How often", "How many"], "c": 0},
+  {"type": "fill", "q": "___ is your favourite food? (Was)", "c": ["what"]},
+  {"type": "fill", "q": "___ do you get to school? – By bike. (Wie)", "c": ["how"]},
+  {"type": "fill", "q": "___ classmates are in your group? (Wie viele)", "c": ["how many"]},
+  {"type": "fill", "q": "___ planner is on the table? (Wessen)", "c": ["whose"]},
+  {"type": "fill", "q": "___ does registration start? – At 8:30. (Wann)", "c": ["when"]},
+  {"type": "mc", "q": "___ Ruby like drama?", "opts": ["Does", "Do", "Is"], "c": 0},
+  {"type": "mc", "q": "What ___ Ty doing at the moment?", "opts": ["is", "does", "do"], "c": 0},
+  {"type": "mc", "q": "Where ___ your parents work?", "opts": ["do", "does", "are"], "c": 0},
+  {"type": "mc", "q": "How often ___ Karam practise the guitar?", "opts": ["does", "do", "is"], "c": 0},
+  {"type": "mc", "q": "Whose hoodie ___ this?", "opts": ["is", "does", "do"], "c": 0},
+  {"type": "fill", "q": "Why ___ you wearing a costume? (gerade jetzt)", "c": ["are"]},
+  {"type": "fill", "q": "When ___ the museum open? (simple present, it)", "c": ["does"]},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Where", "does", "your", "cousin", "live?"], "c": "Where does your cousin live?"},
+  {"type": "order", "q": "Baue die Frage:", "words": ["How", "many", "subjects", "do", "you", "have?"], "c": "How many subjects do you have?"},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Whose", "phone", "is", "on", "the", "desk?"], "c": "Whose phone is on the desk?"},
+  {"type": "mc", "q": "Welche Frage passt zu „Because it's too expensive.“?", "opts": ["Why don't you buy it?", "When do you buy it?", "Where do you buy it?"], "c": 0},
+  {"type": "mc", "q": "Welche Frage passt zu „Every Tuesday afternoon.“?", "opts": ["How often do you have PE?", "How much is PE?", "Who is your PE teacher?"], "c": 0},
+  {"type": "mc", "q": "Welche Frage passt zu „It's Annabeth's.“?", "opts": ["Whose slide show is this?", "Who is Annabeth?", "Which slide show is good?"], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „What does she doing?“ Richtig ist:", "opts": ["What is she doing?", "What does she does?", "What she is doing?"], "c": 0},
+ ]
+},
+{
+ id:"q16", num:"QUEST 16 · Die Eisenberge", title:"Das große s: Plural-s, s-Genitiv & he/she/it-s",
+ desc:"Drei kleine s – drei völlig verschiedene Bedeutungen. Die Zwerge der Eisenberge zeigen dir, wie du sie nie wieder verwechselst.",
+ card:31,
+ rules:[
+  {"h": "Die drei s auf einen Blick", "table": [["<b>1. Plural-s</b> = mehrere", "two book<b>s</b>, three friend<b>s</b>, many subject<b>s</b>"], ["<b>2. s-Genitiv</b> = gehört jemandem", "Ruby<b>'s</b> bike, my brother<b>'s</b> room"], ["<b>3. he/she/it-s</b> = Verb-Endung", "he play<b>s</b>, she like<b>s</b>, it work<b>s</b>"]], "ex": "Der Apostroph ' steht NUR beim s-Genitiv!"},
+  {"h": "1. Das Plural-s", "t": "Normalerweise einfach <b>-s</b>. Sonderfälle:<br>nach s, x, ch, sh → <b>-es</b>: bus<b>es</b>, box<b>es</b>, watch<b>es</b><br>Konsonant + y → <b>-ies</b>: hobb<b>ies</b>, cit<b>ies</b>, countr<b>ies</b><br><b>Unregelmäßig:</b> man → men · woman → women · child → children · mouse → mice · foot → feet · person → people", "ex": "Vorsicht: Manche Wörter stehen IMMER im Plural: trousers, jeans, glasses, clothes, scissors."},
+  {"h": "2. Der s-Genitiv", "table": [["eine Person", "Ruby<b>'s</b> bag"], ["mehrere Personen (endet auf s)", "my parent<b>s'</b> car (Apostroph hinten!)"], ["Name endet auf s", "Charles<b>'</b> hammer oder Charles<b>'s</b> hammer"], ["bei Sachen lieber <b>of</b>", "the door <b>of</b> the classroom"]], "ex": "Deutsch: „Rubys Tasche“ ohne Apostroph – Englisch: „Ruby<b>'s</b> bag“ MIT Apostroph."},
+  {"h": "3. Das he/she/it-s", "t": "Im simple present bekommt nur die 3. Person Einzahl ein -s:<br>I play – you play – <b>he plays</b> – we play – they play<br><br>Sonderfälle wie beim Plural: go → go<b>es</b>, do → do<b>es</b>, watch → watch<b>es</b>, study → stud<b>ies</b><br><b>have → has</b>", "ex": "Merksatz: <b>he, she, it – das s muss mit!</b>"},
+ ],
+ ex:[
+  {"type": "mc", "q": "Die Mehrzahl von „box“:", "opts": ["boxes", "boxs", "boxies"], "c": 0},
+  {"type": "mc", "q": "Die Mehrzahl von „hobby“:", "opts": ["hobbies", "hobbys", "hobbyes"], "c": 0},
+  {"type": "mc", "q": "Die Mehrzahl von „child“:", "opts": ["children", "childs", "childrens"], "c": 0},
+  {"type": "mc", "q": "Die Mehrzahl von „woman“:", "opts": ["women", "womans", "womens"], "c": 0},
+  {"type": "mc", "q": "Die Mehrzahl von „person“:", "opts": ["people", "persons", "peoples"], "c": 0},
+  {"type": "fill", "q": "one country – two ___", "c": ["countries"]},
+  {"type": "fill", "q": "one bus – three ___", "c": ["buses"]},
+  {"type": "fill", "q": "one foot – two ___", "c": ["feet"]},
+  {"type": "fill", "q": "one mouse – many ___", "c": ["mice"]},
+  {"type": "mc", "q": "Welches Wort steht immer im Plural?", "opts": ["trousers", "shirt", "cap"], "c": 0},
+  {"type": "mc", "q": "„Die Tasche von Ruby“ heißt:", "opts": ["Ruby's bag", "Rubys bag", "Ruby bag"], "c": 0},
+  {"type": "mc", "q": "„Das Auto meiner Eltern“ heißt:", "opts": ["my parents' car", "my parent's car", "my parents car"], "c": 0},
+  {"type": "mc", "q": "Welcher Satz ist richtig?", "opts": ["This is my sister's room.", "This is my sisters room.", "This is my sister room."], "c": 0},
+  {"type": "fill", "q": "That is ___ new hoodie. (Ty)", "c": ["Ty's"]},
+  {"type": "fill", "q": "These are ___ books. (the students – mehrere)", "c": ["the students'"]},
+  {"type": "mc", "q": "Was ist bei Sachen besser?", "opts": ["the colour of the door", "the door's colour", "the door of colour"], "c": 0},
+  {"type": "mc", "q": "Lily ___ drama every Thursday.", "opts": ["has", "have", "haves"], "c": 0},
+  {"type": "mc", "q": "Percy ___ to the beach at weekends.", "opts": ["goes", "go", "gos"], "c": 0},
+  {"type": "mc", "q": "My tutor ___ us with our planners.", "opts": ["helps", "help", "helpes"], "c": 0},
+  {"type": "fill", "q": "She ___ (study) French and German.", "c": ["studies"]},
+  {"type": "fill", "q": "He ___ (watch) a slide show.", "c": ["watches"]},
+  {"type": "fill", "q": "It ___ (not/cost) much money.", "c": ["doesn't cost", "does not cost"]},
+  {"type": "mc", "q": "Welches s ist in „Karam's buddy“?", "opts": ["s-Genitiv (gehört ihm)", "Plural-s", "he/she/it-s"], "c": 0},
+  {"type": "mc", "q": "Welches s ist in „She likes chemistry“?", "opts": ["he/she/it-s (Verb)", "Plural-s", "s-Genitiv"], "c": 0},
+  {"type": "mc", "q": "Welches s ist in „two accents“?", "opts": ["Plural-s", "s-Genitiv", "he/she/it-s"], "c": 0},
+  {"type": "mc", "q": "Welcher Satz ist richtig?", "opts": ["My brother's friends like sports.", "My brothers friend's like sports.", "My brother's friend's like sports."], "c": 0},
+  {"type": "fill", "q": "Annabeth ___ (have got) two brothers.", "c": ["has got"]},
+  {"type": "order", "q": "Baue den Satz:", "words": ["This", "is", "my", "teacher's", "desk."], "c": "This is my teacher's desk."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Nico", "never", "forgets", "his", "homework."], "c": "Nico never forgets his homework."},
+  {"type": "mc", "q": "Finde den Fehler: „The girls bag's are new.“ Richtig ist:", "opts": ["The girls' bags are new.", "The girl's bags' are new.", "The girls bags' are new."], "c": 0},
+ ]
+},
+{
+ id:"q17", num:"QUEST 17 · Der Spiegel von Lórien", title:"Objektpronomen: me, him, her, us, them",
+ desc:"Im Spiegel siehst du dich selbst – und alle anderen. Wer macht etwas, und wen trifft es? Genau darum geht es hier.",
+ card:32,
+ rules:[
+  {"h": "Subjekt oder Objekt?", "t": "Das <b>Subjekt</b> macht etwas – es steht meist am Satzanfang.<br>Das <b>Objekt</b> ist das Ziel der Handlung – es steht meist nach dem Verb.", "table": [["<b>I</b> like <b>him</b>.", "I = Subjekt · him = Objekt"], ["<b>He</b> likes <b>me</b>.", "He = Subjekt · me = Objekt"]], "ex": "Drehe den Satz um – und beide Wörter ändern die Form!"},
+  {"h": "Die komplette Tabelle", "table": [["Subjekt", "Objekt"], ["I (ich)", "<b>me</b> (mich/mir)"], ["you (du)", "<b>you</b> (dich/dir)"], ["he (er)", "<b>him</b> (ihn/ihm)"], ["she (sie)", "<b>her</b> (sie/ihr)"], ["it (es)", "<b>it</b> (es/ihm)"], ["we (wir)", "<b>us</b> (uns)"], ["you (ihr)", "<b>you</b> (euch)"], ["they (sie)", "<b>them</b> (sie/ihnen)"]], "ex": "Nur <b>you</b> und <b>it</b> ändern sich nicht – das macht es leichter!"},
+  {"h": "Wo steht das Objektpronomen?", "table": [["nach dem Verb", "Can you help <b>me</b>?"], ["nach einer Präposition", "This is for <b>her</b>. · Come with <b>us</b>. · Look at <b>them</b>."], ["bei Aufforderungen", "Tell <b>him</b>! · Don't ask <b>us</b>!"]], "ex": "Nach <b>to, for, with, at, about, from</b> steht IMMER die Objektform."},
+  {"h": "Nicht verwechseln: her und their", "t": "<b>her</b> kann zweierlei sein:<br>Objektform: I see <b>her</b>. (ich sehe sie)<br>Possessivbegleiter: <b>her</b> bag (ihre Tasche)<br><br><b>them</b> = sie (Objekt) · <b>their</b> = ihre (Begleiter)", "ex": "I like <b>them</b>. – I like <b>their</b> costumes."},
+ ],
+ ex:[
+  {"type": "mc", "q": "Can you help ___, please? (mir)", "opts": ["me", "I", "my"], "c": 0},
+  {"type": "mc", "q": "I often visit ___ at the weekend. (sie – Mehrzahl)", "opts": ["them", "they", "their"], "c": 0},
+  {"type": "mc", "q": "This present is for ___. (ihn)", "opts": ["him", "he", "his"], "c": 0},
+  {"type": "mc", "q": "Ruby is nice. I like ___.", "opts": ["her", "she", "hers"], "c": 0},
+  {"type": "mc", "q": "Come with ___! (uns)", "opts": ["us", "we", "our"], "c": 0},
+  {"type": "mc", "q": "Look at ___! It's a beautiful rollercoaster.", "opts": ["it", "its", "it's"], "c": 0},
+  {"type": "fill", "q": "My grandma often calls ___. (mich)", "c": ["me"]},
+  {"type": "fill", "q": "Tell ___ about your trip! (uns)", "c": ["us"]},
+  {"type": "fill", "q": "I can't find my glasses. Can you see ___?", "c": ["them"]},
+  {"type": "fill", "q": "Karam is my buddy. I sit next to ___.", "c": ["him"]},
+  {"type": "fill", "q": "Thalia is deaf, so we learn to sign with ___.", "c": ["her"]},
+  {"type": "mc", "q": "___ are my best friends.", "opts": ["They", "Them", "Their"], "c": 0},
+  {"type": "mc", "q": "I always help ___.", "opts": ["them", "they", "their"], "c": 0},
+  {"type": "mc", "q": "___ likes design technology.", "opts": ["He", "Him", "His"], "c": 0},
+  {"type": "mc", "q": "Annabeth teaches ___ a lot.", "opts": ["us", "we", "our"], "c": 0},
+  {"type": "mc", "q": "Welcher Satz ist richtig?", "opts": ["She knows me.", "Her knows I.", "She knows I."], "c": 0},
+  {"type": "mc", "q": "Welcher Satz ist richtig?", "opts": ["We can ask them.", "Us can ask they.", "We can ask they."], "c": 0},
+  {"type": "fill", "q": "He is my cousin, and I visit ___ every summer. (ihn)", "c": ["him"]},
+  {"type": "mc", "q": "„her“ in „I met her at the fair“ bedeutet:", "opts": ["sie (Objekt)", "ihre (Begleiter)", "ihr gehörend"], "c": 0},
+  {"type": "mc", "q": "„her“ in „her new schoolbag“ bedeutet:", "opts": ["ihre (Begleiter)", "sie (Objekt)", "ihr (Ziel)"], "c": 0},
+  {"type": "mc", "q": "Wähle richtig: I like ___ costumes. (ihre)", "opts": ["their", "them", "they"], "c": 0},
+  {"type": "mc", "q": "Wähle richtig: I like ___. (sie, Mehrzahl)", "opts": ["them", "their", "they"], "c": 0},
+  {"type": "fill", "q": "Percy is late. Let's wait for ___.", "c": ["him"]},
+  {"type": "fill", "q": "The museum is great. Do you want to visit ___ with me?", "c": ["it"]},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Can", "you", "give", "me", "your", "planner?"], "c": "Can you give me your planner?"},
+  {"type": "order", "q": "Baue den Satz:", "words": ["My", "parents", "take", "us", "to", "the", "campsite."], "c": "My parents take us to the campsite."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Please", "don't", "tell", "her", "about", "the", "surprise."], "c": "Please don't tell her about the surprise."},
+  {"type": "mc", "q": "Finde den Fehler: „She sits next to I.“ Richtig ist:", "opts": ["She sits next to me.", "Her sits next to me.", "She sits next to my."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „Give the note to he.“ Richtig ist:", "opts": ["Give the note to him.", "Give the note to his.", "Give the note at he."], "c": 0},
+  {"type": "mc", "q": "„Them like us“ – was ist falsch?", "opts": ["„Them“ muss „They“ heißen.", "„us“ muss „we“ heißen.", "Der Satz ist richtig."], "c": 0},
+ ]
 }
 ];
 
@@ -948,9 +1282,14 @@ const TOPICS = {
  v2:["Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie", "Vokabeln: Zuhause & Familie"],
  v3:["Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen", "Vokabeln: Essen & Einkaufen"],
  v4:["Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere", "Vokabeln: Freizeit, Hobbys & Tiere"],
+ q13:["Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Signalwörter erkennen", "Signalwörter erkennen", "Signalwörter erkennen", "Signalwörter erkennen", "Zustandsverben (know, like, want …)", "Zustandsverben (know, like, want …)", "Zustandsverben (know, like, want …)", "Zustandsverben (know, like, want …)", "Zustandsverben (know, like, want …)", "Present Progressive: Schreibregeln (-ing)", "Present Progressive: Schreibregeln (-ing)", "Present Progressive: Schreibregeln (-ing)", "Present Progressive: Schreibregeln (-ing)", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive", "Simple Present vs. Present Progressive"],
+ q14:["zählbar / nicht zählbar", "zählbar / nicht zählbar", "zählbar / nicht zählbar", "zählbar / nicht zählbar", "zählbar / nicht zählbar", "much / many / a lot of", "much / many / a lot of", "much / many / a lot of", "much / many / a lot of", "much / many / a lot of", "much / many / a lot of", "much / many / a lot of", "much / many / a lot of", "some / any", "some / any", "some / any", "some / any", "some / any", "some / any", "some / any", "some / any", "How much / How many", "How much / How many", "How much / How many", "How much / How many", "much / many / a lot of", "some / any", "How much / How many", "much / many / a lot of", "some / any"],
+ q15:["Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragen bilden (Mix)"],
+ q16:["Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "s-Genitiv ('s)", "s-Genitiv ('s)", "s-Genitiv ('s)", "s-Genitiv ('s)", "s-Genitiv ('s)", "s-Genitiv ('s)", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Die drei s unterscheiden", "Die drei s unterscheiden", "Die drei s unterscheiden", "Die drei s unterscheiden", "Die drei s unterscheiden", "s-Genitiv ('s)", "Simple Present: he/she/it-s", "Die drei s unterscheiden"],
+ q17:["Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Subjekt- und Objektform"],
 };
 
-let S = {xp:0, done:{}, best:{}, cards:[], stats:{}};
+let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[]};
 const KEY = "englisch-abenteuer-v4";
 let storageOK = true;
 
@@ -969,6 +1308,22 @@ function browserStore(){
   }catch(e){ return null; } /* z. B. blockiert im Privatmodus */
 }
 
+/* Stellt sicher, dass auch ältere Spielstände alle Felder haben */
+function normalizeState(){
+  S.cards   = Array.isArray(S.cards)   ? S.cards   : [];
+  S.extras  = Array.isArray(S.extras)  ? S.extras  : [];
+  S.facts   = Array.isArray(S.facts)   ? S.facts   : [];
+  S.stats   = (S.stats   && typeof S.stats==="object")   ? S.stats   : {};
+  S.done    = (S.done    && typeof S.done==="object")    ? S.done    : {};
+  S.best    = (S.best    && typeof S.best==="object")    ? S.best    : {};
+  S.perfect = (S.perfect && typeof S.perfect==="object") ? S.perfect : {};
+  S.xp = Number(S.xp)||0;
+  S.maxStreak = Number(S.maxStreak)||0;
+  // Indizes verwerfen, die es nicht (mehr) gibt
+  S.cards  = S.cards.filter(i=>Number.isInteger(i) && i>=0 && i<CARDS.length);
+  S.extras = S.extras.filter(i=>Number.isInteger(i) && i>=0 && i<EXTRA_CARDS.length);
+  S.facts  = S.facts.filter(i=>Number.isInteger(i) && i>=0 && i<FACTS.length);
+}
 async function loadState(){
   try{
     const cs = claudeStore();
@@ -982,7 +1337,7 @@ async function loadState(){
         if(v) S = Object.assign(S, JSON.parse(v));
       }
     }
-    S.stats = S.stats || {};
+    normalizeState();
   }catch(e){ /* Noch kein Spielstand vorhanden – kein Problem */ }
 }
 async function saveState(){
@@ -998,12 +1353,73 @@ async function saveState(){
 }
 
 /* ---------- Spielstand sichern & übertragen ---------- */
+function saveMsg(text, ok){
+  const box = document.getElementById("saveMsg");
+  if(!box) return;
+  box.style.display = "block";
+  box.style.borderColor = ok ? "rgba(90,154,90,.6)" : "rgba(192,69,58,.6)";
+  box.innerHTML = text;
+}
+function stateFileName(){
+  return "Englisch-Abenteuer_Spielstand_" + new Date().toISOString().slice(0,10) + ".json";
+}
+/* Weg 1: Teilen-Menü – auf dem iPad am zuverlässigsten */
+async function shareState(){
+  try{
+    const file = new File([JSON.stringify(S,null,1)], stateFileName(), {type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:stateFileName()});
+      saveMsg('✅ Wähle im Teilen-Menü <b>„In Dateien sichern"</b>, um den Spielstand abzulegen.', true);
+      return true;
+    }
+  }catch(e){
+    if(e && e.name==="AbortError"){ saveMsg('Abgebrochen – es wurde nichts gespeichert.', false); return true; }
+  }
+  return false;
+}
+async function exportOrShare(){
+  if(await shareState()) return;
+  exportState();
+}
+/* Weg 3: Text zum Kopieren – funktioniert immer */
+function showStateText(){
+  saveMsg('📋 Kopiere diesen Text und sichere ihn z. B. in einer Notiz. Zum Wiederherstellen fügst du ihn hier wieder ein und tippst auf „Übernehmen".'
+    +'<textarea id="stateBox" style="width:100%;height:110px;margin-top:8px;font-size:11px;border-radius:8px;padding:8px;'
+    +'background:rgba(0,0,0,.4);color:#f5ead0;border:1px solid rgba(217,168,60,.4)"></textarea>'
+    +'<div class="btnRow" style="margin:8px 0 0"><button class="btn ghost" onclick="copyStateText()">📋 Kopieren</button>'
+    +'<button class="btn ghost" onclick="pasteStateText()">✔ Übernehmen</button></div>', true);
+  const box=document.getElementById("stateBox"); if(box) box.value = JSON.stringify(S);
+}
+function copyStateText(){
+  const box=document.getElementById("stateBox"); if(!box) return;
+  box.select(); box.setSelectionRange(0,999999);
+  try{ navigator.clipboard.writeText(box.value); }catch(e){ try{ document.execCommand("copy"); }catch(e2){} }
+}
+function pasteStateText(){
+  const box=document.getElementById("stateBox"); if(!box) return;
+  try{
+    const data=JSON.parse(box.value);
+    if(typeof data!=="object"||data===null) throw 0;
+    S=Object.assign({xp:0,done:{},best:{},cards:[],stats:{},extras:[],facts:[],perfect:{}},data);
+    normalizeState(); storageOK=true; saveState(); showEval();
+    saveMsg('✅ Spielstand übernommen: <b>'+S.xp+' XP</b>, '+(S.cards.length+S.extras.length)+' Karten.', true);
+  }catch(e){ saveMsg('⚠ Der eingefügte Text ist kein gültiger Spielstand.', false); }
+}
 function exportState(){
-  const a = document.createElement("a");
-  a.href = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(S, null, 1));
+  const json = JSON.stringify(S, null, 1);
   const d = new Date().toISOString().slice(0,10);
-  a.download = "Englisch-Abenteuer_Spielstand_" + d + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
+  const name = "Englisch-Abenteuer_Spielstand_" + d + ".json";
+  try{
+    const blob = new Blob([json], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    saveMsg('✅ Spielstand gesichert als <b>'+name+'</b><br><span style="opacity:.8">Auf dem iPad liegt die Datei jetzt in <b>Dateien → Downloads</b>. Safari zeigt dafür keine eigene Meldung an.</span>', true);
+  }catch(e){
+    saveMsg('⚠ Der Download hat nicht geklappt. Kopiere den Spielstand notfalls von Hand aus dem Browser-Speicher.', false);
+  }
 }
 function importState(){
   const inp = document.createElement("input");
@@ -1016,14 +1432,14 @@ function importState(){
       try{
         const data = JSON.parse(rd.result);
         if(typeof data !== "object" || data === null) throw 0;
-        S = Object.assign({xp:0, done:{}, best:{}, cards:[], stats:{}}, data);
-        S.stats = S.stats || {};
+        S = Object.assign({xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[], facts:[], perfect:{}}, data);
+        normalizeState();
         storageOK = true;
         saveState();
         showEval();
+        saveMsg('✅ Spielstand geladen: <b>'+S.xp+' XP</b>, '+(S.cards.length+S.extras.length)+' Karten, '+Object.keys(S.done).length+' bestandene Quests.', true);
       }catch(e){
-        const b = document.getElementById("impBtn");
-        if(b) b.textContent = "⚠ Datei ungültig – bitte exportierte JSON-Datei wählen";
+        saveMsg('⚠ Diese Datei konnte nicht gelesen werden. Bitte die exportierte <b>.json</b>-Datei auswählen.', false);
       }
     };
     rd.readAsText(f);
@@ -1037,7 +1453,15 @@ function rank(){ return RANKS[level()]; }
    Karten anzeigen + herunterladen (eingebettete Bilder)
    ========================================================= */
 function cardIMG(c){
-  return `<img src="${CARD_IMGS[c.id]}" alt="${c.name}" loading="lazy">`;
+  const src = CARD_IMGS[c.id] || ("cards/"+c.id+".jpg");
+  return `<img src="${src}" alt="${c.name}" loading="lazy">`;
+}
+function downloadExtra(idx){
+  const c = EXTRA_CARDS[idx];
+  const a = document.createElement("a");
+  a.href = CARD_IMGS[c.id] || ("cards/"+c.id+".jpg");
+  a.download = "Karte_" + c.name.replace(/[^a-zA-ZäöüÄÖÜß0-9]+/g,"_") + ".jpg";
+  document.body.appendChild(a); a.click(); a.remove();
 }
 function downloadCard(idx){
   const c = CARDS[idx];
@@ -1064,10 +1488,10 @@ function headerHTML(){
     <div class="hud">
       <span class="badge">⭐ ${S.xp} XP</span>
       <span class="badge">🏅 ${rank()}</span>
-      <span class="badge">🃏 ${S.cards.length}/12</span>
+      <span class="badge">🃏 ${S.cards.length+S.extras.length}/${CARDS.length+EXTRA_CARDS.length}</span>
       <div class="xpbar" title="Bis zum nächsten Rang"><div style="width:${Math.min(100,cur/span*100)}%"></div></div>
     </div>
-    <div class="sub">Meistere 6 Quests durch die Grammatik der 5. Klasse – sammle XP und alle 12 Belohnungskarten!</div>
+    <div class="sub">${QUESTS.length} Quests durch Grammatik und Wortschatz der 5. und 6. Klasse – sammle XP und alle ${CARDS.length+EXTRA_CARDS.length} Karten!</div>
   </header>`;
 }
 
@@ -1084,13 +1508,15 @@ function showHome(){
       <p>${q.desc}</p>
       <div class="meta">
         <span class="pill">${q.ex.length} Übungen</span>
-        ${best!=null?`<span class="pill ${best>=90?'done':''}">Beste: ${best}%</span>`:''}
-        ${hasCard?'<span class="pill done">🃏 Karte erhalten</span>':'<span class="pill">🎁 Karte ab 90 %</span>'}
+        ${best!=null?`<span class="pill ${best>=85?'done':''}">Beste: ${best}%</span>`:''}
+        ${hasCard?'<span class="pill done">🃏 Karte erhalten</span>':'<span class="pill">🎁 Karte ab 85 %</span>'}
       </div>
     </div>`;
   };
-  const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q");
+  const DEEP = ["q13","q14","q15","q16","q17"];
+  const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q" && !DEEP.includes(x.q.id));
   const vocab   = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="v");
+  const deep    = QUESTS.map((q,i)=>({q,i})).filter(x=>DEEP.includes(x.q.id));
   app.innerHTML = headerHTML() + `
     <div class="backRow" style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn ghost" onclick="showAlbum()">🃏 Karten-Album</button>
@@ -1101,7 +1527,10 @@ function showHome(){
     <div class="sectionTitle">⚔️ Grammatik-Quests</div>
     <div class="grid">${grammar.map(x=>tile(x.q,x.i)).join("")}</div>
     <div class="sectionTitle" style="margin-top:20px">🧙 Vokabel-Quests</div>
-    <div class="grid">${vocab.map(x=>tile(x.q,x.i)).join("")}</div>`;
+    <div class="grid">${vocab.map(x=>tile(x.q,x.i)).join("")}</div>
+    <div class="sectionTitle" style="margin-top:20px">🔥 Vertiefungs-Quests</div>
+    <div class="hint-sm">Anspruchsvoller und ausführlicher erklärt – genau für die Themen, die erfahrungsgemäß am meisten Übung brauchen.</div>
+    <div class="grid">${deep.map(x=>tile(x.q,x.i)).join("")}</div>`;
   window.scrollTo(0,0);
 }
 
@@ -1139,8 +1568,8 @@ function factHTML(){
   const isNew = !S.facts.includes(f);
   if(isNew){ S.facts.push(f); saveState(); }
   return `<div class="fact">
-    <span class="ring">💍</span>
-    <h3>WUSSTEST DU? · MITTELERDE-FAKT</h3>
+    <span class="ring">${factCat(f).icon}</span>
+    <h3>WUSSTEST DU? · ${factCat(f).label}</h3>
     <p>${FACTS[f]}</p>
     ${isNew?`<p style="font-size:12px;opacity:.75;margin-top:6px">📖 Neu im Fakten-Buch gespeichert (${S.facts.length}/${FACTS.length})</p>`:""}
     <div class="btnRow" style="justify-content:center"><button class="btn" onclick="renderExercise()">Weiter geht's! →</button></div>
@@ -1289,11 +1718,20 @@ function finishQuest(){
   let newCards=[];
   if(passed){ S.done[q.id]=true; S.xp += 25; }
   if(pct===100){ S.perfect = S.perfect||{}; S.perfect[q.id]=true; }
-  if(pct>=90 && q.card!=null && !S.cards.includes(q.card)){
+  if(pct>=85 && q.card!=null && !S.cards.includes(q.card)){
     S.cards.push(q.card);
     newCards.push({ci:q.card, label:"✦ NEUE QUEST-KARTE ✦"});
   }
   // Sonderkarten für besondere Erfolge prüfen
+  // Zufallsfund ab 95 %
+  if(pct>=95){
+    const pool = EXTRA_CARDS.map((c,i)=>i).filter(i=>!S.extras.includes(i));
+    if(pool.length){
+      const pick = pool[Math.floor(Math.random()*pool.length)];
+      S.extras.push(pick);
+      newCards.push({extra:pick, label:"🎲 ZUFALLSFUND (95 %)"});
+    }
+  }
   SPECIALS.forEach(sp=>{
     if(!S.cards.includes(sp.card) && specialReached(sp)){
       S.cards.push(sp.card);
@@ -1302,8 +1740,8 @@ function finishQuest(){
   });
   saveState();
   const msg = pct===100 ? "PERFEKT – eine fehlerfreie Quest! Ganz Mittelerde verneigt sich."
-            : pct>=90 ? "Legendär! Du hast dir die Quest-Karte verdient!"
-            : passed ? "Quest bestanden! Ab 90 % wartet die Quest-Karte – versuch es gleich noch einmal!"
+            : pct>=85 ? "Legendär! Du hast dir die Quest-Karte verdient!"
+            : passed ? "Quest bestanden! Ab 85 % wartet die Quest-Karte – versuch es gleich noch einmal!"
             : "Fast! Du brauchst mindestens 60 %, um die Quest zu bestehen. Lies die Regeln noch einmal – du schaffst das!";
   app.innerHTML = headerHTML() + `
    <div class="result">
@@ -1312,13 +1750,16 @@ function finishQuest(){
      <p style="margin:10px 0;font-size:16px;font-weight:700">${msg}</p>
      ${passed?`<p style="opacity:.8;font-size:14px">+25 XP Abschlussbonus · Längste Serie in dieser Runde: ${run.bestStreak||0} 🔥</p>`:""}
      <div class="cardStage">
-       ${newCards.map(x=>`
-         <div class="cardBox">
+       ${newCards.map(x=>{
+         const c = x.extra!=null ? EXTRA_CARDS[x.extra] : CARDS[x.ci];
+         const dl = x.extra!=null ? `downloadExtra(${x.extra})` : `downloadCard(${x.ci})`;
+         return `<div class="cardBox">
            <span class="newTag">${x.label}</span>
-           ${cardIMG(CARDS[x.ci])}
-           <div class="dl"><button class="btn" onclick="downloadCard(${x.ci})">⬇ Karte herunterladen</button></div>
-         </div>`).join("")}
-       ${pct>=90 && !newCards.length ? `<p style="opacity:.75">Die Quest-Karte besitzt du schon – schau ins Album!</p>`:""}
+           ${cardIMG(c)}
+           <div class="nm" style="margin-top:6px;font-weight:900">${c.name}</div>
+           <div class="dl"><button class="btn" onclick="${dl}">⬇ Karte herunterladen</button></div>
+         </div>`;}).join("")}
+       ${pct>=85 && !newCards.length ? `<p style="opacity:.75">Die Quest-Karte besitzt du schon – schau ins Album!</p>`:""}
      </div>
      <div class="btnRow" style="justify-content:center">
        ${!passed?`<button class="btn" onclick="showIntro(${run.qi})">↺ Nochmal versuchen</button>`:""}
@@ -1342,16 +1783,25 @@ function specialReached(sp){
   return false;
 }
 
+function reiseTrophies(){
+  try{
+    const ls = browserStore(); if(!ls) return [];
+    const v = ls.getItem("mittelerde-reise-v1"); if(!v) return [];
+    const d = JSON.parse(v);
+    return Array.isArray(d.trophies) ? d.trophies : [];
+  }catch(e){ return []; }
+}
 function showAlbum(){
-  const slot=(c,i)=>{
-    const owned=S.cards.includes(i);
-    const hint = c.q!=null
-      ? `🔒 ${QUESTS[c.q].num.split(" · ")[0]} mit 90 % schaffen`
-      : `🏅 ${SPECIALS[c.sp].desc}`;
+  const troph = new Set(reiseTrophies());
+  const slot=(c,i,kind)=>{
+    const owned = kind==="extra" ? (S.extras.includes(i) || troph.has(c.id)) : S.cards.includes(i);
+    const hint = kind==="extra" ? "🎲 Zufallsfund ab 95 % oder Gegner-Belohnung"
+      : (c.q!=null ? `🔒 ${QUESTS[c.q].num.split(" · ")[0]} mit 85 % schaffen` : `🏅 ${SPECIALS[c.sp].desc}`);
+    const dl = kind==="extra" ? `downloadExtra(${i})` : `downloadCard(${i})`;
     return `<div class="albumSlot ${owned?"":"locked"}">
-      ${cardIMG(c)}
-      <div class="nm">${owned?c.name:"???"}</div>
-      ${owned?`<button class="btn" style="padding:8px 14px;font-size:13px;margin-top:6px" onclick="downloadCard(${i})">⬇ Bild</button>`
+      ${owned?cardIMG(c):`<div class="mystery"><span>?</span></div>`}
+      <div class="nm">${owned?c.name:"Unbekannte Karte"}</div>
+      ${owned?`<button class="btn" style="padding:8px 14px;font-size:13px;margin-top:6px" onclick="${dl}">⬇ Bild</button>`
              :`<div class="lk">${hint}</div>`}
     </div>`;
   };
@@ -1359,14 +1809,29 @@ function showAlbum(){
   const sc = CARDS.map((c,i)=>({c,i})).filter(x=>x.c.sp!=null);
   const nq = qc.filter(x=>S.cards.includes(x.i)).length;
   const ns = sc.filter(x=>S.cards.includes(x.i)).length;
+  const setBlock = (key)=>{
+    const list = EXTRA_CARDS.map((c,i)=>({c,i})).filter(x=>x.c.set===key);
+    if(!list.length) return "";
+    const n = list.filter(x=>S.extras.includes(x.i) || troph.has(x.c.id)).length;
+    return `<div class="sectionTitle" style="font-size:18px;margin-top:18px">${SET_INFO[key].t} · ${n} / ${list.length}</div>
+      <div class="albumGrid">${list.map(x=>slot(x.c,x.i,"extra")).join("")}</div>`;
+  };
+  const extrasOwned = EXTRA_CARDS.filter((c,i)=>S.extras.includes(i) || troph.has(c.id)).length;
+  const totalOwned = nq+ns+extrasOwned;
+  const totalAll = qc.length+sc.length+EXTRA_CARDS.length;
   app.innerHTML = headerHTML() + `
    <div class="backRow"><button class="btn ghost" onclick="showHome()">← Zur Questkarte</button></div>
-   <div class="sectionTitle">🃏 Dein Karten-Album</div>
-   <div class="hint-sm">Für jede Quest mit <b>90 % oder mehr</b> bekommst du ihre Quest-Karte. Sonderkarten gibt es für besondere Erfolge – im gesperrten Feld steht, wie du sie verdienst. Jede Karte kannst du herunterladen, ausdrucken (63 × 88 mm) und ausschneiden.</div>
+   <div class="sectionTitle">🃏 Dein Karten-Album · ${totalOwned} / ${totalAll}</div>
+   <div class="hint-sm">Quest-Karten gibt es ab <b>85 %</b>. Ab <b>95 %</b> kommt zusätzlich ein zufälliger Kartenfund dazu.
+   Weitere Karten gewinnst du in der Mittelerde-Reise, wenn du einen Gegner besiegst. Noch nicht entdeckte Karten bleiben geheim –
+   jede gefundene Karte kannst du herunterladen, ausdrucken (63 × 88 mm) und ausschneiden.</div>
    <div class="sectionTitle" style="font-size:18px">Quest-Karten · ${nq} / ${qc.length}</div>
-   <div class="albumGrid">${qc.map(x=>slot(x.c,x.i)).join("")}</div>
+   <div class="albumGrid">${qc.map(x=>slot(x.c,x.i,"quest")).join("")}</div>
    <div class="sectionTitle" style="font-size:18px;margin-top:18px">🏅 Sonderkarten · ${ns} / ${sc.length}</div>
-   <div class="albumGrid">${sc.map(x=>slot(x.c,x.i)).join("")}</div>`;
+   <div class="albumGrid">${sc.map(x=>slot(x.c,x.i,"quest")).join("")}</div>
+   ${setBlock("mittelerde")}
+   ${setBlock("fusion")}
+   ${setBlock("halbgoetter")}`;
   window.scrollTo(0,0);
 }
 
@@ -1376,11 +1841,11 @@ function showFacts(){
   app.innerHTML = headerHTML() + `
    <div class="backRow"><button class="btn ghost" onclick="showHome()">← Zur Questkarte</button></div>
    <div class="sectionTitle">📖 Das Buch der Fakten</div>
-   <div class="hint-sm">${got.length} von ${FACTS.length} Mittelerde-Fakten entdeckt. Neue Fakten erscheinen während der Quests – ungefähr alle 5 Aufgaben einer. Gesammelte Fakten bleiben hier für immer gespeichert.</div>
+   <div class="hint-sm">${got.length} von ${FACTS.length} Fakten entdeckt (Mittelerde 💍 und Pokémon ⚡). Neue Fakten erscheinen während der Quests – ungefähr alle 5 Aufgaben einer. Gesammelte Fakten bleiben hier für immer gespeichert.</div>
    ${FACTS.map((t,i)=>{
      const ok = got.includes(i);
      return `<div class="factRow ${ok?"":"lockedF"}">
-       <span class="fnum">${i+1}</span>
+       <span class="fnum">${ok?factCat(i).icon:(i+1)}</span>
        <p>${ok?t:"❓ Noch nicht entdeckt – spiele weiter, um diesen Fakt zu finden!"}</p>
      </div>`;
    }).join("")}`;
@@ -1440,11 +1905,19 @@ function showEval(){
    ${section("⚪ Noch nicht geübt",grp(0),null,true)}
    <div class="evSec"><h3>Nach Quests</h3>${quests}</div>
    <div class="evSec"><h3>Spielstand sichern & übertragen</h3>
-     <div class="hint-sm" style="margin-top:0">Der Fortschritt wird automatisch auf diesem Gerät im Browser gespeichert. Mit „Exportieren" kannst du ihn als Datei sichern und z. B. auf einem anderen iPad über „Laden" wiederherstellen.</div>
+     <div class="hint-sm" style="margin-top:0">Der Fortschritt wird automatisch auf diesem Gerät im Browser gespeichert.
+     Zum Sichern oder Übertragen gibt es drei Wege:<br>
+     <b>📤 Teilen / Sichern</b> – auf dem iPad der zuverlässigste Weg (dann „In Dateien sichern")<br>
+     <b>💾 Als Datei laden</b> – klassischer Download nach Dateien → Downloads<br>
+     <b>📋 Text anzeigen</b> – funktioniert immer: Text kopieren und z. B. in einer Notiz aufbewahren</div>
      <div class="btnRow">
-       <button class="btn ghost" onclick="exportState()">💾 Spielstand exportieren</button>
-       <button class="btn ghost" id="impBtn" onclick="importState()">📥 Spielstand laden</button>
+       <button class="btn ghost" onclick="exportOrShare()">📤 Teilen / Sichern</button>
+       <button class="btn ghost" onclick="exportState()">💾 Als Datei laden</button>
+       <button class="btn ghost" id="impBtn" onclick="importState()">📥 Datei laden</button>
+       <button class="btn ghost" onclick="showStateText()">📋 Text anzeigen</button>
      </div>
+     <div id="saveMsg" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;
+       background:rgba(0,0,0,.25);font-size:13.5px;line-height:1.5"></div>
    </div>
    <div class="btnRow"><button class="btn ghost" id="rst" onclick="resetStats()">🗑 Statistik zurücksetzen</button></div>`;
   window.scrollTo(0,0);
