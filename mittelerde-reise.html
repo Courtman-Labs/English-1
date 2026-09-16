@@ -92,6 +92,16 @@
   .fillIn:focus{outline:none;border-color:var(--gold2)}
   .fillIn.correct{border-color:var(--green);background:rgba(90,154,90,.25)}
   .fillIn.wrong{border-color:var(--red);background:rgba(192,69,58,.25)}
+  .fb{margin:12px auto 0;max-width:520px;padding:14px 16px;border-radius:14px;border:2px solid;text-align:center}
+  .fb.ok{background:rgba(90,154,90,.18);border-color:rgba(90,154,90,.7)}
+  .fb.no{background:rgba(192,69,58,.18);border-color:rgba(192,69,58,.7)}
+  .fb .fbTitle{font-family:'Cinzel',serif;font-size:17px;font-weight:700;margin-bottom:6px}
+  .fb.ok .fbTitle{color:#a8e0a8}
+  .fb.no .fbTitle{color:#ffab9e}
+  .fb .fbLine{font-size:15px;line-height:1.6;margin:4px 0}
+  .fb .fbWord{font-weight:800;color:var(--gold2);font-size:17px}
+  .fb .fbDe{opacity:.85;font-size:14px}
+  .fb .yours{text-decoration:line-through;opacity:.8}
   .atkFx{text-align:center;font-family:'Cinzel',serif;color:var(--gold2);font-size:15px;min-height:22px;margin-top:8px}
   /* ---- Roster ---- */
   .rosterGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin:10px 0}
@@ -646,6 +656,7 @@ function renderBattle(){
    <div class="hint-sm" style="text-align:center;margin-top:-6px">Serie: <b>${battle.streak}</b> · bei 5/10/15 greift dein Team an</div>
    <div class="qBox">${qHTML}</div>
    <div class="atkFx" id="atkFx"></div>
+   <div id="feedback"></div>
    <div class="btnRow" style="justify-content:center"><button class="btn ghost" onclick="fleeBattle()">✕ Rückzug</button></div>`;
   window.scrollTo(0,0);
   const inp = document.getElementById("fillInput"); if(inp) setTimeout(()=>inp.focus(),50);
@@ -659,7 +670,7 @@ function answerMC(btn, chosen, correct){
     else if(b===btn) b.classList.add("wrong");
     b.onclick=null;
   });
-  setTimeout(()=>resolveAnswer(ok),650);
+  resolveAnswer(ok, ok?null:chosen);
 }
 function checkFill(){
   if(battle.answered) return;
@@ -672,55 +683,101 @@ function checkFill(){
   battle.answered = true;
   inp.classList.add(ok?"correct":"wrong");
   inp.disabled = true;
-  if(!ok){
-    const hintEl = document.createElement("div");
-    hintEl.className="hint-sm"; hintEl.style.marginTop="8px";
-    hintEl.textContent = "Richtig wäre: " + firstAnswer(v);
-    inp.insertAdjacentElement("afterend", hintEl);
-  }
-  setTimeout(()=>resolveAnswer(ok),750);
+  resolveAnswer(ok, ok?null:inp.value.trim());
 }
 
-function resolveAnswer(ok){
+/* Zeigt die Auswertung und wartet auf „Weiter" */
+function showFeedback(ok, given){
+  const v = battle.current;
+  const de = v.de.split(";")[0].trim();
+  const box = document.getElementById("feedback");
+  if(!box){ resolveAnswer(ok); return; }
+  const wrongLine = (given && String(given).length)
+    ? `<div class="fbLine">Deine Antwort: <span class="yours">${esc(given)}</span></div>` : "";
+  box.innerHTML = `<div class="fb ${ok?"ok":"no"}">
+      <div class="fbTitle">${ok?"✓ Richtig!":"✗ Leider falsch"}</div>
+      ${ok?"":wrongLine}
+      <div class="fbLine">${ok?"":"Richtig ist: "}<span class="fbWord">${esc(firstAnswer(v))}</span></div>
+      <div class="fbLine fbDe">bedeutet: ${esc(de)}</div>
+      ${v.example && v.example.includes("___")
+        ? `<div class="fbLine fbDe" style="margin-top:6px">${esc(v.example.replace("___", firstAnswer(v)))}</div>` : ""}
+      <div class="btnRow" style="justify-content:center;margin:12px 0 0">
+        <button class="btn" id="nextBtn" onclick="continueBattle()">Weiter →</button>
+      </div>
+    </div>`;
+  battle.pendingOk = ok;
+  const b = document.getElementById("nextBtn"); if(b) b.focus();
+}
+function continueBattle(){
+  const box = document.getElementById("feedback"); if(box) box.innerHTML = "";
+  const ok = battle.pendingOk;
+  battle.pendingOk = null;
+  resolveAnswer(ok);
+}
+
+function resolveAnswer(ok, given){
   const tag = battle.current.tag;
   S.stats[tag] = S.stats[tag] || {a:0,c:0};
   S.stats[tag].a++; if(ok) S.stats[tag].c++;
 
+  let attack = null;
   if(ok){
     battle.streak++;
     if(battle.streak>S.maxStreak) S.maxStreak=battle.streak;
     S.xp += 5;
-    if(battle.streak%15===0){ triggerAttack(3); }
-    else if(battle.streak%10===0){ triggerAttack(2); }
-    else if(battle.streak%5===0){ triggerAttack(1); }
-    else { flashFx(""); proceedBattle(); }
+    if(battle.streak%15===0)      attack = doAttack(3);
+    else if(battle.streak%10===0) attack = doAttack(2);
+    else if(battle.streak%5===0)  attack = doAttack(1);
   } else {
     battle.streak = 0;
-    flashFx("Die Serie reißt ab …");
-    proceedBattle();
   }
+  saveState();
+  showFeedback(ok, given, attack);
 }
-function flashFx(msg){
-  const el = document.getElementById("atkFx"); if(el) el.textContent = msg;
-}
-function triggerAttack(tier){
+
+/* Führt den Angriff aus und liefert den Text dazu zurück */
+function doAttack(tier){
   const ally = pickAlly(tier);
   const dmg = tier===1 ? (15+Math.floor(Math.random()*11))
             : tier===2 ? (35+Math.floor(Math.random()*21))
             : (70+Math.floor(Math.random()*31));
   battle.foeHP = Math.max(0, battle.foeHP - dmg);
+  if(!battle.isBoss){ S.node = Math.max(S.node, battle.nodeIndex); S.nodeHP = battle.foeHP; }
   const label = tier===1?"Schwacher Angriff":tier===2?"Mittlerer Angriff":"Starker Angriff";
-  flashFx(`${ally?ally.name:"Dein Team"} greift an! ${label}: −${dmg} KP`);
-  S.node = battle.isBoss ? S.node : Math.max(S.node, battle.nodeIndex);
-  S.nodeHP = battle.foeHP;
-  saveState();
-  setTimeout(()=>{
-    if(battle.foeHP<=0){ winBattle(); } else { proceedBattle(); }
-  }, 900);
+  return `⚔️ ${ally?ally.name:"Dein Team"} greift an! ${label}: −${dmg} KP`;
 }
-function proceedBattle(){
+function flashFx(msg){
+  const el = document.getElementById("atkFx"); if(el) el.textContent = msg;
+}
+
+/* Zeigt die Auswertung und wartet auf „Weiter" */
+function showFeedback(ok, given, attack){
+  const v = battle.current;
+  const de = v.de.split(";")[0].trim();
+  const box = document.getElementById("feedback");
+  if(!box){ continueBattle(); return; }
+  const wrongLine = (given && String(given).length)
+    ? `<div class="fbLine">Deine Antwort: <span class="yours">${esc(given)}</span></div>` : "";
+  const done = battle.foeHP<=0;
+  box.innerHTML = `<div class="fb ${ok?"ok":"no"}">
+      <div class="fbTitle">${ok?"✓ Richtig!":"✗ Leider falsch"}</div>
+      ${ok?"":wrongLine}
+      <div class="fbLine">${ok?"":"Richtig ist: "}<span class="fbWord">${esc(firstAnswer(v))}</span></div>
+      <div class="fbLine fbDe">bedeutet: ${esc(de)}</div>
+      ${v.example && v.example.includes("___")
+        ? `<div class="fbLine fbDe" style="margin-top:6px">${esc(v.example.replace("___", firstAnswer(v)))}</div>` : ""}
+      ${attack ? `<div class="fbLine" style="color:var(--gold2);font-weight:700;margin-top:10px">${attack}</div>` : ""}
+      ${(!ok && battle.streak===0) ? `<div class="fbLine fbDe" style="margin-top:6px">Die Serie beginnt wieder bei 0.</div>` : ""}
+      <div class="btnRow" style="justify-content:center;margin:12px 0 0">
+        <button class="btn" id="nextBtn" onclick="continueBattle()">${done?"Sieg ansehen →":"Weiter →"}</button>
+      </div>
+    </div>`;
+  const b=document.getElementById("nextBtn"); if(b) b.focus();
+}
+function continueBattle(){
+  const box=document.getElementById("feedback"); if(box) box.innerHTML="";
   if(battle.foeHP<=0){ winBattle(); return; }
-  setTimeout(()=>nextBattleQuestion(), battle.answered?300:0);
+  nextBattleQuestion();
 }
 function fleeBattle(){ battle=null; showMap(); }
 
