@@ -313,6 +313,8 @@ const CARDS = [
  {id:"annapsia", name:"Annapsia", q:18},
  {id:"silenara", name:"Silenara", q:19},
  {id:"percydor", name:"Percydor", q:20},
+ {id:"nicoroark", name:"Nicoroark", q:21},
+ {id:"aquiladra", name:"Aquiladra", q:22},
 ];
 /* ---------- Sonderkarten: besondere Erfolge ---------- */
 
@@ -393,13 +395,11 @@ const EXTRA_CARDS = [
  {id:"thalenso", name:"Thalenso", set:"fusion"},
  {id:"solpharos", name:"Solpharos", set:"fusion"},
  {id:"fenvoli", name:"Fenvoli", set:"fusion"},
- {id:"nicoroark", name:"Nicoroark", set:"fusion"},
  {id:"rakkuno", name:"Rakkuno", set:"fusion"},
  {id:"percyana-b", name:"Percyana B", set:"fusion"},
  {id:"florikatia", name:"Florikatia", set:"fusion"},
  {id:"pandarok", name:"Pandarok", set:"fusion"},
  {id:"pandarokhan", name:"Pandarokhan", set:"fusion"},
- {id:"aquiladra", name:"Aquiladra", set:"fusion"},
  {id:"suriko", name:"Suriko", set:"fusion"},
  {id:"travis-stoll", name:"Travis Stoll", set:"halbgoetter"},
  {id:"percy-jackson", name:"Percy Jackson", set:"halbgoetter"},
@@ -1255,6 +1255,96 @@ const QUESTS = [
   {"type": "mc", "q": "Finde den Fehler: „Give the note to he.“ Richtig ist:", "opts": ["Give the note to him.", "Give the note to his.", "Give the note at he."], "c": 0},
   {"type": "mc", "q": "„Them like us“ – was ist falsch?", "opts": ["„Them“ muss „They“ heißen.", "„us“ muss „we“ heißen.", "Der Satz ist richtig."], "c": 0},
  ]
+},
+{
+ id:"q18", num:"QUEST 18 · Bree (Klassenarbeit 1, Klasse 6)", title:"Simple Past – Klassenarbeits-Vertiefung",
+ desc:"Am 23.09. steht die 1. Klassenarbeit an – hier ist alles, was du für das simple past brauchst: Bildung, Verneinung, Fragen und die Signalwörter.",
+ card:33,
+ rules:[
+  {"h": "🎯 Klassenarbeit 1, Klasse 6", "t": "Diese Quest übt genau den Grammatikstoff der Checkliste: <b>the simple past</b> – Bildung, Verneinung, Fragen mit <b>did</b> und mit <b>was/were</b>, sowie die Signalwörter im Vergleich zum simple present.", "ex": ""},
+  {"h": "Regelmäßige Verben: Grundform + -ed", "table": [["normal", "play → play<b>ed</b>"], ["stummes -e", "like → like<b>d</b>"], ["kurzer Vokal + 1 Konsonant", "plan → plan<b>ned</b>, stop → stop<b>ped</b>"], ["Konsonant + y", "try → tr<b>ied</b>, carry → carr<b>ied</b>"], ["Vokal + y", "stay → stay<b>ed</b> (kein y→i!)"]], "ex": "Aussprache: [d] nach stimmhaften Lauten (loved), [t] nach stimmlosen (liked), [ɪd] nach t/d (needed, painted)."},
+  {"h": "Unregelmäßige Verben", "t": "Diese Formen musst du auswendig lernen – es gibt keine Regel: come–came, go–went, do–did, have–had, take–took, see–saw … Die vollständige Liste übst du in der eigenen Quest „Unregelmäßige Verben“.", "ex": "I/He/She/It <b>was</b> nervous. We/You/They <b>were</b> excited."},
+  {"h": "Verneinung mit didn't", "t": "Bei ALLEN Verben (auch unregelmäßigen!) bildest du die Verneinung mit <b>didn't + Grundform</b>. Das Hilfsverb trägt die Vergangenheit, das Vollverb bleibt in der Grundform.", "ex": "Ty <b>didn't know</b> anyone. ✗ Ty didn't knew."},
+  {"h": "Fragen mit did", "t": "Bei Vollverben: <b>Did</b> + Subjekt + Grundform? Nach dem Subjekt folgt die Grundform, weil did die Vergangenheit schon zeigt.", "table": [["Did", "you enjoy the party?", "Yes, I did. / No, I didn't."], ["Did", "Ty miss New York?", "Yes, he did. / No, he didn't."]], "ex": ""},
+  {"h": "Fragen mit was/were", "t": "Bei <b>to be</b> gibt es kein did – du drehst einfach was/were nach vorn.", "table": [["Was", "Ty nervous?", "Yes, he was. / No, he wasn't."], ["Were", "his classmates friendly?", "Yes, they were. / No, they weren't."]], "ex": ""},
+  {"h": "Signalwörter: simple past vs. simple present", "table": [["→ simple past", "yesterday, last week/month/year, ... ago, on Monday (letzten Montag)"], ["→ simple present", "every day, always, usually, often, sometimes, now"]], "ex": "We arrived <u>yesterday</u>. (past) – We usually arrive <u>early</u>. (present)"},
+ ],
+ ex:[
+  {"type": "fill", "q": "organise → ___", "c": ["organised"]},
+  {"type": "mc", "q": "Signalwort für simple past:", "opts": ["two days ago", "at the moment", "often", "always"], "c": 0},
+  {"type": "fill", "q": "I ___ (not/enjoy) the party without my best friend.", "c": ["didn't enjoy", "did not enjoy"]},
+  {"type": "mc", "q": "___ Ty miss his American friends?", "opts": ["Did", "Does", "Was"], "c": 0},
+  {"type": "mc", "q": "___ his classmates friendly?", "opts": ["Were", "Was", "Did"], "c": 0},
+  {"type": "mc", "q": "„Were you at home yesterday?“ – Kurzantwort nein:", "opts": ["No, I wasn't.", "No, I didn't.", "No, I amn't."], "c": 0},
+  {"type": "mc", "q": "„We only arrived last week!“ – welche Zeit?", "opts": ["simple past", "simple present", "present progressive"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „like“:", "opts": ["liked", "likeed", "likd"], "c": 0, "hint": "Stummes e: nur -d anhängen"},
+  {"type": "fill", "q": "Karam ___ (post) photos every week. (simple present)", "c": ["posts"]},
+  {"type": "fill", "q": "Ruby ___ (not/find) her charity T-shirt.", "c": ["didn't find", "did not find"]},
+  {"type": "mc", "q": "„Did Ruby and Lily talk to Ty?“ – Kurzantwort nein:", "opts": ["No, they didn't.", "No, they don't.", "No, they weren't."], "c": 0},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Were", "the", "boys", "happy", "about", "football?"], "c": "Were the boys happy about football?"},
+  {"type": "mc", "q": "„Was the trip long?“ – Kurzantwort ja:", "opts": ["Yes, it was.", "Yes, it did.", "Yes, it is."], "c": 0},
+  {"type": "fill", "q": "Yesterday Ruby ___ (walk) to school, but usually she ___ (cycle).", "c": ["walked, cycles", "walked cycles"], "hint": "zwei Lücken, mit Komma getrennt eintippen"},
+  {"type": "fill", "q": "carry → ___", "c": ["carried"]},
+  {"type": "fill", "q": "Karam ___ (post) a photo yesterday. (simple past)", "c": ["posted"]},
+  {"type": "mc", "q": "Verneinung: They ___ have time to unpack.", "opts": ["didn't", "don't", "wasn't"], "c": 0},
+  {"type": "fill", "q": "___ they organise a surprise? (Frage)", "c": ["did"]},
+  {"type": "mc", "q": "___ Ty nervous on his first day?", "opts": ["Was", "Did", "Were"], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „Ty don't know the way.“ Richtig:", "opts": ["Ty didn't know the way.", "Ty not know the way.", "Ty doesn't knew the way."], "c": 0},
+  {"type": "fill", "q": "enjoy → ___", "c": ["enjoyed"]},
+  {"type": "mc", "q": "Signalwort für simple past:", "opts": ["last weekend", "sometimes", "Look!", "this morning (heute)"], "c": 0, "hint": "„last weekend“ liegt in der Vergangenheit"},
+  {"type": "mc", "q": "Verneinung: Ty ___ know anyone at his new school.", "opts": ["didn't", "don't", "doesn't"], "c": 0},
+  {"type": "mc", "q": "___ you enjoy the farewell party?", "opts": ["Did", "Do", "Was"], "c": 0},
+  {"type": "fill", "q": "___ you at the Autumn Fair last year? (Frage: were)", "c": ["were"]},
+  {"type": "mc", "q": "Finde den Fehler: „Was you at the party?“ Richtig:", "opts": ["Were you at the party?", "Did you at the party?", "Are you at the party?"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „stay“:", "opts": ["stayed", "staied", "stayd"], "c": 0, "hint": "Vokal + y → nur -ed"},
+  {"type": "mc", "q": "Signalwort für simple PRESENT (nicht past!):", "opts": ["every Friday", "yesterday", "last year", "two weeks ago"], "c": 0},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Ty", "didn't", "know", "anyone", "at", "first."], "c": "Ty didn't know anyone at first."},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Did", "you", "enjoy", "your", "first", "day?"], "c": "Did you enjoy your first day?"},
+ ]
+},
+{
+ id:"q19", num:"QUEST 19 · Bruinen-Furt (Klassenarbeit 1, Klasse 6)", title:"Unregelmäßige Verben",
+ desc:"89 Verben, die sich nicht an Regeln halten – Grundform, Simple Past und Past Participle. Für die Klassenarbeit am 23.09. musst du sie auswendig können.",
+ card:34,
+ rules:[
+  {"h": "🎯 Klassenarbeit 1, Klasse 6", "t": "Die Liste der unregelmäßigen Verben (Lehrbuch S. 206/207) ist ausdrücklich Teil des Klassenarbeitsstoffs. Es gibt dafür keine Eselsbrücke – nur Auswendiglernen hilft.", "ex": ""},
+  {"h": "Drei Formen pro Verb", "table": [["Grundform (infinitive)", "go"], ["Simple Past", "went"], ["Past Participle", "gone"]], "ex": "Die Simple-Past-Form brauchst du für Sätze wie „I went…“. Das Past Participle brauchst du später für andere Zeitformen (z. B. present perfect – kommt in einer späteren Unit)."},
+  {"h": "Verben, die sich nicht ändern", "t": "Manche unregelmäßigen Verben sehen in allen drei Formen gleich aus: <b>cut – cut – cut</b>, <b>put – put – put</b>, <b>hit – hit – hit</b>, <b>hurt – hurt – hurt</b>, <b>cost – cost – cost</b>, <b>read – read – read</b> (Achtung: Aussprache ändert sich trotzdem: [ri:d] → [red]!).", "ex": ""},
+  {"h": "Verben mit zwei gültigen Formen", "t": "Bei manchen Verben sind zwei Formen richtig, z. B. <b>burnt/burned</b>, <b>dreamt/dreamed</b>, <b>learnt/learned</b>, <b>smelt/smelled</b>, <b>spelt/spelled</b>. Beide zählen als richtig.", "ex": ""},
+  {"h": "Lerntipp", "t": "Lies dir die Liste laut vor, in Dreiergruppen: „go – went – gone“, „see – saw – seen“, „take – took – taken“. Übe besonders die Verben, die du im Text „We only arrived last week!“ und in den Übungen zu Ty gelesen hast.", "ex": ""},
+ ],
+ ex:[
+  {"type": "mc", "q": "Simple Past von „to make“:", "opts": ["made", "brought", "cut", "stood"], "c": 0},
+  {"type": "fill", "q": "Simple Past von „to forgive“ (vergeben, verzeihen):", "c": ["forgave"]},
+  {"type": "fill", "q": "We ___ (eat) fish and chips at the farewell party.", "c": ["ate"]},
+  {"type": "mc", "q": "Last night I ___ about my old school in New York.", "opts": ["dreamt", "dreamed", "dreams", "dreaming"], "c": 0, "hint": "Beide Formen sind richtig, hier nur eine Option wählen."},
+  {"type": "fill", "q": "Past Participle von „to win“ (gewinnen, siegen):", "c": ["won"]},
+  {"type": "mc", "q": "Past Participle von „to stand“:", "opts": ["become", "stood", "led", "said"], "c": 1},
+  {"type": "mc", "q": "Simple Past von „to leave“:", "opts": ["said", "left", "swam", "let"], "c": 1},
+  {"type": "mc", "q": "Simple Past von „to wear“:", "opts": ["stole", "made", "wore", "stood"], "c": 2},
+  {"type": "fill", "q": "Simple Past von „to fit (in)“ (britisches Englisch):", "c": ["fit", "fit in"]},
+  {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „came“?", "c": ["come"]},
+  {"type": "fill", "q": "Past Participle von „to run“ (laufen, rennen):", "c": ["run"]},
+  {"type": "mc", "q": "Simple Past von „to choose“:", "opts": ["threw", "showed", "flew", "chose"], "c": 3},
+  {"type": "fill", "q": "Simple Past von „to speak“ (sprechen):", "c": ["spoke"]},
+  {"type": "fill", "q": "Past Participle von „to tell“ (erzählen, sagen):", "c": ["told"]},
+  {"type": "mc", "q": "Simple Past von „to sleep“:", "opts": ["chose", "slept", "spelt", "let"], "c": 1},
+  {"type": "fill", "q": "Simple Past von „to write“ (schreiben):", "c": ["wrote"]},
+  {"type": "mc", "q": "Past Participle von „to hold“:", "opts": ["shown", "swum", "taught", "held"], "c": 3},
+  {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „drove“?", "c": ["drive"]},
+  {"type": "fill", "q": "Karam ___ (buy) a new hoodie at the sale yesterday.", "c": ["bought"]},
+  {"type": "mc", "q": "Simple Past von „to drink“:", "opts": ["drank", "built", "got", "put"], "c": 0},
+  {"type": "fill", "q": "Past Participle von „to go“ (gehen, fahren):", "c": ["gone"]},
+  {"type": "fill", "q": "Simple Past von „to deal (with)“:", "c": ["dealt", "dealt (with)"]},
+  {"type": "fill", "q": "Simple Past von „to sit“ (sitzen):", "c": ["sat"]},
+  {"type": "mc", "q": "Simple Past von „to be“ bei I/he/she/it:", "opts": ["was", "were", "been", "be"], "c": 0},
+  {"type": "mc", "q": "Past Participle von „to lose“:", "opts": ["drunk", "shot", "known", "lost"], "c": 3},
+  {"type": "fill", "q": "Simple Past von „to have“:", "c": ["had"]},
+  {"type": "fill", "q": "Simple Past von „to feed“ (füttern, ernähren):", "c": ["fed"]},
+  {"type": "fill", "q": "Simple Past von „to set up“:", "c": ["set up"]},
+  {"type": "mc", "q": "Past Participle von „to fight“:", "opts": ["meant", "bought", "fought", "shown"], "c": 2},
+  {"type": "mc", "q": "Past Participle von „to catch“:", "opts": ["caught", "sold", "built", "hung"], "c": 0},
+ ]
 }
 ];
 
@@ -1311,6 +1401,8 @@ const TOPICS = {
  q15:["Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragen bilden (Mix)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragewörter (where, when, who …)", "Fragen bilden (Mix)"],
  q16:["Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "Plural-s", "s-Genitiv ('s)", "s-Genitiv ('s)", "s-Genitiv ('s)", "s-Genitiv ('s)", "s-Genitiv ('s)", "s-Genitiv ('s)", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Simple Present: he/she/it-s", "Die drei s unterscheiden", "Die drei s unterscheiden", "Die drei s unterscheiden", "Die drei s unterscheiden", "Die drei s unterscheiden", "s-Genitiv ('s)", "Simple Present: he/she/it-s", "Die drei s unterscheiden"],
  q17:["Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Subjekt- und Objektform"],
+ q18:["Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Kurzantworten", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Kurzantworten", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did"],
+ q19:["Simple Past (Formen)", "Simple Past (Tippen)", "Im Satz anwenden", "Im Satz anwenden", "Past Participle (Tippen)", "Past Participle (Formen)", "Simple Past (Formen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Grundform erkennen", "Past Participle (Tippen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Past Participle (Tippen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Past Participle (Formen)", "Grundform erkennen", "Im Satz anwenden", "Simple Past (Formen)", "Past Participle (Tippen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Simple Past (Formen)", "Past Participle (Formen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Past Participle (Formen)", "Past Participle (Formen)"],
 };
 
 let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[]};
@@ -1590,7 +1682,7 @@ function showHome(){
       </div>
     </div>`;
   };
-  const DEEP = ["q13","q14","q15","q16","q17"];
+  const DEEP = ["q13","q14","q15","q16","q17","q18","q19"];
   const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q" && !DEEP.includes(x.q.id));
   const vocab   = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="v");
   const deep    = QUESTS.map((q,i)=>({q,i})).filter(x=>DEEP.includes(x.q.id));
