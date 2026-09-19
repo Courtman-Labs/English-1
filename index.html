@@ -315,6 +315,7 @@ const CARDS = [
  {id:"percydor", name:"Percydor", q:20},
  {id:"nicoroark", name:"Nicoroark", q:21},
  {id:"aquiladra", name:"Aquiladra", q:22},
+ {id:"boromir", name:"Boromir", q:23},
 ];
 /* ---------- Sonderkarten: besondere Erfolge ---------- */
 
@@ -326,7 +327,6 @@ const EXTRA_CARDS = [
  {id:"blastoise-gaertner-der-ruhe", name:"Blastoise Gärtner der Ruhe", set:"mittelerde"},
  {id:"blastoise-waechter-der-quellen", name:"Blastoise Wächter der Quellen", set:"mittelerde"},
  {id:"borimir-waechter-der-freundschaft", name:"Borimir Wächter der Freundschaft", set:"mittelerde"},
- {id:"boromir", name:"Boromir", set:"mittelerde"},
  {id:"celebloom", name:"Celebloom", set:"mittelerde"},
  {id:"entfrau", name:"Entfrau", set:"mittelerde"},
  {id:"entterra", name:"Entterra", set:"mittelerde"},
@@ -1345,6 +1345,48 @@ const QUESTS = [
   {"type": "mc", "q": "Past Participle von „to fight“:", "opts": ["meant", "bought", "fought", "shown"], "c": 2},
   {"type": "mc", "q": "Past Participle von „to catch“:", "opts": ["caught", "sold", "built", "hung"], "c": 0},
  ]
+},
+{
+ id:"q20", num:"QUEST 20 · Wetterspitze (Klassenarbeit 1, Klasse 6)", title:"Unregelmäßige Verben: aktueller Lernstand",
+ desc:"Nur die 15 Verben, die ihr im Unterricht bisher behandelt habt – aus „Saying goodbye to New York“ und der Verbliste. Die vollständige Liste mit allen 89 Verben (Quest 19) kommt erst später im Schuljahr dran.",
+ card:35,
+ rules:[
+  {"h": "🎯 Klassenarbeit 1, Klasse 6", "t": "Diese Quest übt <b>nur</b> die unregelmäßigen Verben, die bisher im Unterricht drankamen – kein Verb mehr, keins weniger. Für die vollständige Liste aus dem Lehrbuch (S. 206/207) gibt es die eigene Quest „Unregelmäßige Verben“.", "ex": ""},
+  {"h": "Die 15 Verben auf einen Blick", "table": [["be (Einzahl)", "was"], ["be (Mehrzahl)", "were"], ["leave", "left"], ["come", "came"], ["say", "said"], ["go", "went"], ["eat", "ate"], ["give", "gave"], ["sing", "sang"], ["have", "had"], ["feel", "felt"], ["take", "took"], ["do", "did"], ["fly", "flew"], ["think", "thought"], ["forget", "forgot"]], "ex": "„to be“ hat im simple past zwei Formen: was (I/he/she/it) und were (we/you/they)."},
+  {"h": "Woher kommen diese Verben?", "t": "Aus der Geschichte „Saying goodbye to New York“ (Ty erzählt von seiner Abschiedsparty) und aus eurer zweiten Liste zu den unregelmäßigen Verben. Lies den Text noch einmal durch, dann fallen dir die Formen im Zusammenhang leichter ein.", "ex": "I can't believe that only a week ago I was still in New York!"},
+ ],
+ ex:[
+  {"type": "mc", "q": "Simple Past von „to be“ (ist/war (Einzahl: I/he/she/it)):", "opts": ["left", "had", "went", "was"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to be“ (ist/war (Mehrzahl: we/you/they)):", "opts": ["took", "did", "left", "were"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to leave“ (verlassen):", "opts": ["left", "flew", "came", "had"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to come“ (kommen):", "opts": ["came", "sang", "left", "had"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to say“ (sagen):", "opts": ["left", "came", "said", "went"], "c": 2},
+  {"type": "mc", "q": "Simple Past von „to go“ (gehen):", "opts": ["went", "said", "felt", "were"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to eat“ (essen):", "opts": ["left", "ate", "flew", "sang"], "c": 1},
+  {"type": "mc", "q": "Simple Past von „to give“ (geben):", "opts": ["gave", "thought", "ate", "left"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to sing“ (singen):", "opts": ["sang", "gave", "left", "came"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to have“ (haben):", "opts": ["flew", "had", "ate", "said"], "c": 1},
+  {"type": "mc", "q": "Simple Past von „to feel“ (fühlen):", "opts": ["came", "forgot", "had", "felt"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to take“ (nehmen):", "opts": ["took", "ate", "went", "sang"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to do“ (machen, tun):", "opts": ["took", "left", "had", "did"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to fly“ (fliegen):", "opts": ["flew", "sang", "thought", "felt"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to think“ (denken):", "opts": ["forgot", "ate", "flew", "thought"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to forget“ (vergessen):", "opts": ["came", "took", "forgot", "felt"], "c": 2},
+  {"type": "fill", "q": "Simple Past von „to be“ (ist/war (Einzahl: I/he/she/it)):", "c": ["was"]},
+  {"type": "fill", "q": "Simple Past von „to leave“ (verlassen):", "c": ["left"]},
+  {"type": "fill", "q": "Simple Past von „to say“ (sagen):", "c": ["said"]},
+  {"type": "fill", "q": "Simple Past von „to eat“ (essen):", "c": ["ate"]},
+  {"type": "fill", "q": "Simple Past von „to sing“ (singen):", "c": ["sang"]},
+  {"type": "fill", "q": "Simple Past von „to feel“ (fühlen):", "c": ["felt"]},
+  {"type": "fill", "q": "Simple Past von „to do“ (machen, tun):", "c": ["did"]},
+  {"type": "fill", "q": "Simple Past von „to think“ (denken):", "c": ["thought"]},
+  {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „came“?", "c": ["come"]},
+  {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „gave“?", "c": ["give"]},
+  {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „took“?", "c": ["take"]},
+  {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „flew“?", "c": ["fly"]},
+  {"type": "fill", "q": "The day before we ___ (leave) America, my best friends Ava and Josh came over to my house.", "c": ["left"]},
+  {"type": "fill", "q": "All my school friends ___ (be) in the garden with 'Good Luck!' balloons.", "c": ["were"]},
+ ]
 }
 ];
 
@@ -1403,6 +1445,7 @@ const TOPICS = {
  q17:["Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Subjekt- und Objektform", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Objektpronomen (me, him, them …)", "Subjekt- und Objektform"],
  q18:["Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Kurzantworten", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Kurzantworten", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did"],
  q19:["Simple Past (Formen)", "Simple Past (Tippen)", "Im Satz anwenden", "Im Satz anwenden", "Past Participle (Tippen)", "Past Participle (Formen)", "Simple Past (Formen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Grundform erkennen", "Past Participle (Tippen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Past Participle (Tippen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Past Participle (Formen)", "Grundform erkennen", "Im Satz anwenden", "Simple Past (Formen)", "Past Participle (Tippen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Simple Past (Formen)", "Past Participle (Formen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Past Participle (Formen)", "Past Participle (Formen)"],
+ q20:["Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Grundform erkennen", "Grundform erkennen", "Grundform erkennen", "Grundform erkennen", "Im Satz: „Saying goodbye to New York“", "Im Satz: „Saying goodbye to New York“"],
 };
 
 let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[]};
@@ -1682,7 +1725,7 @@ function showHome(){
       </div>
     </div>`;
   };
-  const DEEP = ["q13","q14","q15","q16","q17","q18","q19"];
+  const DEEP = ["q13","q14","q15","q16","q17","q18","q19","q20"];
   const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q" && !DEEP.includes(x.q.id));
   const vocab   = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="v");
   const deep    = QUESTS.map((q,i)=>({q,i})).filter(x=>DEEP.includes(x.q.id));
