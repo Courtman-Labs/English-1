@@ -316,6 +316,8 @@ const CARDS = [
  {id:"nicoroark", name:"Nicoroark", q:21},
  {id:"aquiladra", name:"Aquiladra", q:22},
  {id:"boromir", name:"Boromir", q:23},
+ {id:"eowyn", name:"Éowyn", q:24},
+ {id:"baumflor-hueter-fangorns", name:"Baumflor Hüter Fangorns", q:25},
 ];
 /* ---------- Sonderkarten: besondere Erfolge ---------- */
 
@@ -323,14 +325,12 @@ const CARDS = [
 const EXTRA_CARDS = [
  {id:"aravereon-erbe-des-koenigs", name:"Aravereon Erbe des Königs", set:"mittelerde"},
  {id:"balrog", name:"Balrog", set:"mittelerde"},
- {id:"baumflor-hueter-fangorns", name:"Baumflor Hüter Fangorns", set:"mittelerde"},
  {id:"blastoise-gaertner-der-ruhe", name:"Blastoise Gärtner der Ruhe", set:"mittelerde"},
  {id:"blastoise-waechter-der-quellen", name:"Blastoise Wächter der Quellen", set:"mittelerde"},
  {id:"borimir-waechter-der-freundschaft", name:"Borimir Wächter der Freundschaft", set:"mittelerde"},
  {id:"celebloom", name:"Celebloom", set:"mittelerde"},
  {id:"entfrau", name:"Entfrau", set:"mittelerde"},
  {id:"entterra", name:"Entterra", set:"mittelerde"},
- {id:"eowyn", name:"Éowyn", set:"mittelerde"},
  {id:"evoli-der-ringtraeger", name:"Evoli der Ringtraeger", set:"mittelerde"},
  {id:"evoli-der-ringtraeger-l060", name:"Evoli der Ringtraeger (Variante 60)", set:"mittelerde"},
  {id:"evoli-von-bruchtal", name:"Evoli von Bruchtal", set:"mittelerde"},
@@ -1387,6 +1387,94 @@ const QUESTS = [
   {"type": "fill", "q": "The day before we ___ (leave) America, my best friends Ava and Josh came over to my house.", "c": ["left"]},
   {"type": "fill", "q": "All my school friends ___ (be) in the garden with 'Good Luck!' balloons.", "c": ["were"]},
  ]
+},
+{
+ id:"q21", num:"QUEST 21 · Amon Sûl (Klassenarbeit 1, Klasse 6)", title:"Fragen & Verneinung mit did/didn't",
+ desc:"Vertiefung von Quest 18: alles rund um Fragen mit did und die Verneinung mit didn't – inklusive der Falle mit who/what als Subjekt oder Objekt.",
+ card:36,
+ rules:[
+  {"h": "🎯 Klassenarbeit 1, Klasse 6", "t": "Diese Quest vertieft gezielt einen Teilbereich aus Quest 18: <b>Fragen mit did</b> und die <b>Verneinung mit didn't</b>. Wenn dir das in Quest 18 noch schwerfiel, übe hier extra.", "ex": ""},
+  {"h": "Fragen mit did", "t": "<b>Did</b> + Subjekt + Grundform des Vollverbs? Das Hilfsverb did trägt die Vergangenheit, das Vollverb bleibt in der Grundform.", "table": [["Did", "you enjoy the party?", "Yes, I did. / No, I didn't."], ["Did", "Ty miss New York?", "Yes, he did. / No, he didn't."]], "ex": "✗ Did you liked it? → ✓ Did you like it?"},
+  {"h": "Verneinung mit didn't", "t": "Bei ALLEN Verben (auch unregelmäßigen!) bildest du die Verneinung mit <b>didn't + Grundform</b>.", "ex": "✗ Ty didn't went. → ✓ Ty <b>didn't go</b>."},
+  {"h": "Die Subjekt-Falle bei who/what", "t": "Ist <b>who</b> oder <b>what</b> selbst das Subjekt des Satzes, brauchst du <b>kein did</b> – die Wortstellung bleibt wie im Aussagesatz. Ist who/what dagegen das Objekt, brauchst du did wie gewohnt.", "table": [["Subjektfrage (kein did)", "Who told Ty about the clubs? – Ryan (told him)."], ["Objektfrage (mit did)", "Who did Ty tell about the clubs? – His friends."]], "ex": "Trick: Steht direkt nach who/what ein Verb (kein weiteres Subjekt), ist who/what das Subjekt."},
+  {"h": "Kurzantworten", "t": "Bei did-Fragen antwortest du immer mit einer Form von <b>did</b>, nie mit dem Vollverb.", "ex": "Did you like it? – Yes, I did. (nicht: Yes, I liked.)"},
+ ],
+ ex:[
+  {"type": "mc", "q": "___ Ty enjoy the school tour?", "opts": ["Did", "Was", "Do"], "c": 0},
+  {"type": "mc", "q": "___ you go to the Autumn Fair last year?", "opts": ["Did", "Was", "Were"], "c": 0},
+  {"type": "fill", "q": "___ Ryan show Ty around the school? (Frage mit did)", "c": ["did"]},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Did", "you", "like", "the", "farewell", "party?"], "c": "Did you like the farewell party?"},
+  {"type": "mc", "q": "What time ___ registration start?", "opts": ["did", "was", "were"], "c": 0},
+  {"type": "fill", "q": "Why ___ Karam wear a costume? (do → Frage)", "c": ["did"]},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Where", "did", "Ty", "go", "after", "school?"], "c": "Where did Ty go after school?"},
+  {"type": "mc", "q": "___ Ruby and Lily practise for the show?", "opts": ["Did", "Was", "Were"], "c": 0},
+  {"type": "mc", "q": "Ty ___ know anyone at his new school.", "opts": ["didn't", "wasn't", "doesn't"], "c": 0},
+  {"type": "fill", "q": "Ryan ___ (not/hear) the question.", "c": ["didn't hear"]},
+  {"type": "mc", "q": "They ___ have time to unpack.", "opts": ["didn't", "weren't", "don't"], "c": 0},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Karam", "didn't", "bring", "his", "guitar."], "c": "Karam didn't bring his guitar."},
+  {"type": "fill", "q": "I ___ (not/enjoy) the trip without my best friend.", "c": ["didn't enjoy"]},
+  {"type": "mc", "q": "Finde den Fehler: „Ty didn't went to New York.“ Richtig ist:", "opts": ["Ty didn't go to New York.", "Ty didn't goes to New York.", "Ty not went to New York."], "c": 0, "hint": "Nach didn't steht die Grundform!"},
+  {"type": "fill", "q": "We ___ (not/finish) our project in time.", "c": ["didn't finish"]},
+  {"type": "mc", "q": "„Did you enjoy the fair?“ – „Yes, ___.“", "opts": ["I did.", "I do.", "I was."], "c": 0},
+  {"type": "mc", "q": "„Did Ryan help you?“ – „No, ___.“", "opts": ["he didn't.", "he wasn't.", "he doesn't."], "c": 0},
+  {"type": "fill", "q": "„Did Karam bring his ideas?“ – „Yes, he ___.“", "c": ["did"]},
+  {"type": "mc", "q": "„Did the twins practise together?“ – „No, ___.“", "opts": ["they didn't.", "they weren't.", "they don't."], "c": 0},
+  {"type": "fill", "q": "„Did you talk to Ty?“ – „Yes, I ___.“", "c": ["did"]},
+  {"type": "mc", "q": "Welche Kurzantwort passt zu „Did Ruby and Lily sing?“?", "opts": ["Yes, they did.", "Yes, they were.", "Yes, they does."], "c": 0},
+  {"type": "mc", "q": "„Who told Ty about the school clubs?“ – warum steht hier KEIN did?", "opts": ["„Who“ ist hier das Subjekt.", "Die Frage ist falsch.", "„Who“ braucht nie did."], "c": 0, "hint": "Wenn who/what selbst das Subjekt ist, bleibt die Wortstellung wie im Aussagesatz."},
+  {"type": "mc", "q": "„Who did Ty talk to?“ – warum steht hier did?", "opts": ["„Who“ ist hier das Objekt.", "Die Frage ist falsch.", "Nach who steht immer did."], "c": 0},
+  {"type": "fill", "q": "Who ___ (bring) the photos? (who = Subjekt, kein did nötig)", "c": ["brought"]},
+  {"type": "fill", "q": "What ___ Karam bring to school? (what = Objekt, mit did)", "c": ["did"]},
+  {"type": "fill", "q": "„___ you enjoy your first day?“ „Yes, I did. The lessons were fun.“", "c": ["did"]},
+  {"type": "fill", "q": "„___ he go to the football club?“ „No, he didn't. He went home.“", "c": ["did"]},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Did", "the", "students", "like", "the", "new", "timetable?"], "c": "Did the students like the new timetable?"},
+  {"type": "fill", "q": "„___ Lily and Ruby whisper during the lesson?“ „Yes, they did.“", "c": ["did"]},
+  {"type": "mc", "q": "Finde den Fehler: „Did you liked the show?“ Richtig ist:", "opts": ["Did you like the show?", "Did you likes the show?", "Did you was like the show?"], "c": 0},
+ ]
+},
+{
+ id:"q22", num:"QUEST 22 · Die Weißen Türme (Klassenarbeit 1, Klasse 6)", title:"Fragen & Verneinung mit was/were",
+ desc:"Vertiefung von Quest 18: alles rund um Fragen mit was/were und die Verneinung mit wasn't/weren't – und wie du did von was/were unterscheidest.",
+ card:37,
+ rules:[
+  {"h": "🎯 Klassenarbeit 1, Klasse 6", "t": "Diese Quest vertieft gezielt einen Teilbereich aus Quest 18: <b>Fragen mit was/were</b> und die <b>Verneinung mit wasn't/weren't</b>.", "ex": ""},
+  {"h": "Fragen mit was/were", "t": "Bei <b>to be</b> gibt es kein did – du drehst was/were einfach nach vorn vors Subjekt.", "table": [["Was", "Ty nervous?", "Yes, he was. / No, he wasn't."], ["Were", "his classmates friendly?", "Yes, they were. / No, they weren't."]], "ex": "I/he/she/it → was · we/you/they → were"},
+  {"h": "Verneinung mit wasn't/weren't", "t": "<b>wasn't</b> (war nicht, Einzahl) und <b>weren't</b> (waren nicht, Mehrzahl) – niemals mit didn't kombinieren!", "ex": "✗ We wasn't at home. → ✓ We <b>weren't</b> at home."},
+  {"h": "did oder was/were – wie entscheidest du?", "t": "Frag dich: Steckt ein <b>Vollverb</b> (Handlung) im Satz, oder nur ein <b>Adjektiv/Nomen</b> nach to be?", "table": [["Vollverb → did", "Did you <b>enjoy</b> the tour?"], ["Adjektiv/Nomen → was/were", "Was the tour <b>interesting</b>?"]], "ex": "„enjoy“ ist eine Handlung (Verb) → did. „interesting“ beschreibt nur (Adjektiv) → was."},
+  {"h": "Kurzantworten", "t": "Bei was/were-Fragen antwortest du mit einer Form von <b>be</b>, nie mit did.", "ex": "Was it fun? – Yes, it was. (nicht: Yes, it did.)"},
+ ],
+ ex:[
+  {"type": "mc", "q": "___ Ty nervous on his first day?", "opts": ["Was", "Did", "Were"], "c": 0},
+  {"type": "mc", "q": "___ his classmates friendly?", "opts": ["Were", "Was", "Did"], "c": 0},
+  {"type": "fill", "q": "___ you at the Autumn Fair? (Frage mit were)", "c": ["were"]},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Was", "the", "farewell", "party", "a", "surprise?"], "c": "Was the farewell party a surprise?"},
+  {"type": "mc", "q": "___ Ruby and Lily happy about the photos?", "opts": ["Were", "Was", "Did"], "c": 0},
+  {"type": "fill", "q": "___ Karam's costume funny? (Frage mit was)", "c": ["was"]},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Were", "you", "scared", "on", "the", "first", "day?"], "c": "Were you scared on the first day?"},
+  {"type": "mc", "q": "___ the museum open yesterday?", "opts": ["Was", "Were", "Did"], "c": 0},
+  {"type": "mc", "q": "Ty ___ scared, he was excited.", "opts": ["wasn't", "didn't", "isn't"], "c": 0},
+  {"type": "fill", "q": "His friends ___ (not/happy) about the news at first.", "c": ["weren't happy"]},
+  {"type": "mc", "q": "The boat ___ too big.", "opts": ["wasn't", "weren't", "didn't"], "c": 0},
+  {"type": "order", "q": "Baue den Satz:", "words": ["They", "weren't", "at", "home", "yesterday."], "c": "They weren't at home yesterday."},
+  {"type": "fill", "q": "I ___ (not/be) ready for the test.", "c": ["wasn't"]},
+  {"type": "mc", "q": "Finde den Fehler: „We wasn't at the party.“ Richtig ist:", "opts": ["We weren't at the party.", "We wasn't not at the party.", "We didn't was at the party."], "c": 0},
+  {"type": "fill", "q": "The friends ___ (not/be) the only people on the boat.", "c": ["weren't"]},
+  {"type": "mc", "q": "„Was the trip long?“ – „Yes, ___.“", "opts": ["it was.", "it did.", "it is."], "c": 0},
+  {"type": "mc", "q": "„Were you at home?“ – „No, ___.“", "opts": ["I wasn't.", "I didn't.", "I amn't."], "c": 0},
+  {"type": "fill", "q": "„Was Ty nervous?“ – „Yes, he ___.“", "c": ["was"]},
+  {"type": "mc", "q": "„Were the students friendly?“ – „No, ___.“", "opts": ["they weren't.", "they didn't.", "they aren't."], "c": 0},
+  {"type": "fill", "q": "„Were you scared?“ – „No, I ___.“", "c": ["wasn't"]},
+  {"type": "mc", "q": "Welche Kurzantwort passt zu „Was the museum interesting?“?", "opts": ["Yes, it was.", "Yes, it did.", "Yes, it has."], "c": 0},
+  {"type": "mc", "q": "___ Ty enjoy the tour? (enjoy = Vollverb)", "opts": ["Did", "Was", "Were"], "c": 0},
+  {"type": "mc", "q": "___ the tour interesting? (interesting = Adjektiv, kein Verb)", "opts": ["Was", "Did", "Do"], "c": 0},
+  {"type": "fill", "q": "___ you happy about the surprise? (happy = Adjektiv → be)", "c": ["were"]},
+  {"type": "fill", "q": "___ you like the surprise? (like = Vollverb → did)", "c": ["did"]},
+  {"type": "fill", "q": "„___ you nervous on your first day?“ „Yes, I was.“", "c": ["were"]},
+  {"type": "fill", "q": "„___ the lessons boring?“ „No, they weren't. They were fun.“", "c": ["were"]},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Was", "the", "weather", "nice", "at", "the", "fair?"], "c": "Was the weather nice at the fair?"},
+  {"type": "fill", "q": "„___ Karam and Ryan friends before?“ „Yes, they were.“", "c": ["were"]},
+  {"type": "mc", "q": "Finde den Fehler: „Was you at school yesterday?“ Richtig ist:", "opts": ["Were you at school yesterday?", "Was you in school yesterday?", "Did you was at school yesterday?"], "c": 0},
+ ]
 }
 ];
 
@@ -1446,6 +1534,8 @@ const TOPICS = {
  q18:["Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Kurzantworten", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Kurzantworten", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did", "Fragen mit was/were", "Im Kontext anwenden", "Bildung: regelmäßige Verben", "Signalwörter: simple past vs. simple present", "Verneinung mit didn't", "Fragen mit did"],
  q19:["Simple Past (Formen)", "Simple Past (Tippen)", "Im Satz anwenden", "Im Satz anwenden", "Past Participle (Tippen)", "Past Participle (Formen)", "Simple Past (Formen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Grundform erkennen", "Past Participle (Tippen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Past Participle (Tippen)", "Simple Past (Formen)", "Simple Past (Tippen)", "Past Participle (Formen)", "Grundform erkennen", "Im Satz anwenden", "Simple Past (Formen)", "Past Participle (Tippen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Simple Past (Formen)", "Past Participle (Formen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Simple Past (Tippen)", "Past Participle (Formen)", "Past Participle (Formen)"],
  q20:["Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Grundform erkennen", "Grundform erkennen", "Grundform erkennen", "Grundform erkennen", "Im Satz: „Saying goodbye to New York“", "Im Satz: „Saying goodbye to New York“"],
+ q21:["did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche"],
+ q22:["was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche"],
 };
 
 let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[]};
@@ -1725,7 +1815,7 @@ function showHome(){
       </div>
     </div>`;
   };
-  const DEEP = ["q13","q14","q15","q16","q17","q18","q19","q20"];
+  const DEEP = ["q13","q14","q15","q16","q17","q18","q19","q20","q21","q22"];
   const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q" && !DEEP.includes(x.q.id));
   const vocab   = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="v");
   const deep    = QUESTS.map((q,i)=>({q,i})).filter(x=>DEEP.includes(x.q.id));
