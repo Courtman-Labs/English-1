@@ -318,6 +318,7 @@ const CARDS = [
  {id:"boromir", name:"Boromir", q:23},
  {id:"eowyn", name:"Éowyn", q:24},
  {id:"baumflor-hueter-fangorns", name:"Baumflor Hüter Fangorns", q:25},
+ {id:"borimir-waechter-der-freundschaft", name:"Borimir Wächter der Freundschaft", q:26},
 ];
 /* ---------- Sonderkarten: besondere Erfolge ---------- */
 
@@ -327,7 +328,6 @@ const EXTRA_CARDS = [
  {id:"balrog", name:"Balrog", set:"mittelerde"},
  {id:"blastoise-gaertner-der-ruhe", name:"Blastoise Gärtner der Ruhe", set:"mittelerde"},
  {id:"blastoise-waechter-der-quellen", name:"Blastoise Wächter der Quellen", set:"mittelerde"},
- {id:"borimir-waechter-der-freundschaft", name:"Borimir Wächter der Freundschaft", set:"mittelerde"},
  {id:"celebloom", name:"Celebloom", set:"mittelerde"},
  {id:"entfrau", name:"Entfrau", set:"mittelerde"},
  {id:"entterra", name:"Entterra", set:"mittelerde"},
@@ -1314,36 +1314,36 @@ const QUESTS = [
   {"h": "Lerntipp", "t": "Lies dir die Liste laut vor, in Dreiergruppen: „go – went – gone“, „see – saw – seen“, „take – took – taken“. Übe besonders die Verben, die du im Text „We only arrived last week!“ und in den Übungen zu Ty gelesen hast.", "ex": ""},
  ],
  ex:[
-  {"type": "mc", "q": "Simple Past von „to make“:", "opts": ["made", "brought", "cut", "stood"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to make“:", "opts": ["sunk", "maked", "made", "sat"], "c": 2},
   {"type": "fill", "q": "Simple Past von „to forgive“ (vergeben, verzeihen):", "c": ["forgave"]},
   {"type": "fill", "q": "We ___ (eat) fish and chips at the farewell party.", "c": ["ate"]},
   {"type": "mc", "q": "Last night I ___ about my old school in New York.", "opts": ["dreamt", "dreamed", "dreams", "dreaming"], "c": 0, "hint": "Beide Formen sind richtig, hier nur eine Option wählen."},
   {"type": "fill", "q": "Past Participle von „to win“ (gewinnen, siegen):", "c": ["won"]},
-  {"type": "mc", "q": "Past Participle von „to stand“:", "opts": ["become", "stood", "led", "said"], "c": 1},
-  {"type": "mc", "q": "Simple Past von „to leave“:", "opts": ["said", "left", "swam", "let"], "c": 1},
-  {"type": "mc", "q": "Simple Past von „to wear“:", "opts": ["stole", "made", "wore", "stood"], "c": 2},
+  {"type": "mc", "q": "Past Participle von „to stand“:", "opts": ["grew", "stood", "standed", "told"], "c": 1},
+  {"type": "mc", "q": "Simple Past von „to leave“:", "opts": ["spoke", "run", "leaved", "left"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to wear“:", "opts": ["weared", "wore", "read", "forgotten"], "c": 1},
   {"type": "fill", "q": "Simple Past von „to fit (in)“ (britisches Englisch):", "c": ["fit", "fit in"]},
   {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „came“?", "c": ["come"]},
   {"type": "fill", "q": "Past Participle von „to run“ (laufen, rennen):", "c": ["run"]},
-  {"type": "mc", "q": "Simple Past von „to choose“:", "opts": ["threw", "showed", "flew", "chose"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to choose“:", "opts": ["spoken", "choosed", "spoke", "chose"], "c": 3},
   {"type": "fill", "q": "Simple Past von „to speak“ (sprechen):", "c": ["spoke"]},
   {"type": "fill", "q": "Past Participle von „to tell“ (erzählen, sagen):", "c": ["told"]},
-  {"type": "mc", "q": "Simple Past von „to sleep“:", "opts": ["chose", "slept", "spelt", "let"], "c": 1},
+  {"type": "mc", "q": "Simple Past von „to sleep“:", "opts": ["sleeped", "kept", "fed", "slept"], "c": 3},
   {"type": "fill", "q": "Simple Past von „to write“ (schreiben):", "c": ["wrote"]},
-  {"type": "mc", "q": "Past Participle von „to hold“:", "opts": ["shown", "swum", "taught", "held"], "c": 3},
+  {"type": "mc", "q": "Past Participle von „to hold“:", "opts": ["holded", "told", "sold", "held"], "c": 3},
   {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „drove“?", "c": ["drive"]},
   {"type": "fill", "q": "Karam ___ (buy) a new hoodie at the sale yesterday.", "c": ["bought"]},
-  {"type": "mc", "q": "Simple Past von „to drink“:", "opts": ["drank", "built", "got", "put"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to drink“:", "opts": ["sang", "sung", "drank", "drinked"], "c": 2},
   {"type": "fill", "q": "Past Participle von „to go“ (gehen, fahren):", "c": ["gone"]},
   {"type": "fill", "q": "Simple Past von „to deal (with)“:", "c": ["dealt", "dealt (with)"]},
   {"type": "fill", "q": "Simple Past von „to sit“ (sitzen):", "c": ["sat"]},
-  {"type": "mc", "q": "Simple Past von „to be“ bei I/he/she/it:", "opts": ["was", "were", "been", "be"], "c": 0},
-  {"type": "mc", "q": "Past Participle von „to lose“:", "opts": ["drunk", "shot", "known", "lost"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to be“ bei I/he/she/it:", "opts": ["felt", "was", "bed", "spelt"], "c": 1},
+  {"type": "mc", "q": "Past Participle von „to lose“:", "opts": ["lost", "losed", "driven", "fell"], "c": 0},
   {"type": "fill", "q": "Simple Past von „to have“:", "c": ["had"]},
   {"type": "fill", "q": "Simple Past von „to feed“ (füttern, ernähren):", "c": ["fed"]},
   {"type": "fill", "q": "Simple Past von „to set up“:", "c": ["set up"]},
-  {"type": "mc", "q": "Past Participle von „to fight“:", "opts": ["meant", "bought", "fought", "shown"], "c": 2},
-  {"type": "mc", "q": "Past Participle von „to catch“:", "opts": ["caught", "sold", "built", "hung"], "c": 0},
+  {"type": "mc", "q": "Past Participle von „to fight“:", "opts": ["fought", "caught", "bought", "fighted"], "c": 0},
+  {"type": "mc", "q": "Past Participle von „to catch“:", "opts": ["caught", "brought", "bought", "catched"], "c": 0}
  ]
 },
 {
@@ -1356,22 +1356,22 @@ const QUESTS = [
   {"h": "Woher kommen diese Verben?", "t": "Aus der Geschichte „Saying goodbye to New York“ (Ty erzählt von seiner Abschiedsparty) und aus eurer zweiten Liste zu den unregelmäßigen Verben. Lies den Text noch einmal durch, dann fallen dir die Formen im Zusammenhang leichter ein.", "ex": "I can't believe that only a week ago I was still in New York!"},
  ],
  ex:[
-  {"type": "mc", "q": "Simple Past von „to be“ (ist/war (Einzahl: I/he/she/it)):", "opts": ["left", "had", "went", "was"], "c": 3},
-  {"type": "mc", "q": "Simple Past von „to be“ (ist/war (Mehrzahl: we/you/they)):", "opts": ["took", "did", "left", "were"], "c": 3},
-  {"type": "mc", "q": "Simple Past von „to leave“ (verlassen):", "opts": ["left", "flew", "came", "had"], "c": 0},
-  {"type": "mc", "q": "Simple Past von „to come“ (kommen):", "opts": ["came", "sang", "left", "had"], "c": 0},
-  {"type": "mc", "q": "Simple Past von „to say“ (sagen):", "opts": ["left", "came", "said", "went"], "c": 2},
-  {"type": "mc", "q": "Simple Past von „to go“ (gehen):", "opts": ["went", "said", "felt", "were"], "c": 0},
-  {"type": "mc", "q": "Simple Past von „to eat“ (essen):", "opts": ["left", "ate", "flew", "sang"], "c": 1},
-  {"type": "mc", "q": "Simple Past von „to give“ (geben):", "opts": ["gave", "thought", "ate", "left"], "c": 0},
-  {"type": "mc", "q": "Simple Past von „to sing“ (singen):", "opts": ["sang", "gave", "left", "came"], "c": 0},
-  {"type": "mc", "q": "Simple Past von „to have“ (haben):", "opts": ["flew", "had", "ate", "said"], "c": 1},
-  {"type": "mc", "q": "Simple Past von „to feel“ (fühlen):", "opts": ["came", "forgot", "had", "felt"], "c": 3},
-  {"type": "mc", "q": "Simple Past von „to take“ (nehmen):", "opts": ["took", "ate", "went", "sang"], "c": 0},
-  {"type": "mc", "q": "Simple Past von „to do“ (machen, tun):", "opts": ["took", "left", "had", "did"], "c": 3},
-  {"type": "mc", "q": "Simple Past von „to fly“ (fliegen):", "opts": ["flew", "sang", "thought", "felt"], "c": 0},
-  {"type": "mc", "q": "Simple Past von „to think“ (denken):", "opts": ["forgot", "ate", "flew", "thought"], "c": 3},
-  {"type": "mc", "q": "Simple Past von „to forget“ (vergessen):", "opts": ["came", "took", "forgot", "felt"], "c": 2},
+  {"type": "mc", "q": "Simple Past von „to be“ (ist/war (Einzahl: I/he/she/it)):", "opts": ["hit", "slept", "bed", "was"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to be“ (ist/war (Mehrzahl: we/you/they)):", "opts": ["was", "spoken", "bed", "made"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to leave“ (verlassen):", "opts": ["found", "put", "leaved", "left"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to come“ (kommen):", "opts": ["came", "ate", "comed", "gave"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to say“ (sagen):", "opts": ["said", "eaten", "thought", "sayed"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to go“ (gehen):", "opts": ["goed", "hurt", "broke", "went"], "c": 3},
+  {"type": "mc", "q": "Simple Past von „to eat“ (essen):", "opts": ["ate", "became", "eated", "given"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to give“ (geben):", "opts": ["ate", "become", "gave", "gived"], "c": 2},
+  {"type": "mc", "q": "Simple Past von „to sing“ (singen):", "opts": ["begun", "rung", "sang", "singed"], "c": 2},
+  {"type": "mc", "q": "Simple Past von „to have“ (haben):", "opts": ["grew", "fed", "had", "haved"], "c": 2},
+  {"type": "mc", "q": "Simple Past von „to feel“ (fühlen):", "opts": ["felt", "kept", "feeled", "slept"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to take“ (nehmen):", "opts": ["took", "forgotten", "shot", "taked"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to do“ (machen, tun):", "opts": ["did", "doed", "burnt", "had"], "c": 0},
+  {"type": "mc", "q": "Simple Past von „to fly“ (fliegen):", "opts": ["drawn", "flew", "flied", "drew"], "c": 1},
+  {"type": "mc", "q": "Simple Past von „to think“ (denken):", "opts": ["brought", "bought", "thought", "thinked"], "c": 2},
+  {"type": "mc", "q": "Simple Past von „to forget“ (vergessen):", "opts": ["forgiven", "forgave", "forgot", "forgeted"], "c": 2},
   {"type": "fill", "q": "Simple Past von „to be“ (ist/war (Einzahl: I/he/she/it)):", "c": ["was"]},
   {"type": "fill", "q": "Simple Past von „to leave“ (verlassen):", "c": ["left"]},
   {"type": "fill", "q": "Simple Past von „to say“ (sagen):", "c": ["said"]},
@@ -1385,7 +1385,7 @@ const QUESTS = [
   {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „took“?", "c": ["take"]},
   {"type": "fill", "q": "Zu welcher Grundform (Infinitiv) gehört „flew“?", "c": ["fly"]},
   {"type": "fill", "q": "The day before we ___ (leave) America, my best friends Ava and Josh came over to my house.", "c": ["left"]},
-  {"type": "fill", "q": "All my school friends ___ (be) in the garden with 'Good Luck!' balloons.", "c": ["were"]},
+  {"type": "fill", "q": "All my school friends ___ (be) in the garden with 'Good Luck!' balloons.", "c": ["were"]}
  ]
 },
 {
@@ -1475,6 +1475,49 @@ const QUESTS = [
   {"type": "fill", "q": "„___ Karam and Ryan friends before?“ „Yes, they were.“", "c": ["were"]},
   {"type": "mc", "q": "Finde den Fehler: „Was you at school yesterday?“ Richtig ist:", "opts": ["Were you at school yesterday?", "Was you in school yesterday?", "Did you was at school yesterday?"], "c": 0},
  ]
+},
+{
+ id:"q23", num:"QUEST 23 · Die Furten des Isen (Klassenarbeit 1, Klasse 6)", title:"did oder was/were? – Gemischte Vertiefung",
+ desc:"Jetzt wird gemischt: Quest 21 und 22 einzeln zu können reicht nicht – in der Klassenarbeit musst du in jedem Satz neu entscheiden, welches der beiden du brauchst. Genau das übst du hier.",
+ card:38,
+ rules:[
+  {"h": "🎯 Klassenarbeit 1, Klasse 6", "t": "Diese Quest mischt bewusst Aufgaben aus Quest 21 (did) und Quest 22 (was/were) durcheinander. Das ist schwerer als beide einzeln zu üben – genau das macht diese Quest wertvoll: In der Klassenarbeit kommen die Fragen ja auch nicht sauber sortiert.", "ex": ""},
+  {"h": "Die Entscheidungsfrage", "t": "Bei jedem Satz zuerst fragen: Steckt ein <b>echtes Verb</b> (eine Handlung) im Satz – oder nur <b>to be</b> mit einem Adjektiv/Nomen?", "table": [["Vollverb → did", "Did you <b>enjoy</b> the trip? · Did she <b>sing</b>?"], ["nur to be → was/were", "Was the trip <b>fun</b>? · Was she <b>tired</b>?"]], "ex": "Merksatz: Wenn du das Verb auch im Aussagesatz brauchst (enjoy, sing, like, go …), brauchst du did. Wenn nur ein Adjektiv oder Nomen nach dem Subjekt folgt, brauchst du was/were."},
+  {"h": "Verneinung passend wählen", "table": [["Vollverb → didn't", "Ryan <b>didn't know</b> anyone."], ["to be → wasn't/weren't", "Ryan <b>wasn't</b> scared."]], "ex": "Ein häufiger Fehler: didn't und was/were NIE mischen. ✗ They didn't were happy."},
+  {"h": "Kurzantworten passend wählen", "t": "Die Kurzantwort verwendet immer dasselbe Hilfsverb wie die Frage – nie mischen!", "ex": "Did you like it? – Yes, I did. (nicht: Yes, I was.) · Was it fun? – Yes, it was. (nicht: Yes, it did.)"},
+ ],
+ ex:[
+  {"type": "mc", "q": "___ you enjoy the farewell party?", "opts": ["Did", "Was", "Were"], "c": 0, "hint": "enjoy = Vollverb"},
+  {"type": "mc", "q": "___ the farewell party fun?", "opts": ["Was", "Did", "Were"], "c": 0, "hint": "fun = Adjektiv, kein Verb"},
+  {"type": "mc", "q": "___ the twins sing at the party?", "opts": ["Did", "Was", "Were"], "c": 0, "hint": "sing = Vollverb"},
+  {"type": "mc", "q": "___ the twins happy about the surprise?", "opts": ["Were", "Did", "Was"], "c": 0, "hint": "happy = Adjektiv"},
+  {"type": "fill", "q": "___ Ty nervous on his first day? (was/were)", "c": ["was"]},
+  {"type": "fill", "q": "___ Ty like his new school? (did/was)", "c": ["did"]},
+  {"type": "mc", "q": "___ Ryan and Karam friends before?", "opts": ["Were", "Did", "Was"], "c": 0},
+  {"type": "mc", "q": "___ Ryan and Karam practise together?", "opts": ["Did", "Were", "Was"], "c": 0},
+  {"type": "mc", "q": "What ___ you feel when you heard the news?", "opts": ["did", "was", "were"], "c": 0, "hint": "feel = Vollverb"},
+  {"type": "mc", "q": "How ___ the museum?", "opts": ["was", "did", "were"], "c": 0, "hint": "Frage nach einer Eigenschaft"},
+  {"type": "mc", "q": "Ryan ___ scared, he was excited.", "opts": ["wasn't", "didn't", "isn't"], "c": 0},
+  {"type": "mc", "q": "Ryan ___ know anyone at first.", "opts": ["didn't", "wasn't", "doesn't"], "c": 0},
+  {"type": "fill", "q": "The boat ___ (not/be) too big.", "c": ["wasn't"]},
+  {"type": "fill", "q": "They ___ (not/have) time to unpack.", "c": ["didn't have"]},
+  {"type": "fill", "q": "My dad ___ (not/be) happy about the mess.", "c": ["wasn't"]},
+  {"type": "fill", "q": "My dad ___ (not/like) the mess.", "c": ["didn't like"]},
+  {"type": "mc", "q": "The friends ___ hungry, they'd just eaten.", "opts": ["weren't", "didn't", "don't"], "c": 0},
+  {"type": "mc", "q": "„Did you go to the fair?“ – „Yes, ___.“", "opts": ["I did.", "I was.", "I do."], "c": 0},
+  {"type": "mc", "q": "„Was the fair fun?“ – „Yes, ___.“", "opts": ["it was.", "it did.", "it is."], "c": 0},
+  {"type": "fill", "q": "„Were you scared?“ – „No, I ___.“", "c": ["wasn't"]},
+  {"type": "fill", "q": "„Did Karam bring his guitar?“ – „No, he ___.“", "c": ["didn't"]},
+  {"type": "fill", "q": "„___ your friends surprised?“ „Yes, they were.“", "c": ["Were"]},
+  {"type": "fill", "q": "„___ your friends know about the party?“ „No, they didn't.“", "c": ["Did"]},
+  {"type": "mc", "q": "Finde den Fehler: „Was you at school yesterday?“ Richtig ist:", "opts": ["Were you at school yesterday?", "Did you were at school yesterday?", "Was you in school yesterday?"], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „Did you was happy?“ Richtig ist:", "opts": ["Were you happy?", "Did you were happy?", "Was you happy?"], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „The trip wasn't go well.“ Richtig ist:", "opts": ["The trip didn't go well.", "The trip wasn't went well.", "The trip not went well."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „They didn't were at home.“ Richtig ist:", "opts": ["They weren't at home.", "They didn't weren't at home.", "They wasn't at home."], "c": 0},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Did", "the", "students", "like", "the", "new", "timetable?"], "c": "Did the students like the new timetable?"},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Were", "the", "lessons", "interesting", "today?"], "c": "Were the lessons interesting today?"},
+  {"type": "order", "q": "Baue den Satz:", "words": ["We", "weren't", "at", "the", "fair", "yesterday."], "c": "We weren't at the fair yesterday."},
+ ]
 }
 ];
 
@@ -1536,6 +1579,7 @@ const TOPICS = {
  q20:["Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past erkennen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Simple Past tippen (15 Verben aus dem Unterricht)", "Grundform erkennen", "Grundform erkennen", "Grundform erkennen", "Grundform erkennen", "Im Satz: „Saying goodbye to New York“", "Im Satz: „Saying goodbye to New York“"],
  q21:["did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche"],
  q22:["was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche"],
+ q23:["did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "did oder was/were entscheiden", "did oder was/were entscheiden", "Verneinung gemischt"],
 };
 
 let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[]};
@@ -1815,7 +1859,7 @@ function showHome(){
       </div>
     </div>`;
   };
-  const DEEP = ["q13","q14","q15","q16","q17","q18","q19","q20","q21","q22"];
+  const DEEP = ["q13","q14","q15","q16","q17","q18","q19","q20","q21","q22","q23"];
   const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q" && !DEEP.includes(x.q.id));
   const vocab   = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="v");
   const deep    = QUESTS.map((q,i)=>({q,i})).filter(x=>DEEP.includes(x.q.id));
@@ -1944,6 +1988,7 @@ function norm(s){ return s.toLowerCase().replace(/\u2019/g,"'").replace(/\s+/g,"
 
 function resolve(ok, correctText){
   if(run.answered) return; run.answered=true;
+  const ex = currentEx();
   try{ // Statistik für die Lehrer-Auswertung
     const ei = run.order[run.pos], qid = QUESTS[run.qi].id;
     S.stats[qid] = S.stats[qid] || {};
@@ -1964,7 +2009,12 @@ function resolve(ok, correctText){
   } else {
     run.streak=0;
     fb.className="feedback no";
-    fb.innerHTML = "❌ <b>Leider falsch.</b> Richtig ist: <b>"+esc(correctText)+"</b><br><span style='font-weight:400'>Merk es dir – die Karte wartet trotzdem auf dich!</span>";
+    // Wenn die Aufgabe ein "___" im Satz hat, den kompletten richtigen Satz zeigen (wie in der Mittelerde-Reise)
+    const filled = ex.q.includes("___") ? ex.q.replace("___", correctText) : null;
+    fb.innerHTML = "❌ <b>Leider falsch.</b> Richtig ist: <b>"+esc(correctText)+"</b>"
+      + (filled ? `<br><span style="font-weight:400;opacity:.9">${esc(filled)}</span>` : "")
+      + (ex.hint ? `<br><span style="font-weight:400;opacity:.8">💡 ${esc(ex.hint)}</span>` : "")
+      + "<br><span style='font-weight:400'>Merk es dir – die Karte wartet trotzdem auf dich!</span>";
   }
   document.getElementById("nextRow").style.display="flex";
   document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
