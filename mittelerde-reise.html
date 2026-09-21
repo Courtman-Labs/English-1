@@ -211,7 +211,7 @@ const BOSS_NODE = {name:"Erebor – Der Einsame Berg", icon:"🐉", foe:"Smaug",
 const OWN_KEY = "mittelerde-reise-v1";
 const MAIN_KEY = "englisch-abenteuer-v4";
 let S = {scope:"all", starter:null, unlockedInApp:[], node:0, nodeHP:null,
-         xp:0, maxStreak:0, stats:{}, defeated:[], trophies:[]};
+         xp:0, maxStreak:0, stats:{}, defeated:[], trophies:[], weak:{}};
 let storageOK = true;
 
 function browserStore(){
@@ -226,6 +226,7 @@ function normalizeReise(){
   S.defeated      = Array.isArray(S.defeated)      ? S.defeated      : [];
   S.trophies      = Array.isArray(S.trophies)      ? S.trophies      : [];
   S.stats = (S.stats && typeof S.stats==="object") ? S.stats : {};
+  S.weak  = (S.weak  && typeof S.weak==="object"  && !Array.isArray(S.weak)) ? S.weak : {};
   S.xp = Number(S.xp)||0; S.maxStreak = Number(S.maxStreak)||0;
   S.node = Math.min(Math.max(0, Number(S.node)||0), NODES.length);
   if(!["all","grade5","grade6"].includes(S.scope)) S.scope="all";
@@ -376,8 +377,18 @@ function shuffledCopy(arr){
   return a;
 }
 function nextVocab(){
+  const pool = poolForScope();
+  /* Vokabeln, die zuletzt falsch beantwortet wurden, kommen bevorzugt wieder dran –
+     aber nicht sofort in Folge (recentIds) und nur wenn sie zum aktuellen Bereich gehören. */
+  const dueWeak = Object.keys(S.weak).filter(id => !recentIds.includes(id) && pool.some(v=>v.id===id));
+  if(dueWeak.length && Math.random() < 0.5){
+    const pick = dueWeak[Math.floor(Math.random()*dueWeak.length)];
+    const item = pool.find(v=>v.id===pick);
+    recentIds.push(item.id); if(recentIds.length>12) recentIds.shift();
+    return item;
+  }
   if(!vocabQueue.length){
-    vocabQueue = shuffledCopy(poolForScope());
+    vocabQueue = shuffledCopy(pool);
   }
   let item = vocabQueue.pop();
   let guard=0;
@@ -707,6 +718,21 @@ function resolveAnswer(ok, given){
   S.stats[tag] = S.stats[tag] || {a:0,c:0};
   S.stats[tag].a++; if(ok) S.stats[tag].c++;
 
+  /* Wiederholungs-Logik: falsch beantwortete Vokabeln merken, bis sie 2x in Folge
+     richtig waren. Ein Fehler dazwischen setzt den Zähler wieder auf 0 zurück. */
+  const vid = battle.current.id;
+  let reviewNote = null;
+  if(ok){
+    if(S.weak[vid] != null){
+      S.weak[vid]++;
+      if(S.weak[vid] >= 2){ delete S.weak[vid]; reviewNote = "✅ Gemeistert! Dieses Wort kommt jetzt wieder normal dran."; }
+      else reviewNote = "🔁 Noch einmal richtig, dann hast du es gemeistert!";
+    }
+  } else {
+    S.weak[vid] = 0;
+    reviewNote = "🔁 Dieses Wort kommt bald noch einmal dran, bis du es zweimal in Folge richtig hast.";
+  }
+
   let attack = null;
   if(ok){
     battle.streak++;
@@ -719,7 +745,7 @@ function resolveAnswer(ok, given){
     battle.streak = 0;
   }
   saveState();
-  showFeedback(ok, given, attack);
+  showFeedback(ok, given, attack, reviewNote);
 }
 
 /* Führt den Angriff aus und liefert den Text dazu zurück */
@@ -738,7 +764,7 @@ function flashFx(msg){
 }
 
 /* Zeigt die Auswertung und wartet auf „Weiter" */
-function showFeedback(ok, given, attack){
+function showFeedback(ok, given, attack, reviewNote){
   const v = battle.current;
   const isEn2De = battle.qType==="mc" && battle.qDir==="en2de";
   // Bei "Was bedeutet dieses Wort?" ist die gesuchte Antwort die deutsche Bedeutung,
@@ -760,6 +786,7 @@ function showFeedback(ok, given, attack){
         ? `<div class="fbLine fbDe" style="margin-top:6px">${esc(v.example.replace("___", firstAnswer(v)))}</div>` : ""}
       ${attack ? `<div class="fbLine" style="color:var(--gold2);font-weight:700;margin-top:10px">${attack}</div>` : ""}
       ${(!ok && battle.streak===0) ? `<div class="fbLine fbDe" style="margin-top:6px">Die Serie beginnt wieder bei 0.</div>` : ""}
+      ${reviewNote ? `<div class="fbLine" style="margin-top:6px;opacity:.85;font-size:13px">${reviewNote}</div>` : ""}
       <div class="btnRow" style="justify-content:center;margin:12px 0 0">
         <button class="btn" id="nextBtn" onclick="continueBattle()">${done?"Sieg ansehen →":"Weiter →"}</button>
       </div>
