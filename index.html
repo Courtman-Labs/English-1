@@ -1582,7 +1582,21 @@ const TOPICS = {
  q23:["did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "did oder was/were entscheiden", "did oder was/were entscheiden", "Verneinung gemischt"],
 };
 
-let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[]};
+let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[], review:{}};
+/* Kalenderbasierte Wiederholung: Intervall wird nach jedem bestandenen Durchlauf
+   verlaengert (wie bei klassischen Karteikasten-Systemen), bei Nichtbestehen zurueckgesetzt. */
+const REVIEW_DAYS = [3, 7, 14, 30, 60];
+function dueQuests(){
+  const now = Date.now();
+  return QUESTS.map((q,i)=>({q,i}))
+    .filter(x=>{
+      const r = S.review[x.q.id];
+      if(!r) return false;
+      const dueAfterMs = REVIEW_DAYS[r.stage] * 86400000;
+      return (now - r.last) >= dueAfterMs;
+    })
+    .sort((a,b)=> (now-S.review[b.q.id].last) - (now-S.review[a.q.id].last)); // am laengsten faellige zuerst
+}
 const KEY = "englisch-abenteuer-v4";
 let storageOK = true;
 
@@ -1610,8 +1624,16 @@ function normalizeState(){
   S.done    = (S.done    && typeof S.done==="object")    ? S.done    : {};
   S.best    = (S.best    && typeof S.best==="object")    ? S.best    : {};
   S.perfect = (S.perfect && typeof S.perfect==="object") ? S.perfect : {};
+  S.review  = (S.review  && typeof S.review==="object" && !Array.isArray(S.review)) ? S.review : {};
   S.xp = Number(S.xp)||0;
   S.maxStreak = Number(S.maxStreak)||0;
+  // Kaputte oder veraltete Wiederholungs-Eintraege bereinigen
+  Object.keys(S.review).forEach(qid=>{
+    const r = S.review[qid];
+    if(!r || typeof r!=="object" || !Number.isFinite(r.last) || !Number.isInteger(r.stage) || r.stage<0){
+      delete S.review[qid];
+    }
+  });
   // Indizes verwerfen, die es nicht (mehr) gibt
   S.cards  = S.cards.filter(i=>Number.isInteger(i) && i>=0 && i<CARDS.length);
   S.extras = S.extras.filter(i=>Number.isInteger(i) && i>=0 && i<EXTRA_CARDS.length);
@@ -1828,6 +1850,7 @@ function shuffled(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.f
 function headerHTML(){
   const rp = rankProgress();
   const barTitle = rp.next ? `Noch ${rp.span-rp.cur} XP bis „${rp.next.n}"` : "Höchster Rang erreicht!";
+  const dueCount = dueQuests().length;
   return `<header>
     <svg class="crest" viewBox="0 0 60 60"><circle cx="30" cy="30" r="22" fill="none" stroke="#d9a83c" stroke-width="5"/><circle cx="30" cy="30" r="22" fill="none" stroke="#f7e6b0" stroke-width="1.5" stroke-dasharray="3 5"/><circle cx="30" cy="10" r="4" fill="#ffd76e"/></svg>
     <div><h1>Englisch-Abenteuer in Mittelerde</h1></div>
@@ -1835,6 +1858,7 @@ function headerHTML(){
       <span class="badge">⭐ ${S.xp} XP</span>
       <span class="badge" title="${barTitle}">🏅 ${rank()} · Stufe ${level()+1}/${RANKS.length}</span>
       <span class="badge">🃏 ${S.cards.length+S.extras.length}/${CARDS.length+EXTRA_CARDS.length}</span>
+      ${dueCount ? `<span class="badge" style="cursor:pointer;border-color:rgba(217,168,60,.8)" title="Zur Wiederholung" onclick="showHome()">🔁 ${dueCount} fällig</span>` : ""}
       <div class="xpbar" title="${barTitle}"><div style="width:${rp.pct}%"></div></div>
     </div>
     <div class="sub">${QUESTS.length} Quests durch Grammatik und Wortschatz der 5. und 6. Klasse – sammle XP und alle ${CARDS.length+EXTRA_CARDS.length} Karten!</div>
@@ -1863,6 +1887,11 @@ function showHome(){
   const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q" && !DEEP.includes(x.q.id));
   const vocab   = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="v");
   const deep    = QUESTS.map((q,i)=>({q,i})).filter(x=>DEEP.includes(x.q.id));
+  const due     = dueQuests();
+  const dueBlock = due.length ? `
+    <div class="sectionTitle" style="margin-top:20px">🔁 Fällige Wiederholung <span class="pill" style="margin-left:6px">${due.length}</span></div>
+    <div class="hint-sm">Diese Quests hast du schon bestanden – aber laut Vergessenskurve lohnt sich jetzt eine kurze Auffrischung.</div>
+    <div class="grid">${due.map(x=>tile(x.q,x.i)).join("")}</div>` : "";
   app.innerHTML = headerHTML() + `
     <div class="backRow" style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn ghost" onclick="showAlbum()">🃏 Karten-Album</button>
@@ -1870,7 +1899,8 @@ function showHome(){
       <a class="btn ghost" href="mittelerde-reise.html" style="text-decoration:none;display:inline-flex;align-items:center">⚔️ Mittelerde-Reise</a>
       <button class="btn ghost" onclick="showEval()">📊 Auswertung</button>
     </div>
-    <div class="sectionTitle">⚔️ Grammatik-Quests</div>
+    ${dueBlock}
+    <div class="sectionTitle" style="margin-top:20px">⚔️ Grammatik-Quests</div>
     <div class="grid">${grammar.map(x=>tile(x.q,x.i)).join("")}</div>
     <div class="sectionTitle" style="margin-top:20px">🧙 Vokabel-Quests</div>
     <div class="grid">${vocab.map(x=>tile(x.q,x.i)).join("")}</div>
@@ -2070,6 +2100,11 @@ function finishQuest(){
   let newCards=[];
   if(passed){ S.done[q.id]=true; S.xp += 25; }
   if(pct===100){ S.perfect = S.perfect||{}; S.perfect[q.id]=true; }
+  /* Kalenderbasierte Wiederholung: bei bestandener Quest wird das Intervall bis zur
+     naechsten Faelligkeit verlaengert, bei nicht bestandener wieder auf kurz zurueckgesetzt. */
+  const prevStage = S.review[q.id] ? S.review[q.id].stage : -1;
+  const newStage = passed ? Math.min(prevStage+1, REVIEW_DAYS.length-1) : 0;
+  S.review[q.id] = {last: Date.now(), stage: newStage};
   if(pct>=85 && q.card!=null && !S.cards.includes(q.card)){
     S.cards.push(q.card);
     newCards.push({ci:q.card, label:"✦ NEUE QUEST-KARTE ✦"});
