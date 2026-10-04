@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paris-Abenteuer – Französisch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--gold:#d9a83c;--gold2:#f3d27a;--ink:#f5ecd8;--blue:#3b6fb6;--red:#c4453a;--ok:#5a9a5a;--bad:#c0453a;--card:rgba(16,26,44,.86)}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{min-height:100vh;color:var(--ink);font-family:'Nunito',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(ellipse at top,#1d3157 0%,#0b1220 70%);background-attachment:fixed}
+  #stars{position:fixed;inset:0;pointer-events:none;opacity:.55;
+    background-image:radial-gradient(1px 1px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 72% 12%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 40% 70%,#ffe9a8,transparent),radial-gradient(1px 1px at 85% 55%,#fff,transparent),
+    radial-gradient(1px 1px at 25% 88%,#fff,transparent),radial-gradient(1px 1px at 60% 40%,#cfe0ff,transparent),
+    radial-gradient(1.5px 1.5px at 92% 85%,#fff,transparent),radial-gradient(1px 1px at 5% 50%,#fff,transparent)}
+  main{position:relative;max-width:860px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom))}
+  header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .flag{display:flex;width:34px;height:24px;border-radius:4px;overflow:hidden;box-shadow:0 0 0 2px rgba(217,168,60,.6)}
+  .flag i{flex:1}.flag i:nth-child(1){background:#2b5ca8}.flag i:nth-child(2){background:#f4f1ea}.flag i:nth-child(3){background:#d13b3b}
+  h1{font-family:'Cinzel',serif;color:var(--gold2);font-size:24px;margin:0;line-height:1.1}
+  .sub{display:block;font-size:12.5px;opacity:.75}
+  .hud{display:flex;flex-wrap:wrap;gap:6px}
+  .badge{background:rgba(0,0,0,.35);border:1px solid rgba(217,168,60,.45);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:800}
+  .badge.warnb{border-color:#e89a3c;color:#ffd39a}
+  .btn{font-family:'Cinzel',serif;font-weight:700;font-size:15px;border:none;border-radius:12px;padding:11px 18px;cursor:pointer;
+    background:linear-gradient(#f6d27a,#d9a83c);color:#2a1d07;box-shadow:0 4px 0 #8a6420;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 #8a6420}
+  .btn.ghost{background:rgba(0,0,0,.3);color:var(--ink);border:1px solid rgba(217,168,60,.5);box-shadow:none}
+  .btn.blue{background:linear-gradient(#5d8fd6,#2f5fa6);color:#fff;box-shadow:0 4px 0 #1d3f73}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btnRow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .btnRow.center{justify-content:center}
+  .card{background:var(--card);border:1px solid rgba(217,168,60,.3);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .center{text-align:center}
+  .sectionTitle{font-family:'Cinzel',serif;color:var(--gold2);font-size:21px;margin:16px 0 6px}
+  .hint-sm{font-size:13.5px;opacity:.8;line-height:1.5}
+  .muted{opacity:.6}
+  /* Karte */
+  .mapWrap{position:relative;width:100%;max-width:560px;margin:8px auto;aspect-ratio:100/130;border-radius:14px;overflow:hidden;
+    border:8px solid #2b1d12;box-shadow:0 10px 34px rgba(0,0,0,.55)}
+  .mapSvg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .pin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;z-index:2}
+  .pinB{position:relative;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;
+    background:radial-gradient(circle at 35% 30%,#fff3cf,#e2b75a);border:2px solid #7a5420;box-shadow:0 3px 8px rgba(0,0,0,.45)}
+  .pin.boss .pinB{width:46px;height:46px;font-size:25px;border-color:#a3241c}
+  .pin.done .pinB{background:radial-gradient(circle at 35% 30%,#e3f4dd,#7fb377);border-color:#2e6a2e}
+  .pin.locked{cursor:default}
+  .pin.locked .pinB{background:#b8ad99;filter:grayscale(1);opacity:.75;font-size:15px}
+  .pin.cur .pinB{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(196,69,58,.7)}50%{box-shadow:0 0 0 10px rgba(196,69,58,0)}}
+  .chk{position:absolute;right:-5px;bottom:-4px;background:#2e6a2e;color:#fff;border-radius:50%;width:16px;height:16px;font-size:11px;
+    display:flex;align-items:center;justify-content:center;font-weight:900}
+  .pinL{margin-top:2px;font-size:10.5px;font-weight:800;color:#3a2a14;background:rgba(246,236,211,.92);border-radius:6px;padding:1px 5px;white-space:nowrap}
+  /* Kampf */
+  .foe{display:flex;align-items:center;gap:12px}
+  .foeIcon{font-size:44px;line-height:1}
+  .foeName{font-family:'Cinzel',serif;color:var(--gold2);font-size:18px}
+  .hpbar{height:12px;background:rgba(0,0,0,.4);border-radius:8px;overflow:hidden;margin:8px 0 4px}
+  .hpbar>div{height:100%;background:linear-gradient(90deg,#e0564a,#f09a5c);transition:width .4s}
+  .dots{display:flex;gap:5px;justify-content:center;margin:8px 0 2px;flex-wrap:wrap}
+  .dot{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.15)}
+  .dot.on{background:var(--gold2)}.dot.t2.on{background:#f09a5c}.dot.t3.on{background:#e0564a}
+  .qLabel{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;text-align:center}
+  .qText{font-size:23px;font-weight:800;text-align:center;margin:8px 0 12px;line-height:1.35}
+  .qText.fr{color:#cfe0ff}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .opt{background:rgba(0,0,0,.3);border:1px solid rgba(217,168,60,.45);color:var(--ink);border-radius:12px;padding:13px 8px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+  .opt.correct{background:rgba(90,154,90,.4);border-color:#7fc27f}
+  .opt.wrong{background:rgba(192,69,58,.4);border-color:#e57d72}
+  .fillIn{display:block;width:100%;max-width:560px;margin:0 auto;font-size:19px;padding:12px 14px;border-radius:12px;border:2px solid rgba(217,168,60,.55);
+    background:rgba(0,0,0,.35);color:var(--ink);font-family:inherit;font-weight:700;text-align:center}
+  .fillIn.correct{border-color:#7fc27f}.fillIn.wrong{border-color:#e57d72}
+  .accBar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+  .acc{min-width:38px;padding:7px 8px;border-radius:9px;border:1px solid rgba(207,224,255,.5);background:rgba(59,111,182,.25);color:#e8f0ff;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit}
+  .line{min-height:54px;border:2px dashed rgba(217,168,60,.5);border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;justify-content:center;background:rgba(0,0,0,.2)}
+  .lineHint{font-size:13px;opacity:.6}
+  .bank{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:10px}
+  .tile{font-family:inherit;font-size:16.5px;font-weight:800;padding:8px 12px;border-radius:10px;border:1px solid rgba(217,168,60,.6);
+    background:linear-gradient(#fff6dc,#ecd39a);color:#2a1d07;cursor:pointer}
+  .tile.on{background:linear-gradient(#dfeaff,#a9c4ec);border-color:#5d8fd6}
+  .tile.ghost{opacity:.2;cursor:default}
+  .fb{margin:12px auto 0;max-width:600px;padding:14px 16px;border-radius:14px;border:2px solid;text-align:center}
+  .fb.ok{background:rgba(90,154,90,.18);border-color:rgba(90,154,90,.75)}
+  .fb.no{background:rgba(192,69,58,.18);border-color:rgba(192,69,58,.75)}
+  .fbTitle{font-family:'Cinzel',serif;font-size:18px;font-weight:700;margin-bottom:6px}
+  .fb.ok .fbTitle{color:#a8e0a8}.fb.no .fbTitle{color:#ffab9e}
+  .fbLine{font-size:15.5px;line-height:1.55;margin:5px 0}
+  .fbWord{font-weight:800;color:var(--gold2);font-size:18px}
+  .fbWord mark{background:rgba(240,154,92,.35);color:#ffe0b8;border-radius:4px;padding:0 3px}
+  .yours{text-decoration:line-through;opacity:.85}
+  .yours mark.extra{background:rgba(224,86,74,.35);color:#ffd2cc;border-radius:4px;padding:0 3px;text-decoration:line-through}
+  .fbLine.sub{opacity:.85;font-size:14px}
+  .fbLine.ex{background:rgba(0,0,0,.22);border-radius:10px;padding:8px 10px;font-size:14.5px}
+  .fbLine.ex .fr,.frTxt{color:#cfe0ff;font-weight:700}
+  .fbLine.note{background:rgba(59,111,182,.18);border:1px solid rgba(93,143,214,.45);border-radius:10px;padding:8px 10px;font-size:14px;text-align:left}
+  .fbLine.warn{color:#ffd39a;font-weight:700}
+  .fbLine.small{font-size:13px;opacity:.85}
+  .atk{color:var(--gold2);font-weight:800;margin-top:8px}
+  /* Reisetagebuch */
+  .stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px}
+  .stamp{text-align:center;padding:12px 6px;border-radius:50%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    border:3px double rgba(196,69,58,.8);background:rgba(196,69,58,.08);transform:rotate(-6deg)}
+  .stamp:nth-child(even){transform:rotate(5deg);border-color:rgba(59,111,182,.85);background:rgba(59,111,182,.1)}
+  .stamp .e{font-size:30px}.stamp .n{font-size:11.5px;font-weight:800;margin-top:3px;line-height:1.2}
+  .stamp.locked{border:2px dashed rgba(217,168,60,.35);background:rgba(0,0,0,.2);transform:none}
+  .stamp.locked .e{font-family:'Cinzel',serif;color:rgba(217,168,60,.6)}
+  .fact{background:rgba(0,0,0,.25);border:1px solid rgba(217,168,60,.3);border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14.5px;line-height:1.5;text-align:left}
+  .fact.new{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(243,210,122,.25)}
+  .fact.locked{opacity:.5;text-align:center;font-family:'Cinzel',serif}
+  .factT{font-family:'Cinzel',serif;color:var(--gold2);font-size:13px;margin-bottom:3px}
+  .bigStamp{font-size:64px;margin:6px 0}
+  /* Auswertung */
+  .evRow{display:grid;grid-template-columns:minmax(120px,1.2fr) 2fr auto;gap:10px;align-items:center;margin:8px 0;font-size:14px}
+  .evBar{height:12px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}
+  .evBar>div{height:100%}.evBar .g{background:#6fbf6f}.evBar .y{background:#e8c25a}.evBar .r{background:#e0564a}.evBar .muted{background:#888}
+  .evV{font-weight:800;white-space:nowrap}
+  .weakItem{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg button{font-family:inherit;font-weight:800;font-size:14px;padding:9px 13px;border-radius:10px;border:1px solid rgba(217,168,60,.5);background:rgba(0,0,0,.3);color:var(--ink);cursor:pointer}
+  .seg button.on{background:linear-gradient(#f6d27a,#d9a83c);color:#2a1d07}
+  textarea.stateBox{width:100%;height:110px;margin-top:8px;font-size:11px;border-radius:8px;padding:8px;background:rgba(0,0,0,.4);color:var(--ink);border:1px solid rgba(217,168,60,.4)}
+  #msg{display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;background:rgba(0,0,0,.25);font-size:14px;line-height:1.5}
+  @media (max-width:380px){ .pinB{width:32px;height:32px;font-size:17px} .pin.boss .pinB{width:40px;height:40px;font-size:21px} .pinL{font-size:9.5px;padding:1px 3px} }
+  @media (max-width:520px){ h1{font-size:20px} .qText{font-size:20px} .opts{grid-template-columns:1fr} .evRow{grid-template-columns:1fr;gap:3px} }
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<main id="app"></main>
+<script>
+/* =========================================================
+   PARIS-ABENTEUER – Französisch (À plus! Neubearbeitung, S. 176–181)
+   Eigenständige App, eigener Spielstand, nicht mit Englisch gemischt.
+   Lernprinzipien: aktives Abrufen, gemischte Formate, Schwerpunkt ganze Sätze
+   (beide Richtungen), Gerüst "erst Bausteine, dann tippen", sofortiges
+   erklärendes Feedback, Wiederholung falscher Aufgaben bis 2× in Folge richtig.
+   ========================================================= */
+const KEY = "paris-abenteuer-v1";
+
+const TAGS = {cp:"C'est parti!", u1:"Unité 1 – Thema Stadt", v1:"Unité 1 – Volet 1", v2:"Unité 1 – Volet 2"};
+const SCOPES = {
+  all:{label:"Alles", tags:["cp","u1","v1","v2"]},
+  cp:{label:"C'est parti!", tags:["cp"]},
+  u1:{label:"Unité 1", tags:["u1","v1","v2"]}
+};
+
+/* ---------- Vokabeldatenbank ----------
+   [ID, Französisch (Varianten mit ;), Deutsch (Varianten mit ;), Teil, Beispielsatz FR, Beispielsatz DE]
+   IDs nie ändern – sonst bricht der Spielstand. Neue Einträge hinten anhängen. */
+const VOCAB_RAW = [
+ ["cp01","salut","hallo; tschüss","cp","Salut ! Je m'appelle Léo.","Hallo! Ich heiße Léo."],
+ ["cp02","et","und","cp","Salut Marine et Léo !","Hallo Marine und Léo!"],
+ ["cp03","toi","du (betont)","cp","Je m'appelle Léo, et toi ?","Ich heiße Léo, und du?"],
+ ["cp04","à plus","bis später","cp","Salut ! – À plus !","Tschüss! – Bis später!"],
+ ["cp05","bof","na ja; es geht so","cp","Ça va ? – Bof.","Wie geht's? – Es geht so."],
+ ["cp06","super","super; toll","cp","Et toi, ça va ? – Super !","Und dir, geht's gut? – Super!"],
+ ["cp07","ça va","wie geht's; es geht mir gut","cp","Salut, ça va ?","Hallo, wie geht's?"],
+ ["cp08","ça sonne","es klingelt","cp","Ah, ça sonne !","Ach, es klingelt!"],
+ ["cp09","à demain","bis morgen","cp","Salut ! – À demain !","Tschüss! – Bis morgen!"],
+ ["cp10","bonjour","guten Tag; guten Morgen","cp","Bonjour ! Ça va ?","Guten Tag! Wie geht's?"],
+ ["cp11","la classe","die Klasse","cp",null,null],
+ ["cp12","madame","Frau (Anrede)","cp","Bonjour, Madame !","Guten Tag! (Anrede ohne Namen)"],
+ ["cp13","monsieur","Herr (Anrede)","cp","Bonjour, Monsieur !","Guten Tag! (Anrede ohne Namen)"],
+ ["cp14","au revoir","auf Wiedersehen","cp","Au revoir, Madame !","Auf Wiedersehen!"],
+ ["cp15","tu as quel âge","wie alt bist du","cp","Tu as quel âge, Léo ?","Wie alt bist du, Léo?"],
+ ["cp16","tu habites où","wo wohnst du","cp","Tu habites où ?","Wo wohnst du?"],
+ ["cp17","j'habite","ich wohne","cp","J'habite en Allemagne.","Ich wohne in Deutschland."],
+ ["cp18","en","in (bei Ländern)","cp","J'habite en France !","Ich wohne in Frankreich!"],
+ ["cp19","à","in (bei Städten)","cp","J'habite à Paris.","Ich wohne in Paris."],
+ ["cp20","l'Allemagne","Deutschland","cp","J'habite en Allemagne.","Ich wohne in Deutschland."],
+ ["cp21","la France","Frankreich","cp","J'habite en France !","Ich wohne in Frankreich!"],
+ ["cp30","zéro","null","cp",null,null],
+ ["cp31","un","eins","cp",null,null],
+ ["cp32","deux","zwei","cp",null,null],
+ ["cp33","trois","drei","cp",null,null],
+ ["cp34","quatre","vier","cp",null,null],
+ ["cp35","cinq","fünf","cp",null,null],
+ ["cp36","six","sechs","cp",null,null],
+ ["cp37","sept","sieben","cp",null,null],
+ ["cp38","huit","acht","cp",null,null],
+ ["cp39","neuf","neun","cp",null,null],
+ ["cp40","dix","zehn","cp",null,null],
+ ["cp41","onze","elf","cp","J'ai onze ans.","Ich bin elf Jahre alt."],
+ ["cp42","douze","zwölf","cp","J'ai douze ans.","Ich bin zwölf Jahre alt."],
+ ["cp43","treize","dreizehn","cp",null,null],
+ ["cp44","quatorze","vierzehn","cp",null,null],
+ ["cp45","quinze","fünfzehn","cp",null,null],
+ ["cp46","seize","sechzehn","cp",null,null],
+ ["cp47","dix-sept","siebzehn","cp",null,null],
+ ["cp48","dix-huit","achtzehn","cp",null,null],
+ ["cp49","dix-neuf","neunzehn","cp",null,null],
+ ["cp50","vingt","zwanzig","cp",null,null],
+ ["cp60","moi","ich (betont)","cp","Toi et moi.","Du und ich."],
+ ["cp61","j'aime","ich mag","cp","Moi, j'aime la pizza.","Ich mag Pizza."],
+ ["cp62","je n'aime pas","ich mag … nicht","cp","Je n'aime pas les rats.","Ich mag keine Ratten."],
+ ["cp63","mais","aber","cp","Mais j'aime les chats.","Aber ich mag Katzen."],
+ ["cp64","les jeux vidéo","die Videospiele","cp","J'aime les jeux vidéo et le chocolat !","Ich mag Videospiele und Schokolade!"],
+ ["cp65","le shopping","das Shoppen; das Einkaufen","cp",null,null],
+ ["cp66","le sport","der Sport","cp","Tu aimes le sport ? – Non.","Magst du Sport? – Nein."],
+ ["cp67","la musique","die Musik","cp","Tu aimes la musique ? – Oui.","Magst du Musik? – Ja."],
+ ["cp68","la nature","die Natur","cp",null,null],
+ ["cp69","le chocolat","die Schokolade","cp","J'aime les jeux vidéo et le chocolat !","Ich mag Videospiele und Schokolade!"],
+ ["cp70","les spaghettis","die Spaghetti","cp",null,null],
+ ["cp71","la pizza","die Pizza","cp","Moi, j'aime la pizza.","Ich mag Pizza."],
+ ["cp72","les tomates","die Tomaten","cp",null,null],
+ ["cp73","la salade","der Salat","cp",null,null],
+ ["cp74","le jaune","Gelb","cp",null,null],
+ ["cp75","le rouge","Rot","cp","Tu aimes le rouge ou le vert ?","Magst du Rot oder Grün?"],
+ ["cp76","le bleu","Blau","cp",null,null],
+ ["cp77","le vert","Grün","cp","Tu aimes le rouge ou le vert ?","Magst du Rot oder Grün?"],
+ ["cp78","le noir","Schwarz","cp",null,null],
+ ["cp79","les chats","die Katzen","cp","Mais j'aime les chats.","Aber ich mag Katzen."],
+ ["cp80","les chiens","die Hunde","cp","Tu aimes les chiens ?","Magst du Hunde?"],
+ ["cp81","les rats","die Ratten","cp","Je n'aime pas les rats.","Ich mag keine Ratten."],
+ ["cp82","les poissons","die Fische","cp",null,null],
+ ["cp83","les tortues","die Schildkröten","cp","J'aime les tortues.","Ich mag Schildkröten."],
+ ["cp84","tu aimes","magst du","cp","Tu aimes les chiens ?","Magst du Hunde?"],
+ ["cp85","oui","ja","cp","Tu aimes la musique ? – Oui.","Magst du Musik? – Ja."],
+ ["cp86","non","nein","cp","Tu aimes le sport ? – Non.","Magst du Sport? – Nein."],
+ ["cp87","ou","oder","cp","Tu aimes le rouge ou le vert ?","Magst du Rot oder Grün?"],
+
+ ["u101","bienvenue","willkommen","u1","Bienvenue à Paris !","Willkommen in Paris!"],
+ ["u102","la ville","die Stadt","u1",null,null],
+ ["u103","le cinéma","das Kino","u1",null,null],
+ ["u104","le parc","der Park","u1",null,null],
+ ["u105","le théâtre","das Theater","u1",null,null],
+ ["u106","le café","das Café; der Kaffee","u1",null,null],
+ ["u107","le restaurant","das Restaurant","u1",null,null],
+ ["u108","l'hôtel","das Hotel","u1",null,null],
+ ["u109","le musée","das Museum","u1",null,null],
+ ["u110","le métro","die U-Bahn; die Metro","u1","Le métro, c'est là.","Die Metro ist da."],
+ ["u111","la tour","der Turm","u1","C'est la Tour Eiffel.","Das ist der Eiffelturm."],
+ ["u112","le supermarché","der Supermarkt","u1",null,null],
+ ["u113","le collège","die Schule (Klasse 6–9)","u1","Où est le collège ?","Wo ist die Schule?"],
+ ["u114","le stade","das Stadion","u1","Où est le stade ?","Wo ist das Stadion?"],
+ ["u115","pardon","Entschuldigung; Verzeihung","u1","Pardon, Madame.","Entschuldigung!"],
+ ["u116","où","wo; wohin","u1","Où est le stade ?","Wo ist das Stadion?"],
+ ["u117","c'est","das ist","u1","C'est le stade.","Das ist das Stadion."],
+ ["u118","là","da; dort","u1","Le métro, c'est là.","Die Metro ist da."],
+ ["u119","merci","danke","u1","Merci, Monsieur.","Danke!"],
+
+ ["v101","ce sont","das sind","v1","Ce sont Noé et Max.","Das sind Noé und Max."],
+ ["v102","c'est qui","wer ist das","v1","C'est qui ? – Je ne sais pas.","Wer ist das? – Ich weiß es nicht."],
+ ["v103","comment","wie (Fragewort)","v1","Tu t'appelles comment ?","Wie heißt du?"],
+ ["v104","voilà","hier ist; hier sind; da ist","v1","Voilà Idriss.","Hier ist Idriss."],
+ ["v105","la fille","das Mädchen","v1","La fille, c'est Jeanne.","Das Mädchen ist Jeanne."],
+ ["v106","le garçon","der Junge","v1","Le garçon, c'est Gabin.","Der Junge ist Gabin."],
+ ["v107","l'ami","der Freund","v1","Gabin, c'est l'ami de Jeanne.","Gabin ist der Freund von Jeanne."],
+ ["v108","l'amie","die Freundin","v1","Jeanne, c'est l'amie de Gabin.","Jeanne ist die Freundin von Gabin."],
+ ["v109","de","von","v1","Jeanne, c'est l'amie de Gabin.","Jeanne ist die Freundin von Gabin."],
+ ["v110","mon ami","mein Freund","v1","Noé, c'est mon ami.","Noé ist mein Freund."],
+ ["v111","mon amie","meine Freundin","v1",null,null],
+ ["v112","il s'appelle","er heißt","v1",null,null],
+ ["v113","elle s'appelle","sie heißt","v1","Elle s'appelle Léa.","Sie heißt Léa."],
+ ["v114","avec","mit","v1","La fille avec le chien, c'est Léa !","Das Mädchen mit dem Hund ist Léa!"],
+ ["v115","d'accord","einverstanden; okay","v1","D'accord ? – Oui, d'accord !","Einverstanden? – Ja, einverstanden!"],
+ ["v116","je ne sais pas","ich weiß es nicht; ich weiß nicht","v1","C'est qui ? – Je ne sais pas.","Wer ist das? – Ich weiß es nicht."],
+ ["v117","ici","hier","v1","Le métro, c'est ici ?","Ist die Metro hier?"],
+ ["v118","depuis","seit","v1","J'habite ici depuis samedi.","Ich wohne hier seit Samstag."],
+ ["v119","samedi","Samstag; am Samstag","v1","J'habite ici depuis samedi.","Ich wohne hier seit Samstag."],
+ ["v120","cool","cool","v1",null,null],
+ ["v121","alors","also","v1","Alors, c'est parti !","Also, los geht's!"],
+ ["v122","dans","in (drinnen)","v1","J'habite dans le quartier.","Ich wohne im Viertel."],
+ ["v123","le quartier","das Viertel","v1","C'est le quartier de Léo.","Das ist das Viertel von Léo."],
+
+ ["v201","coucou","hi; hallo","v2","Coucou, ça va ?","Hi, wie geht's?"],
+ ["v202","c'est nous","das sind wir; wir sind's","v2","Salut, c'est nous !","Hallo, wir sind's!"],
+ ["v203","c'est moi","das bin ich; ich bin's","v2","Coucou, c'est moi !","Hi, ich bin's!"],
+ ["v204","être","sein","v2","Je suis à Paris.","Ich bin in Paris."],
+ ["v205","je suis","ich bin","v2","Je suis à Paris.","Ich bin in Paris."],
+ ["v206","tu es","du bist","v2",null,null],
+ ["v207","il est","er ist","v2","Il est sympa.","Er ist nett."],
+ ["v208","elle est","sie ist","v2","Elle est aussi ici.","Sie ist auch hier."],
+ ["v209","on est","man ist; wir sind","v2",null,null],
+ ["v210","nous sommes","wir sind","v2",null,null],
+ ["v211","vous êtes","ihr seid; Sie sind","v2","Vous êtes en retard !","Ihr seid zu spät!"],
+ ["v212","ils sont","sie sind (Jungen/gemischt)","v2","Ils sont ensemble.","Sie sind zusammen."],
+ ["v213","elles sont","sie sind (nur Mädchen)","v2","Elles sont dans la même classe.","Sie sind in derselben Klasse."],
+ ["v214","de","aus (Herkunft)","v2","Je suis de Berlin.","Ich bin aus Berlin."],
+ ["v215","la rue","die Straße","v2","C'est la rue de Belleville.","Das ist die Rue de Belleville."],
+ ["v216","la Tunisie","Tunesien","v2","J'aime la Tunisie.","Ich mag Tunesien."],
+ ["v217","sympa; sympathique","nett; sympathisch","v2","Il est sympa.","Er ist nett."],
+ ["v218","dans la même classe","in derselben Klasse","v2","Elles sont dans la même classe.","Sie sind in derselben Klasse."],
+ ["v219","aussi","auch","v2","Elle est aussi ici.","Sie ist auch hier."],
+ ["v220","ensemble","zusammen","v2","Ils sont ensemble.","Sie sind zusammen."],
+ ["v221","le club","die AG; der Verein; der Klub","v2","Gabin est dans le club de drones.","Gabin ist in der Drohnen-AG."],
+ ["v222","le drone","die Drohne","v2",null,null],
+ ["v223","le club de drones","die Drohnen-AG","v2","Gabin est dans le club de drones.","Gabin ist in der Drohnen-AG."],
+ ["v224","la sixième","die sechste Klasse","v2","Je suis en sixième.","Ich bin in der sechsten Klasse."],
+ ["v225","la cinquième","die siebte Klasse","v2",null,null],
+ ["v226","le basket","der Basketball","v2","J'aime le basket.","Ich mag Basketball."],
+ ["v227","la série","die Serie","v2","Je n'aime pas les séries.","Ich mag keine Serien."],
+ ["v228","la danse","der Tanz; das Tanzen","v2",null,null],
+ ["v229","souvent","oft","v2","Lili-Rose est souvent en retard.","Lili-Rose ist oft zu spät."],
+ ["v230","en retard","zu spät; mit Verspätung","v2","Vous êtes en retard !","Ihr seid zu spät!"],
+];
+
+/* ---------- Satzdatenbank (Sätze aus dem Buch) ----------
+   [ID, Französisch (Varianten mit |), Deutsch (Varianten mit |), Teil, Erklärung] */
+const SENT_RAW = [
+ ["s001","Salut ! Je m'appelle Léo.|Bonjour ! Je m'appelle Léo.","Hallo! Ich heiße Léo.","cp","je m'appelle = ich heiße. Das „m'“ (me) gehört dazu: je m'appelle, tu t'appelles, il/elle s'appelle."],
+ ["s002","Tu t'appelles comment ?|Comment tu t'appelles ?|Comment t'appelles-tu ?","Wie heißt du?","cp","Das Fragewort comment (wie) steht in der Umgangssprache am Satzende."],
+ ["s003","Je m'appelle Léo, et toi ?","Ich heiße Léo, und du?","cp","Et toi ? = Und du? – toi ist die betonte Form von „du“."],
+ ["s004","Salut ! À plus !","Tschüss! Bis später!|Hallo! Bis später!","cp","Salut heißt je nach Situation „Hallo“ oder „Tschüss“."],
+ ["s005","Salut, ça va ?","Hallo, wie geht's?|Hallo, wie geht es dir?|Hallo, geht's dir gut?|Hallo, geht es dir gut?","cp","Ça va ? kann Frage („Wie geht's?“) und Antwort („Gut.“) sein – nur die Satzmelodie entscheidet."],
+ ["s006","Ça va ? – Bof.","Wie geht's? – Es geht so.|Wie geht's? – Na ja.|Wie geht es dir? – Es geht so.|Wie geht es dir? – Na ja.","cp","bof = na ja / es geht so (umgangssprachlich)."],
+ ["s007","Et toi, ça va ? – Super !","Und dir, geht's gut? – Super!|Und dir, geht es gut? – Super!|Und wie geht's dir? – Super!|Und wie geht es dir? – Super!|Und du, wie geht's? – Super!","cp","Et toi ? heißt hier „Und dir?“."],
+ ["s008","Ah, ça sonne !","Ach, es klingelt!|Ach so, es klingelt!","cp","ça sonne = es klingelt (z. B. die Schulglocke)."],
+ ["s009","Bonjour ! Ça va ?","Guten Tag! Wie geht's?|Guten Morgen! Wie geht's?|Guten Tag! Wie geht es dir?|Guten Morgen! Wie geht es dir?","cp","bonjour = guten Tag oder guten Morgen."],
+ ["s010","Bonjour, Madame !","Guten Tag, Madame!|Guten Tag!|Guten Morgen!|Guten Morgen, Madame!","cp","Erwachsene begrüßt man mit Madame oder Monsieur – aber ohne den Namen dazu!"],
+ ["s011","Au revoir, Madame !","Auf Wiedersehen, Madame!|Auf Wiedersehen!","cp","Auch beim Verabschieden: Madame/Monsieur ohne Namen."],
+ ["s012","Tu as quel âge, Léo ?|Léo, tu as quel âge ?|Quel âge as-tu, Léo ?","Wie alt bist du, Léo?","cp","Wörtlich: „Welches Alter hast du?“ – im Französischen hat man sein Alter."],
+ ["s013","J'ai douze ans.","Ich bin zwölf Jahre alt.|Ich bin 12 Jahre alt.|Ich bin zwölf.|Ich bin 12.","cp","Achtung: j'ai = ich habe! Man sagt „Ich habe zwölf Jahre“ – j'ai douze ans."],
+ ["s014","J'ai onze ans.","Ich bin elf Jahre alt.|Ich bin 11 Jahre alt.|Ich bin elf.|Ich bin 11.","cp","Alter immer mit avoir (haben): j'ai onze ans."],
+ ["s015","Tu habites où ?|Où tu habites ?|Où habites-tu ?","Wo wohnst du?","cp","où (mit Akzent) = wo. ou (ohne Akzent) = oder."],
+ ["s016","J'habite en Allemagne.","Ich wohne in Deutschland.","cp","Bei Ländern steht „en“: J'habite en Allemagne / en France. Bei Städten „à“: J'habite à Paris."],
+ ["s017","J'habite en France !","Ich wohne in Frankreich!","cp","Land → en: en France."],
+ ["s018","J'habite à Paris.","Ich wohne in Paris.","cp","Stadt → à: à Paris. Land → en: en France."],
+ ["s019","Et toi, Marine, tu habites où ? – J'habite à Paris.","Und du, Marine, wo wohnst du? – Ich wohne in Paris.","cp","Im Französischen schreibt man nur Satzanfänge und Namen groß – alles andere klein."],
+ ["s020","Toi et moi.","Du und ich.","cp","toi und moi sind die betonten Formen von „du“ und „ich“."],
+ ["s021","Moi, j'aime la pizza.|J'aime la pizza.","Also ich, ich mag Pizza.|Ich mag Pizza.|Ich, ich mag Pizza.","cp","Nach aimer steht im Französischen immer ein Artikel: j'aime LA pizza (auf Deutsch ohne Artikel)."],
+ ["s022","Je n'aime pas les rats.","Ich mag keine Ratten.|Ich mag Ratten nicht.","cp","Verneinung: ne … pas umschließt das Verb. Vor Vokal wird ne zu n': je n'aime pas."],
+ ["s023","Mais j'aime les chats.","Aber ich mag Katzen.","cp","mais = aber."],
+ ["s024","J'aime les tortues.","Ich mag Schildkröten.","cp","Auch im Plural steht nach aimer der Artikel: les tortues."],
+ ["s025","Tu aimes les chiens ?|Est-ce que tu aimes les chiens ?","Magst du Hunde?","cp","tu aimes = du magst – mit -s am Ende (das man nicht hört)."],
+ ["s026","Tu aimes la musique ? – Oui.","Magst du Musik? – Ja.","cp","Frage nur durch die Stimme: Tu aimes la musique ?"],
+ ["s027","Tu aimes le sport ? – Non.","Magst du Sport? – Nein.","cp","oui = ja, non = nein."],
+ ["s028","Tu aimes le rouge ou le vert ?","Magst du Rot oder Grün?","cp","ou (ohne Akzent) = oder. où (mit Akzent) = wo."],
+ ["s029","J'aime les jeux vidéo et le chocolat !","Ich mag Videospiele und Schokolade!","cp","les jeux vidéo – vidéo bleibt im Plural ohne -s."],
+
+ ["s101","Bienvenue à Paris !","Willkommen in Paris!","u1","Stadt → à: Bienvenue à Paris."],
+ ["s102","C'est la Tour Eiffel.","Das ist der Eiffelturm.","u1","la tour ist weiblich – auf Deutsch heißt es aber „der Turm“."],
+ ["s103","Pardon, Madame.","Entschuldigung, Madame!|Verzeihung, Madame!|Entschuldigung!|Verzeihung!","u1","pardon = Entschuldigung, Verzeihung."],
+ ["s104","Où est le stade ?","Wo ist das Stadion?","u1","Où est … ? = Wo ist … ? (où mit Akzent!)"],
+ ["s105","Où est le collège ?","Wo ist die Schule?","u1","le collège ist die Schule für die Klassen 6 bis 9 in Frankreich – kein „College“."],
+ ["s106","C'est le stade.","Das ist das Stadion.","u1","c'est = das ist."],
+ ["s107","Le métro, c'est là.|Le métro est là.","Die Metro ist da.|Die U-Bahn ist da.|Die Metro ist dort.|Die U-Bahn ist dort.","u1","Wörtlich: „Die Metro, das ist da.“ – typisch französische Betonung."],
+ ["s108","Merci, Monsieur.","Danke, Monsieur!|Danke!|Danke schön!","u1","merci = danke. Monsieur ohne Namen."],
+ ["s109","Où est le cinéma ?","Wo ist das Kino?","u1","le cinéma – Akzent auf dem é!"],
+ ["s110","Où est le musée ?","Wo ist das Museum?","u1","le musée – männlich, obwohl es auf -e endet."],
+
+ ["s201","C'est Idriss.","Das ist Idriss.","v1","c'est + Name = das ist …"],
+ ["s202","Ce sont Noé et Max.","Das sind Noé und Max.","v1","c'est = das ist (eine Person) · ce sont = das sind (mehrere)."],
+ ["s203","C'est qui ? – Je ne sais pas.","Wer ist das? – Ich weiß es nicht.|Wer ist das? – Ich weiß nicht.","v1","Je ne sais pas = Ich weiß es nicht (ne … pas um das Verb)."],
+ ["s204","Salut ! Moi, c'est Noé !|Salut ! Je m'appelle Noé !","Hallo! Ich bin Noé!|Hallo! Ich heiße Noé!","v1","Moi, c'est + Name = so stellt man sich locker vor (wörtlich: „Ich, das ist …“)."],
+ ["s205","Voilà Idriss.","Hier ist Idriss.|Da ist Idriss.","v1","voilà = hier ist / da ist."],
+ ["s206","La fille, c'est Jeanne.","Das Mädchen ist Jeanne.|Das Mädchen heißt Jeanne.","v1","la fille ist weiblich – auf Deutsch „das Mädchen“."],
+ ["s207","Le garçon, c'est Gabin.","Der Junge ist Gabin.|Der Junge heißt Gabin.","v1","le garçon – das ç (mit Häkchen) spricht man wie „s“."],
+ ["s208","Jeanne, c'est l'amie de Gabin.|Jeanne est l'amie de Gabin.","Jeanne ist die Freundin von Gabin.|Jeanne ist Gabins Freundin.","v1","l'amie (Freundin) mit -e, l'ami (Freund) ohne – man hört es nicht, sieht es aber!"],
+ ["s209","Gabin, c'est l'ami de Jeanne.|Gabin est l'ami de Jeanne.","Gabin ist der Freund von Jeanne.|Gabin ist Jeannes Freund.","v1","de = von: l'ami de Jeanne."],
+ ["s210","Noé, c'est mon ami.|Noé est mon ami.","Noé ist mein Freund.","v1","mon ami = mein Freund."],
+ ["s211","Elle s'appelle Léa.","Sie heißt Léa.","v1","il s'appelle = er heißt · elle s'appelle = sie heißt."],
+ ["s212","J'aime le sport et la musique.","Ich mag Sport und Musik.","v1","Nach aimer steht im Französischen der Artikel: le sport, la musique."],
+ ["s213","J'aime les chats.","Ich mag Katzen.","v1","les = bestimmter Artikel im Plural (für männlich und weiblich gleich)."],
+ ["s214","La fille avec le chien, c'est Léa !|La fille avec le chien est Léa !","Das Mädchen mit dem Hund ist Léa!","v1","avec = mit."],
+ ["s215","D'accord ? – Oui, d'accord !","Einverstanden? – Ja, einverstanden!|Okay? – Ja, okay!","v1","d'accord = einverstanden, okay."],
+ ["s216","Le métro, c'est ici ?|Le métro est ici ?","Ist die Metro hier?|Ist die U-Bahn hier?","v1","ici = hier."],
+ ["s217","J'habite ici depuis samedi.","Ich wohne hier seit Samstag.|Ich wohne seit Samstag hier.","v1","depuis = seit."],
+ ["s218","Alors, c'est parti !","Also, los geht's!","v1","alors = also · C'est parti ! = Los geht's!"],
+ ["s219","J'habite dans le quartier.","Ich wohne im Viertel.|Ich wohne in dem Viertel.","v1","dans = in (drinnen): dans le quartier."],
+ ["s220","C'est le quartier de Léo.","Das ist das Viertel von Léo.|Das ist Léos Viertel.","v1","Besitz mit de: le quartier de Léo = Léos Viertel."],
+
+ ["s301","Coucou, ça va ?|Salut, ça va ?","Hi, wie geht's?|Hi, wie geht es dir?|Hallo, wie geht's?|Hallo, wie geht es dir?","v2","coucou = hi (umgangssprachlich, unter Freunden)."],
+ ["s302","Salut, c'est nous !","Hallo, wir sind's!|Hallo, das sind wir!","v2","c'est nous = wir sind's."],
+ ["s303","Coucou, c'est moi !|Salut, c'est moi !","Hi, ich bin's!|Hi, das bin ich!|Hallo, ich bin's!","v2","c'est moi = ich bin's."],
+ ["s304","Je suis à Paris.","Ich bin in Paris.","v2","être (sein): je suis, tu es, il/elle/on est, nous sommes, vous êtes, ils/elles sont."],
+ ["s305","Je suis de Berlin.","Ich bin aus Berlin.|Ich komme aus Berlin.","v2","de = aus (Herkunft): Je suis de Berlin."],
+ ["s306","C'est la rue de Belleville.","Das ist die Rue de Belleville.|Das ist die Belleville-Straße.|Das ist die Bellevillestraße.","v2","la rue = die Straße."],
+ ["s307","J'habite rue de Belleville.","Ich wohne in der Rue de Belleville.|Ich wohne in der Bellevillestraße.|Ich wohne in der Belleville-Straße.","v2","Bei Straßen steht im Französischen weder Präposition noch Artikel: J'habite rue de Belleville."],
+ ["s308","J'aime la Tunisie.","Ich mag Tunesien.","v2","Länder haben einen Artikel: la Tunisie, la France, l'Allemagne."],
+ ["s309","Il est sympa.|Il est sympathique.","Er ist nett.|Er ist sympathisch.","v2","sympa = nett (Kurzform von sympathique)."],
+ ["s310","Elles sont dans la même classe.","Sie sind in derselben Klasse.|Sie sind in der gleichen Klasse.","v2","elles = sie (nur Mädchen/Frauen) · ils = sie (Jungen oder gemischt).","sie = nur Mädchen"],
+ ["s311","Elle est aussi ici.|Elle est ici aussi.","Sie ist auch hier.","v2","aussi = auch – steht hinter dem Verb."],
+ ["s312","Ils sont ensemble.","Sie sind zusammen.","v2","ils sont = sie sind (Jungen oder gemischte Gruppe).","sie = Jungen oder gemischte Gruppe"],
+ ["s313","Gabin est dans le club de drones.","Gabin ist in der Drohnen-AG.","v2","le club = die AG / der Verein."],
+ ["s314","Je suis en sixième.","Ich bin in der sechsten Klasse.|Ich bin in der 6. Klasse.|Ich gehe in die sechste Klasse.","v2","In Frankreich zählt man rückwärts: sixième = 6. Klasse, cinquième = 7. Klasse."],
+ ["s315","J'aime le basket.","Ich mag Basketball.","v2","le basket = Basketball (mit Artikel nach aimer)."],
+ ["s316","Je n'aime pas les séries.","Ich mag keine Serien.|Ich mag Serien nicht.","v2","ne … pas: je n'aime pas. Plural: les séries."],
+ ["s317","Lili-Rose est souvent en retard.","Lili-Rose ist oft zu spät.|Lili-Rose kommt oft zu spät.","v2","souvent = oft · en retard = zu spät."],
+ ["s318","Vous êtes en retard !","Ihr seid zu spät!|Sie sind zu spät!|Ihr kommt zu spät!|Sie kommen zu spät!","v2","vous = ihr ODER Sie (höflich) – beides heißt vous."],
+ ["s319","Nous sommes à Paris.","Wir sind in Paris.","v2","nous sommes = wir sind."],
+ ["s320","Tu es de Berlin ?","Bist du aus Berlin?|Kommst du aus Berlin?","v2","tu es = du bist."],
+];
+
+/* ---------- Stationen in Paris (Karte 100 × 130) ---------- */
+const NODES = [
+ {name:"Gare du Nord", icon:"🚂", foe:"Le Pigeon Chapardeur", foeDe:"die diebische Taube", foeIcon:"🐦", hp:60, x:62, y:32},
+ {name:"Montmartre", icon:"🎨", foe:"Le Peintre Grincheux", foeDe:"der grummelige Maler", foeIcon:"🖌️", hp:70, x:46, y:14},
+ {name:"La Villette", icon:"🔬", foe:"Le Robot Farceur", foeDe:"der Scherzbold-Roboter", foeIcon:"🤖", hp:80, x:84, y:18},
+ {name:"Belleville", icon:"🏘️", foe:"Le Chat de Gouttière", foeDe:"der Straßenkater", foeIcon:"🐈", hp:90, x:82, y:50},
+ {name:"Châtelet", icon:"🚇", foe:"Le Rat du Métro", foeDe:"die Metro-Ratte", foeIcon:"🐀", hp:100, x:62, y:58},
+ {name:"Notre-Dame", icon:"🔔", foe:"La Gargouille Grognon", foeDe:"der Brummel-Wasserspeier", foeIcon:"🐲", hp:110, x:64, y:76},
+ {name:"Les Catacombes", icon:"🕯️", foe:"Le Squelette Rieur", foeDe:"das kichernde Skelett", foeIcon:"💀", hp:120, x:50, y:108},
+ {name:"Saint-Germain", icon:"☕", foe:"Le Serveur Pressé", foeDe:"der eilige Kellner", foeIcon:"🤵", hp:130, x:42, y:82},
+ {name:"Le Louvre", icon:"🖼️", foe:"La Momie Égarée", foeDe:"die verirrte Mumie", foeIcon:"🏺", hp:140, x:42, y:60},
+ {name:"Opéra Garnier", icon:"🎼", foe:"Le Fantôme de l'Opéra", foeDe:"das Phantom der Oper", foeIcon:"👻", hp:150, x:41, y:40},
+ {name:"Jardin des Tuileries", short:"Tuileries", icon:"🌳", foe:"Le Mime Muet", foeDe:"der stumme Pantomime", foeIcon:"🎭", hp:160, x:18, y:53},
+ {name:"Arc de Triomphe", icon:"🏛️", foe:"Le Coq Champion", foeDe:"der Champion-Hahn", foeIcon:"🐓", hp:170, x:14, y:30},
+ {name:"Tour Eiffel", icon:"🗼", foe:"Le Gardien de Fer", foeDe:"der eiserne Wächter", foeIcon:"⚙️", hp:320, x:18, y:80, boss:true},
+];
+
+/* ---------- Fun Facts über Frankreich ---------- */
+const FACTS = [
+ "Der Eiffelturm wurde für die Weltausstellung 1889 gebaut. Eigentlich sollte er nach 20 Jahren wieder abgebaut werden – zum Glück blieb er stehen!",
+ "Im Sommer ist der Eiffelturm ein paar Zentimeter höher als im Winter: Das Eisen dehnt sich bei Hitze aus.",
+ "Der Eiffelturm wird ungefähr alle sieben Jahre neu gestrichen – dafür braucht man rund 60 Tonnen Farbe.",
+ "Der Louvre ist das meistbesuchte Kunstmuseum der Welt. Dort hängt die Mona Lisa – auf Französisch heißt sie „La Joconde“.",
+ "Die Mona Lisa ist viel kleiner, als viele denken: nur etwa 77 × 53 Zentimeter.",
+ "Paris ist in 20 Bezirke eingeteilt, die „arrondissements“. Sie sind spiralförmig wie ein Schneckenhaus durchnummeriert.",
+ "Die Pariser Metro wurde im Jahr 1900 eröffnet – passend zur damaligen Weltausstellung.",
+ "In der Pariser Metro gibt es „Geisterbahnhöfe“: stillgelegte Stationen, an denen kein Zug mehr hält.",
+ "Unter Paris liegen die Katakomben, ein Labyrinth aus alten Steinbruch-Gängen. Dort ruhen die Gebeine von rund sechs Millionen Menschen.",
+ "Die Basilika Sacré-Cœur steht auf dem Montmartre, dem höchsten Hügel von Paris. Von dort hat man einen tollen Blick über die ganze Stadt.",
+ "Frankreich gilt seit vielen Jahren als das meistbesuchte Reiseland der Welt.",
+ "Frankreich ist das flächenmäßig größte Land der Europäischen Union.",
+ "In Frankreich gibt es mehr als 1.000 verschiedene Käsesorten.",
+ "Das Handwerk rund um das Baguette gehört seit 2022 zum Immateriellen Kulturerbe der UNESCO.",
+ "Das Wappentier Frankreichs ist der Hahn – „le coq“. Deshalb trägt die Fußball-Nationalmannschaft einen Hahn auf dem Trikot.",
+ "Die französische Fußball-Nationalmannschaft heißt „Les Bleus“ – die Blauen. Sie wurde 1998 und 2018 Weltmeister.",
+ "Die Tour de France ist das berühmteste Radrennen der Welt. Es fand zum ersten Mal 1903 statt.",
+ "Im französischen Collège zählt man die Klassen rückwärts: Man beginnt in der „sixième“ (6. Klasse) und endet in der „troisième“ (9. Klasse).",
+ "Zur Begrüßung gibt man sich in Frankreich oft „la bise“: Küsschen auf die Wangen – je nach Region zwei, drei oder sogar vier!",
+ "Französisch wird auf allen Kontinenten gesprochen. Weltweit können es über 300 Millionen Menschen.",
+ "Französisch ist eine der beiden offiziellen Sprachen der Olympischen Spiele – deshalb hört man die Ansagen dort zuerst auf Französisch.",
+ "In der Stadt Paris wohnen rund 2 Millionen Menschen – im ganzen Großraum Paris sind es über 12 Millionen.",
+ "Der Mont Blanc an der Grenze zu Italien ist mit rund 4.800 Metern der höchste Berg der Alpen.",
+ "Die Seine fließt mitten durch Paris. Innerhalb der Stadt führen 37 Brücken über den Fluss.",
+ "Die Kathedrale Notre-Dame wurde 2019 bei einem Brand schwer beschädigt. Nach dem Wiederaufbau wurde sie im Dezember 2024 wiedereröffnet.",
+ "Paris war 2024 Gastgeber der Olympischen Sommerspiele – nach 1900 und 1924 schon zum dritten Mal.",
+ "Wegen seiner Überseegebiete, zum Beispiel in der Karibik und im Pazifik, hat Frankreich mehr Zeitzonen als jedes andere Land der Welt.",
+ "Vom Platz rund um den Arc de Triomphe gehen zwölf Straßen sternförmig ab. Der Platz heißt deshalb „Place de l'Étoile“ – Sternplatz.",
+ "Im Parc de la Villette steht die „Cité des sciences“, eines der größten Wissenschaftsmuseen Europas.",
+ "Der französische Nationalfeiertag ist der 14. Juli. Er erinnert an den Sturm auf die Bastille im Jahr 1789.",
+ "Die französische Flagge in Blau, Weiß und Rot heißt „le drapeau tricolore“ – die Trikolore.",
+ "Viele deutsche Wörter kommen aus dem Französischen: Restaurant, Café, Portemonnaie, Trottoir oder Friseur zum Beispiel.",
+ "Das Croissant hat einen österreichischen Vorfahren: das Wiener Kipferl. Berühmt geworden ist es aber in Frankreich.",
+];
+
+/* ---------- Aufbereitung ---------- */
+const VOCAB = VOCAB_RAW.map(r=>({id:r[0], fr:r[1], de:r[2], tag:r[3], exFr:r[4]||null, exDe:r[5]||null, kind:"v"}));
+const SENTS = SENT_RAW.map(r=>({id:r[0], frAlts:r[1].split("|"), deAlts:r[2].split("|"), tag:r[3], note:r[4]||"", deHint:r[5]||"", kind:"s"}));
+const ITEM = {}; VOCAB.forEach(v=>ITEM[v.id]=v); SENTS.forEach(s=>ITEM[s.id]=s);
+
+/* ---------- Spielstand ---------- */
+function defaultState(){
+  return {started:false, scope:"all", mode:"normal", node:0, xp:0, maxStreak:0, answered:0,
+          stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}};
+}
+let S = defaultState();
+function normalizeState(){
+  const d = defaultState();
+  Object.keys(d).forEach(k=>{
+    const ok = S[k]!==undefined && S[k]!==null && typeof S[k]===typeof d[k] && Array.isArray(S[k])===Array.isArray(d[k]);
+    if(!ok) S[k]=d[k];
+  });
+  if(!SCOPES[S.scope]) S.scope="all";
+  if(!["normal","exam"].includes(S.mode)) S.mode="normal";
+  S.node = Math.max(0, Math.min(NODES.length-1, parseInt(S.node)||0));
+  S.xp = Number(S.xp)||0; S.maxStreak = Number(S.maxStreak)||0; S.answered = Number(S.answered)||0;
+  S.defeated = S.defeated.filter(i=>Number.isInteger(i) && i>=0 && i<NODES.length);
+  S.facts = S.facts.filter(i=>Number.isInteger(i) && i>=0 && i<FACTS.length);
+  Object.keys(S.weak).forEach(id=>{ if(!ITEM[id] || !Number.isFinite(S.weak[id])) delete S.weak[id]; });
+}
+function store(){ try{ return window.localStorage; }catch(e){ return null; } }
+function loadState(){
+  try{ const ls=store(); const v=ls && ls.getItem(KEY); if(v) S = Object.assign(defaultState(), JSON.parse(v)); }catch(e){}
+  normalizeState();
+}
+function saveState(){ try{ const ls=store(); if(ls) ls.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+/* ---------- Hilfsfunktionen ---------- */
+const app = document.getElementById("app");
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function rnd(a){ return a[Math.floor(Math.random()*a.length)]; }
+function ri(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function alts(s){ return String(s).split(";").map(x=>x.trim()).filter(Boolean); }
+function first(s){ return alts(s)[0]; }
+function bump(obj, key, ok){ obj[key]=obj[key]||{a:0,c:0}; obj[key].a++; if(ok) obj[key].c++; }
+
+/* Normalisierung: Groß-/Kleinschreibung und Satzzeichen zählen nicht – Akzente schon (streng). */
+function normFr(s){
+  return String(s||"").toLocaleLowerCase("fr")
+    .replace(/[’‘`´]/g,"'")
+    .replace(/[«»"“”„]/g," ")
+    .replace(/[–—]/g," ")
+    .replace(/(^|\s)-(?=\s|$)/g," ")
+    .replace(/[.,!?;:…()]/g," ")
+    .replace(/'\s+/g,"'")
+    .replace(/\s+/g," ").trim();
+}
+function normDe(s){
+  return String(s||"").toLowerCase()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .replace(/[’‘`´']/g,"")
+    .replace(/[«»"“”„]/g," ")
+    .replace(/[–—-]/g," ")
+    .replace(/[.,!?;:…()]/g," ")
+    .replace(/\s+/g," ").trim();
+}
+function stripAcc(s){ return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+
+/* ---------- Auswahl der nächsten Aufgabe ---------- */
+let bag = {v:[], s:[]}, recent = [];
+function resetBags(){ bag = {v:[], s:[]}; recent = []; }
+function poolV(){ const t=SCOPES[S.scope].tags; return VOCAB.filter(v=>t.includes(v.tag)); }
+function poolS(){ const t=SCOPES[S.scope].tags; return SENTS.filter(s=>t.includes(s.tag)); }
+function nextItem(){
+  const pv = poolV(), ps = poolS();
+  const allowed = new Set([...(S.mode==="exam" ? [] : pv), ...ps].map(x=>x.id));
+  /* Falsch beantwortete Aufgaben kommen bevorzugt wieder dran, bis sie 2× in Folge richtig waren */
+  const due = Object.keys(S.weak).filter(id=>allowed.has(id) && !recent.includes(id));
+  let item = null;
+  if(due.length && Math.random() < 0.5){
+    item = ITEM[rnd(due)];
+  } else {
+    const kind = (S.mode==="exam" || !pv.length) ? "s" : (Math.random() < 0.65 ? "s" : "v");
+    const pool = kind==="s" ? ps : pv;
+    if(!bag[kind].length) bag[kind] = shuffle(pool.map(x=>x.id));
+    let id = bag[kind].pop(), guard = 0;
+    while(recent.includes(id) && bag[kind].length && guard++ < 6){ bag[kind].unshift(id); id = bag[kind].pop(); }
+    item = ITEM[id];
+  }
+  recent.push(item.id); if(recent.length > 8) recent.shift();
+  return item;
+}
+
+/* ---------- Multiple Choice: Ablenker aus derselben Wortart ---------- */
+function vgroup(v){
+  if(/^cp(3\d|4\d|50)$/.test(v.id)) return "num";
+  if(/^(le|la|les) |^l'/i.test(v.fr)) return "noun";
+  return "other";
+}
+function mcOptions(v, field){
+  const correct = first(v[field]);
+  const okAlts = alts(v[field]).map(x=>x.toLowerCase());
+  const g = vgroup(v);
+  const vDe = alts(v.de).map(s=>s.toLowerCase()), vFr = alts(v.fr).map(s=>s.toLowerCase());
+  const usable = x => x.id!==v.id && x.fr!==v.fr && x.de!==v.de
+    && !alts(x.de).some(s=>vDe.includes(s.toLowerCase())) && !alts(x.fr).some(s=>vFr.includes(s.toLowerCase()));
+  let cand = VOCAB.filter(x=>usable(x) && vgroup(x)===g).map(x=>first(x[field]));
+  cand = [...new Set(cand)].filter(c=>!okAlts.includes(c.toLowerCase()));
+  if(cand.length < 3){
+    const more = VOCAB.filter(usable).map(x=>first(x[field])).filter(c=>!okAlts.includes(c.toLowerCase()) && !cand.includes(c));
+    cand = [...new Set(cand.concat(more))];
+  }
+  return {opts: shuffle([correct, ...shuffle(cand).slice(0,3)]), correct};
+}
+
+/* ---------- Satzbausteine mit gezielten Ablenkern ---------- */
+const CONF_FR = {"à":["en","dans"],"en":["à","dans"],"dans":["à","en"],"le":["la","les"],"la":["le","les"],"les":["le","la"],
+  "suis":["es","est"],"es":["suis","est"],"est":["et","es"],"et":["est"],"sommes":["sont","êtes"],"êtes":["est","sommes"],
+  "sont":["sommes","est"],"ou":["où"],"où":["ou"],"moi":["toi"],"toi":["moi"],"il":["elle"],"elle":["il"],"ils":["elles"],
+  "elles":["ils"],"l'ami":["l'amie"],"l'amie":["l'ami"],"aime":["aimes"],"aimes":["aime"],"habite":["habites"],"habites":["habite"],
+  "c'est":["sont"],"de":["à"],"j'ai":["je"],"je":["tu"],"tu":["je"]};
+const CONF_DE = {"ich":["du"],"du":["ich"],"er":["sie"],"sie":["er"],"in":["aus"],"aus":["in"],"der":["die","das"],"die":["der","das"],
+  "das":["der","die"],"und":["oder"],"oder":["und"],"bin":["bist","ist"],"ist":["bist","sind"],"sind":["seid","ist"],"mag":["magst"],
+  "magst":["mag"],"wohne":["wohnst"],"wohnst":["wohne"],"wo":["wie"],"wie":["wo"]};
+function tokens(s){
+  return String(s).replace(/[–—]/g," ").split(/\s+/)
+    .map(t=>t.replace(/^[«"„“(]+/,"").replace(/[.,!?;:…»"“”)]+$/,""))
+    .filter(t=>t && t!=="-");
+}
+function tileSet(answer, lang){
+  const toks = tokens(answer);
+  const have = new Set(toks.map(t=>t.toLowerCase()));
+  const conf = lang==="fr" ? CONF_FR : CONF_DE;
+  let d = [];
+  shuffle(toks).forEach(t=>{ (conf[t.toLowerCase()]||[]).forEach(c=>{ if(!have.has(c) && !d.includes(c)) d.push(c); }); });
+  d = shuffle(d).slice(0,2);
+  if(d.length < 2){
+    const src = SENTS.map(s=> lang==="fr" ? s.frAlts[0] : s.deAlts[0]).flatMap(tokens);
+    const extra = shuffle([...new Set(src)]).filter(t=>!have.has(t.toLowerCase()) && !d.includes(t));
+    d = d.concat(extra.slice(0, 2-d.length));
+  }
+  return shuffle(toks.concat(d)).map(t=>({t, used:false}));
+}
+
+/* ---------- Antwort prüfen ---------- */
+function checkAnswer(given, accepted, lang){
+  const N = lang==="fr" ? normFr : normDe;
+  const g = N(given);
+  if(accepted.some(a=>N(a)===g)) return {ok:true, best:accepted.find(a=>N(a)===g)};
+  if(lang==="fr"){
+    const acc = accepted.find(a=>stripAcc(N(a))===stripAcc(g));
+    if(acc) return {ok:false, why:"accent", best:acc};
+  }
+  const gt = g.split(" ");
+  let best = accepted[0], score = -1;
+  accepted.forEach(a=>{ const sc = N(a).split(" ").filter(t=>gt.includes(t)).length; if(sc>score){ score=sc; best=a; } });
+  return {ok:false, why:null, best};
+}
+/* markiert in der richtigen Lösung alle Wörter, die in der eigenen Antwort fehlen oder anders sind */
+function highlight(correct, given, lang){
+  const N = lang==="fr" ? normFr : normDe;
+  const gt = N(given).split(" ");
+  return String(correct).split(/(\s+)/).map(part=>{
+    if(/^\s+$/.test(part)) return part;
+    const n = N(part);
+    if(!n || gt.includes(n)) return esc(part);
+    return `<mark>${esc(part)}</mark>`;
+  }).join("");
+}
+/* markiert in der eigenen Antwort alle Wörter, die in der Lösung nicht vorkommen (z. B. ein überflüssiges „à la“) */
+function markExtra(given, correct, lang){
+  const N = lang==="fr" ? normFr : normDe;
+  const ct = N(correct).split(" ");
+  return String(given).split(/(\s+)/).map(part=>{
+    if(/^\s+$/.test(part)) return part;
+    const n = N(part);
+    if(!n || ct.includes(n)) return esc(part);
+    return `<mark class="extra">${esc(part)}</mark>`;
+  }).join("");
+}
+function genderInfo(word){
+  const w = word.toLowerCase();
+  if(w.startsWith("le ")) return "männlich (le)";
+  if(w.startsWith("la ")) return "weiblich (la)";
+  if(w.startsWith("les ")) return "Mehrzahl (les)";
+  if(w.startsWith("l'")) return "vor einem Vokal werden le und la zu l' – das Geschlecht musst du dir extra merken";
+  return "";
+}
+
+/* ---------- Oberfläche ---------- */
+function header(){
+  const weak = Object.keys(S.weak).length;
+  return `<header>
+    <div class="brand"><div class="flag"><i></i><i></i><i></i></div>
+      <div><h1>Paris-Abenteuer</h1><span class="sub">L'aventure parisienne · Französisch</span></div></div>
+    <div class="hud">
+      <span class="badge">⭐ ${S.xp} XP</span>
+      <span class="badge">🗼 ${S.defeated.length}/${NODES.length} Stempel</span>
+      <span class="badge">📜 ${S.facts.length}/${FACTS.length} Fakten</span>
+      ${weak ? `<span class="badge warnb" title="Aufgaben, die noch zweimal in Folge richtig sein müssen">🔁 ${weak} üben</span>` : ""}
+    </div></header>`;
+}
+function nav(){
+  return `<div class="btnRow">
+    <button class="btn ghost" onclick="showMap()">🗺️ Karte</button>
+    <button class="btn ghost" onclick="showCarnet()">📔 Reisetagebuch</button>
+    <button class="btn ghost" onclick="showEval()">📊 Auswertung</button>
+    <button class="btn ghost" onclick="showSettings()">⚙️ Einstellungen</button>
+    <a class="btn ghost" href="index.html">📚 Englisch</a></div>`;
+}
+
+function showStart(){
+  app.innerHTML = header() + `<div class="card center">
+    <div class="bigStamp">🗼</div>
+    <h2 style="font-family:Cinzel,serif;color:var(--gold2);margin:4px 0">Bienvenue à Paris !</h2>
+    <p class="hint-sm" style="max-width:560px;margin:8px auto">Du reist quer durch Paris – vom Gare du Nord bis zum Eiffelturm. An jeder Station wartet ein frecher Gegner,
+    den du mit richtigem Französisch besiegst. Die meisten Aufgaben sind <b>ganze Sätze</b> – genau wie in der Klassenarbeit:
+    erst baust du sie aus Bausteinen, danach tippst du sie selbst.</p>
+    <p class="hint-sm" style="max-width:560px;margin:8px auto">Für jeden Sieg bekommst du einen <b>Stempel</b> und neue <b>Fakten über Frankreich</b> für dein Reisetagebuch.
+    Achtung: Akzente zählen! <b>é</b> ist nicht <b>e</b>.</p>
+    <div class="btnRow center"><button class="btn" onclick="S.started=true;saveState();showMap()">C'est parti ! 🚀</button></div>
+  </div>`;
+}
+
+function mapSVG(){
+  const pts = NODES.map(n=>`${n.x},${n.y}`).join(" ");
+  const reach = Math.min(S.node, NODES.length-1);
+  const donePts = NODES.slice(0, reach+1).map(n=>`${n.x},${n.y}`).join(" ");
+  const seine = "M100,98 C90,94 80,86 72,78 C67,73 64,71 58,68 C52,66 44,66 36,64 C30,63 26,68 24,74 C22,82 14,90 0,98";
+  return `<svg class="mapSvg" viewBox="0 0 100 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="grid" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M6 0H0V6" fill="none" stroke="#cdb88e" stroke-width=".15"/></pattern>
+      <radialGradient id="vig" cx="50%" cy="50%" r="72%"><stop offset="62%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#3b2a12" stop-opacity=".38"/></radialGradient>
+    </defs>
+    <rect width="100" height="130" fill="#efe2c4"/>
+    <rect width="100" height="130" fill="url(#grid)"/>
+    <path d="M50,8 C78,8 96,30 96,62 C96,96 78,122 50,122 C22,122 4,98 4,64 C4,32 22,8 50,8 Z" fill="#f7eed6" stroke="#a88b5c" stroke-width=".55" stroke-dasharray="1.6 1"/>
+    <ellipse cx="8" cy="66" rx="5" ry="13" fill="#b3cb94" opacity=".85"/>
+    <ellipse cx="92" cy="86" rx="6" ry="10" fill="#b3cb94" opacity=".85"/>
+    <text x="1.5" y="98" font-size="2.3" fill="#56703a" font-style="italic">Bois de Boulogne</text>
+    <text x="80" y="99" font-size="2.3" fill="#56703a" font-style="italic">Bois de Vincennes</text>
+    <path d="${seine}" fill="none" stroke="#7fa9cf" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="${seine}" fill="none" stroke="#a9c9e6" stroke-width="1.1" stroke-linecap="round"/>
+    <ellipse cx="62" cy="69.8" rx="3.2" ry="1.1" fill="#efe2c4" stroke="#7fa9cf" stroke-width=".3" transform="rotate(-22 62 69.8)"/>
+    <text x="76" y="90" font-size="3" fill="#4f7ea8" font-style="italic" transform="rotate(-38 76 90)">La Seine</text>
+    <polyline points="${pts}" fill="none" stroke="#a33" stroke-width=".55" stroke-dasharray="1.3 1.2" opacity=".5"/>
+    <polyline points="${donePts}" fill="none" stroke="#c4453a" stroke-width=".9" stroke-linejoin="round" opacity=".9"/>
+    <g transform="translate(89 117)" fill="#5a4320" font-size="2.6" text-anchor="middle">
+      <circle r="5" fill="none" stroke="#7a5a35" stroke-width=".35"/>
+      <path d="M0,-4.6 L1.1,0 L0,4.6 L-1.1,0 Z" fill="#c4453a"/><path d="M-4.6,0 L0,1.1 L4.6,0 L0,-1.1 Z" fill="#7a5a35"/>
+      <text y="-6">N</text></g>
+    <rect x="3" y="2.5" width="30" height="7.5" rx="1.2" fill="#f7eed6" stroke="#a88b5c" stroke-width=".35"/>
+    <rect x="3" y="2.5" width="2" height="7.5" fill="#2b5ca8"/><rect x="31" y="2.5" width="2" height="7.5" fill="#d13b3b"/>
+    <text x="18" y="7.6" font-size="3.6" font-family="Cinzel, serif" fill="#5a4320" text-anchor="middle">Plan de Paris</text>
+    <rect width="100" height="130" fill="url(#vig)"/>
+  </svg>`;
+}
+
+function showMap(){
+  battle = null;
+  if(!S.started){ showStart(); return; }
+  const pins = NODES.map((n,i)=>{
+    const done = S.defeated.includes(i), locked = i > S.node, cur = !done && i===S.node;
+    return `<div class="pin ${done?"done":""} ${locked?"locked":""} ${cur?"cur":""} ${n.boss?"boss":""}"
+      style="left:${n.x}%;top:${(n.y/130*100).toFixed(2)}%" ${locked?"":`onclick="enterNode(${i})"`}>
+      <div class="pinB">${locked?"🔒":n.icon}${done?'<span class="chk">✓</span>':""}</div>
+      ${locked?"":`<div class="pinL">${esc(n.short||n.name)}</div>`}</div>`;
+  }).join("");
+  const nx = Math.min(S.node, NODES.length-1), n = NODES[nx];
+  const allDone = S.defeated.length===NODES.length;
+  app.innerHTML = header() + nav() + `
+    <div class="sectionTitle">🗺️ Deine Reise durch Paris</div>
+    <div class="hint-sm">Bereich: <b>${SCOPES[S.scope].label}</b> · Modus: <b>${S.mode==="exam"?"Klassenarbeit (nur Sätze)":"Normal (Sätze + Vokabeln)"}</b> – ändern unter Einstellungen.
+    Tippe auf eine freigeschaltete Station.</div>
+    <div class="mapWrap">${mapSVG()}${pins}</div>
+    <div class="card center">
+      ${allDone ? `<b>🏆 Du hast ganz Paris erobert!</b><br><span class="hint-sm">Du kannst jede Station weiter zum Üben besuchen.</span>`
+        : `Nächstes Ziel: <b>${n.icon} ${esc(n.name)}</b> – dort wartet <b>${n.foeIcon} ${esc(n.foe)}</b> <span class="muted">(${esc(n.foeDe)})</span>`}
+      <div class="btnRow center"><button class="btn" onclick="enterNode(${allDone?NODES.length-1:nx})">⚔️ ${allDone?"Am Eiffelturm üben":"Los geht's"}</button></div>
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+/* ---------- Kampf ---------- */
+let battle = null;
+const ATTACKS = {vFD:"🥖 Baguette-Stups", vDF_mc:"🥖 Baguette-Stups", vDF_type:"🧀 Käse-Wurf", sTiles:"🧱 Pflasterstein-Konter", sType:"✒️ Federkiel-Treffer"};
+const ACCENTS = ["é","è","ê","à","â","ç","ô","î","ù","û","ë","ï","'"];
+
+function enterNode(i){
+  if(i > S.node) return;
+  const n = NODES[i];
+  battle = {node:i, foeHP:n.hp, foeMax:n.hp, streak:0};
+  newQuestion();
+}
+function newQuestion(){
+  const it = nextItem();
+  Object.assign(battle, {item:it, answered:false, picked:[], tiles:null, opts:null, correct:null, dir:null});
+  if(it.kind==="v"){
+    const r = Math.random();
+    battle.q = r < 0.33 ? "vFD" : (r < 0.62 ? "vDF_mc" : "vDF_type");
+    if(battle.q==="vFD"){ const m = mcOptions(it,"de"); battle.opts=m.opts; battle.correct=m.correct; }
+    if(battle.q==="vDF_mc"){ const m = mcOptions(it,"fr"); battle.opts=m.opts; battle.correct=m.correct; }
+  } else {
+    battle.dir = Math.random() < 0.5 ? "fd" : "df";
+    const key = it.id+":"+battle.dir;
+    battle.q = (S.stage[key]||0) ? "sType" : "sTiles";   /* erst Bausteine, später tippen */
+    if(battle.q==="sTiles"){
+      const ans = battle.dir==="fd" ? it.deAlts[0] : it.frAlts[0];
+      battle.tiles = tileSet(ans, battle.dir==="fd" ? "de" : "fr");
+    }
+  }
+  renderBattle();
+}
+function isNoun(v){ return /^(le|la|les) |^l'/i.test(first(v.fr)); }
+
+function renderBattle(){
+  const n = NODES[battle.node], it = battle.item;
+  let q = "";
+  const accBar = `<div class="accBar">${ACCENTS.map((c,i)=>`<button class="acc" type="button" onclick="insertChar(${i})">${esc(c)}</button>`).join("")}</div>`;
+  const enter = `onkeydown="if(event.key==='Enter'){event.preventDefault();checkType();}"`;
+  if(battle.q==="vFD"){
+    q = `<div class="qLabel">Was bedeutet das Wort?</div><div class="qText fr">${esc(first(it.fr))}</div>
+      <div class="opts">${battle.opts.map((o,i)=>`<button class="opt" onclick="answerMC(${i})">${esc(o)}</button>`).join("")}</div>`;
+  } else if(battle.q==="vDF_mc"){
+    q = `<div class="qLabel">Wie heißt das auf Französisch?</div><div class="qText">${esc(it.de.replace(/;/g,","))}</div>
+      <div class="opts">${battle.opts.map((o,i)=>`<button class="opt" onclick="answerMC(${i})">${esc(o)}</button>`).join("")}</div>`;
+  } else if(battle.q==="vDF_type"){
+    q = `<div class="qLabel">Schreib auf Französisch${isNoun(it)?" – mit Artikel!":""}</div><div class="qText">${esc(it.de.replace(/;/g,","))}</div>
+      <input class="fillIn" id="typeIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Französisch …" ${enter}>
+      ${accBar}<div class="btnRow center"><button class="btn" onclick="checkType()">Prüfen ✔</button></div>`;
+  } else if(battle.q==="sTiles"){
+    const fd = battle.dir==="fd";
+    q = `<div class="qLabel">Übersetze ins ${fd?"Deutsche":"Französische"} – lege die Bausteine</div>
+      <div class="qText ${fd?"fr":""}">${esc(fd?it.frAlts[0]:it.deAlts[0])}</div>
+      ${(!fd && it.deHint) ? `<div class="hint-sm center" style="margin:-6px 0 10px">(${esc(it.deHint)})</div>` : ""}
+      <div class="line" id="line"></div><div class="bank" id="bank"></div>
+      <div class="btnRow center"><button class="btn ghost" onclick="resetTiles()">↺ Zurücksetzen</button><button class="btn" onclick="checkTiles()">Prüfen ✔</button></div>
+      <div class="hint-sm center">Achtung: Es sind auch ein, zwei Bausteine dabei, die nicht in den Satz gehören.</div>`;
+  } else {
+    const fd = battle.dir==="fd";
+    q = `<div class="qLabel">Übersetze ins ${fd?"Deutsche":"Französische"} – schreib den ganzen Satz</div>
+      <div class="qText ${fd?"fr":""}">${esc(fd?it.frAlts[0]:it.deAlts[0])}</div>
+      ${(!fd && it.deHint) ? `<div class="hint-sm center" style="margin:-6px 0 10px">(${esc(it.deHint)})</div>` : ""}
+      <input class="fillIn" id="typeIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ganzer Satz …" ${enter}>
+      ${fd?"":accBar}
+      <div class="btnRow center"><button class="btn" onclick="checkType()">Prüfen ✔</button></div>
+      ${fd?"":`<div class="hint-sm center">Akzente und Apostrophe zählen (j'habite, à, é …). Groß-/Kleinschreibung und Satzzeichen nicht.</div>`}`;
+  }
+  const dots = Array.from({length:15},(_,i)=>`<span class="dot ${i>=10?"t3":i>=5?"t2":""} ${i<battle.streak?"on":""}"></span>`).join("");
+  app.innerHTML = header() + `
+    <div class="card">
+      <div class="foe"><div class="foeIcon">${n.foeIcon}</div>
+        <div style="flex:1"><div class="foeName">${esc(n.foe)}</div><div class="hint-sm">${n.icon} ${esc(n.name)} · ${esc(n.foeDe)}</div>
+          <div class="hpbar"><div id="hpFill" style="width:${battle.foeHP/battle.foeMax*100}%"></div></div>
+          <div class="hint-sm" id="hpTxt">${battle.foeHP} / ${battle.foeMax} KP</div></div></div>
+      <div class="dots">${dots}</div>
+      <div class="hint-sm center">Serie: <b>${battle.streak}</b> · bei 5/10/15 richtigen Antworten in Folge gibt es einen Extra-Angriff</div>
+    </div>
+    <div class="card">${q}</div>
+    <div id="feedback"></div>
+    <div class="btnRow center"><button class="btn ghost" onclick="flee()">✕ Rückzug</button></div>`;
+  if(battle.q==="sTiles") renderTiles();
+  const inp = document.getElementById("typeIn"); if(inp) setTimeout(()=>{ try{ inp.focus(); }catch(e){} }, 0);
+  window.scrollTo(0,0);
+}
+function insertChar(i){
+  const inp = document.getElementById("typeIn"); if(!inp || inp.disabled) return;
+  const c = ACCENTS[i];
+  const s = inp.selectionStart ?? inp.value.length, e = inp.selectionEnd ?? inp.value.length;
+  inp.value = inp.value.slice(0,s) + c + inp.value.slice(e);
+  inp.focus(); const p = s + c.length; try{ inp.setSelectionRange(p,p); }catch(err){}
+}
+function renderTiles(){
+  const line = document.getElementById("line"), bank = document.getElementById("bank");
+  if(!line || !bank) return;
+  line.innerHTML = battle.picked.length
+    ? battle.picked.map((ti,j)=>`<button class="tile on" onclick="unpick(${j})">${esc(battle.tiles[ti].t)}</button>`).join("")
+    : `<span class="lineHint">Tippe die Bausteine in der richtigen Reihenfolge an …</span>`;
+  bank.innerHTML = battle.tiles.map((t,i)=> t.used ? `<span class="tile ghost">${esc(t.t)}</span>`
+    : `<button class="tile" onclick="pick(${i})">${esc(t.t)}</button>`).join("");
+}
+function pick(i){ if(!battle || battle.answered) return; const t = battle.tiles[i]; if(!t || t.used) return; t.used = true; battle.picked.push(i); renderTiles(); }
+function unpick(j){ if(!battle || battle.answered) return; const i = battle.picked[j]; if(i==null) return; battle.tiles[i].used = false; battle.picked.splice(j,1); renderTiles(); }
+function resetTiles(){ if(!battle || battle.answered) return; battle.tiles.forEach(t=>t.used=false); battle.picked = []; renderTiles(); }
+
+function answerMC(i){
+  if(!battle || battle.answered) return;
+  battle.answered = true;
+  const chosen = battle.opts[i], ok = chosen===battle.correct;
+  document.querySelectorAll(".opt").forEach((b,j)=>{
+    b.disabled = true;
+    if(battle.opts[j]===battle.correct) b.classList.add("correct"); else if(j===i) b.classList.add("wrong");
+  });
+  resolve(ok, ok?null:chosen, {ok, best:battle.correct});
+}
+function checkTiles(){
+  if(!battle || battle.answered || !battle.picked.length) return;
+  const given = battle.picked.map(i=>battle.tiles[i].t).join(" ");
+  const fd = battle.dir==="fd";
+  const r = checkAnswer(given, fd ? battle.item.deAlts : battle.item.frAlts, fd ? "de" : "fr");
+  battle.answered = true;
+  resolve(r.ok, r.ok?null:given, r);
+}
+function checkType(){
+  if(!battle || battle.answered) return;
+  const inp = document.getElementById("typeIn"); if(!inp) return;
+  const given = inp.value; if(!given.trim()) return;
+  const it = battle.item; let r;
+  if(battle.q==="vDF_type"){
+    const acc = alts(it.fr);
+    r = checkAnswer(given, acc, "fr");
+    if(!r.ok && r.why!=="accent"){
+      /* richtiges Wort, aber falscher oder fehlender Artikel? */
+      const g = normFr(given).replace(/^(le |la |les |l'|un |une )/,"");
+      for(const a of acc){
+        const m = a.match(/^(le |la |les |l')(.+)$/i);
+        if(m && (normFr(m[2])===g || stripAcc(normFr(m[2]))===stripAcc(g))){ r = {ok:false, why:"article", best:a}; break; }
+      }
+    }
+  } else {
+    const fd = battle.dir==="fd";
+    r = checkAnswer(given, fd ? it.deAlts : it.frAlts, fd ? "de" : "fr");
+  }
+  battle.answered = true;
+  inp.disabled = true; inp.classList.add(r.ok ? "correct" : "wrong");
+  resolve(r.ok, r.ok?null:given, r);
+}
+
+function resolve(ok, given, r){
+  const it = battle.item;
+  const tkey = it.kind==="v" ? (battle.q==="vFD" ? "vFD" : "vDF") : (battle.dir==="fd" ? "sFD" : "sDF");
+  bump(S.stats, it.tag, ok); bump(S.tstats, tkey, ok);
+  S.answered++;
+  const notes = [];
+  /* Wiederholungs-Logik: falsche Aufgaben merken, bis sie 2× in Folge richtig waren */
+  if(ok){
+    if(S.weak[it.id]!=null){
+      S.weak[it.id]++;
+      if(S.weak[it.id] >= 2){ delete S.weak[it.id]; notes.push("✅ Gemeistert! Diese Aufgabe kommt jetzt wieder normal dran."); }
+      else notes.push("🔁 Noch einmal richtig, dann sitzt es!");
+    }
+  } else {
+    S.weak[it.id] = 0;
+    notes.push("🔁 Diese Aufgabe kommt bald wieder – bis du sie zweimal in Folge richtig hast.");
+  }
+  /* Gerüst: erst Bausteine, dann selbst tippen; nach 2 Tipp-Fehlern in Folge wieder Bausteine */
+  if(it.kind==="s"){
+    const key = it.id+":"+battle.dir;
+    if(battle.q==="sTiles" && ok){ S.stage[key]=1; S.tfail[key]=0; notes.push("⬆️ Gut gebaut! Nächstes Mal tippst du diesen Satz selbst."); }
+    if(battle.q==="sType"){
+      if(ok) S.tfail[key]=0;
+      else { S.tfail[key]=(S.tfail[key]||0)+1; if(S.tfail[key]>=2){ S.stage[key]=0; S.tfail[key]=0; notes.push("🧱 Nächstes Mal hilft dir bei diesem Satz wieder der Baukasten."); } }
+    }
+  }
+  let attack = null;
+  if(ok){
+    battle.streak++; if(battle.streak > S.maxStreak) S.maxStreak = battle.streak;
+    let dmg = battle.q==="sType" ? 14 : battle.q==="sTiles" ? 10 : battle.q==="vDF_type" ? 9 : 7;
+    let label = ATTACKS[battle.q];
+    if(battle.streak % 15===0){ dmg += ri(60,80); label = "🗼 Eiffel-Blitz (15er-Serie!)"; }
+    else if(battle.streak % 10===0){ dmg += ri(30,45); label = "🎺 Trompeten-Fanfare (10er-Serie!)"; }
+    else if(battle.streak % 5===0){ dmg += ri(15,25); label = "🥐 Croissant-Wirbel (5er-Serie!)"; }
+    battle.foeHP = Math.max(0, battle.foeHP - dmg);
+    S.xp += it.kind==="s" ? 10 : 5;
+    attack = `${label}: −${dmg} KP`;
+  } else {
+    battle.streak = 0;
+  }
+  saveState();
+  showFeedback(ok, given, r||{}, notes, attack);
+}
+
+function showFeedback(ok, given, r, notes, attack){
+  const it = battle.item, box = document.getElementById("feedback");
+  if(!box){ continueBattle(); return; }
+  const typed = ["vDF_type","sType","sTiles"].includes(battle.q);
+  let body = "";
+  if(it.kind==="v"){
+    const shown = battle.q==="vFD" ? battle.correct : (r.best || first(it.fr));
+    const lang = battle.q==="vFD" ? "de" : "fr";
+    const disp = (!ok && typed && given) ? highlight(shown, given, lang) : esc(shown);
+    body += `<div class="fbLine">${ok?"":"Richtig ist: "}<span class="fbWord">${disp}</span></div>`;
+    body += `<div class="fbLine sub"><span class="frTxt">${esc(alts(it.fr).join(" / "))}</span> = ${esc(it.de.replace(/;/g,","))}</div>`;
+    if(it.exFr) body += `<div class="fbLine ex"><span class="fr">${esc(it.exFr)}</span><br>${esc(it.exDe||"")}</div>`;
+  } else {
+    const fd = battle.dir==="fd", acc = fd ? it.deAlts : it.frAlts;
+    const shown = ok ? (r.best || acc[0]) : (r.best || acc[0]);
+    const disp = (!ok && given) ? highlight(shown, given, fd?"de":"fr") : esc(shown);
+    body += `<div class="fbLine">${ok?"":"Richtig ist: "}<span class="fbWord">${disp}</span></div>`;
+    const others = acc.filter(a=>a!==shown).slice(0,2);
+    if(others.length) body += `<div class="fbLine small">Auch richtig: ${others.map(esc).join(" · ")}</div>`;
+    body += `<div class="fbLine ex"><span class="fr">${esc(it.frAlts[0])}</span><br>${esc(it.deAlts[0])}</div>`;
+    if(it.note) body += `<div class="fbLine note">💡 ${esc(it.note)}</div>`;
+  }
+  let warn = "";
+  if(!ok && r.why==="accent") warn = `<div class="fbLine warn">✏️ Fast! Nur die <b>Akzente</b> stimmen nicht – im Französischen zählen sie. Schau dir die markierten Wörter an.</div>`;
+  if(!ok && r.why==="article") warn = `<div class="fbLine warn">✏️ Das Wort stimmt, aber der <b>Artikel</b> fehlt oder ist falsch. Lerne Nomen immer mit Artikel: ${esc(r.best)} – ${esc(genderInfo(r.best))}.</div>`;
+  let yourDisp = esc(given||"");
+  if(!ok && given && typed){
+    const lang = it.kind==="v" ? "fr" : (battle.dir==="fd" ? "de" : "fr");
+    const ref = it.kind==="v" ? (r.best || first(it.fr)) : (r.best || (battle.dir==="fd" ? it.deAlts[0] : it.frAlts[0]));
+    yourDisp = markExtra(given, ref, lang);
+  }
+  const wrongLine = (!ok && given) ? `<div class="fbLine">Deine Antwort: <span class="yours">${yourDisp}</span></div>` : "";
+  const done = battle.foeHP <= 0;
+  box.innerHTML = `<div class="fb ${ok?"ok":"no"}">
+    <div class="fbTitle">${ok?"✓ Richtig ! Très bien !":"✗ Leider falsch"}</div>
+    ${wrongLine}${warn}${body}
+    ${attack ? `<div class="fbLine atk">${attack}</div>` : ""}
+    ${!ok ? `<div class="fbLine small">Die Serie beginnt wieder bei 0.</div>` : ""}
+    ${notes.map(t=>`<div class="fbLine small">${t}</div>`).join("")}
+    <div class="btnRow center"><button class="btn" id="nextBtn" onclick="continueBattle()">${done?"Sieg ansehen →":"Weiter →"}</button></div>
+  </div>`;
+  const hf = document.getElementById("hpFill"), ht = document.getElementById("hpTxt");
+  if(hf) hf.style.width = (battle.foeHP/battle.foeMax*100)+"%";
+  if(ht) ht.textContent = `${battle.foeHP} / ${battle.foeMax} KP`;
+  /* Fokus erst im nächsten Tick: sonst löst der Enter-Tastendruck, der die Antwort
+     abgeschickt hat, sofort auch den Weiter-Button aus (bekannter Stolperstein). */
+  setTimeout(()=>{ const b = document.getElementById("nextBtn"); if(b){ try{ b.focus(); b.scrollIntoView({block:"nearest", behavior:"smooth"}); }catch(e){} } }, 0);
+}
+function continueBattle(){
+  if(!battle) return;
+  if(battle.foeHP <= 0){ win(); return; }
+  newQuestion();
+}
+function flee(){ battle = null; showMap(); }
+
+function unlockFacts(n){
+  const pool = FACTS.map((_,i)=>i).filter(i=>!S.facts.includes(i));
+  const got = shuffle(pool).slice(0,n);
+  got.forEach(i=>S.facts.push(i));
+  return got;
+}
+function win(){
+  const i = battle.node, n = NODES[i];
+  const firstWin = !S.defeated.includes(i);
+  if(firstWin) S.defeated.push(i);
+  if(i===S.node && S.node < NODES.length-1) S.node++;
+  S.xp += 30;
+  const got = unlockFacts(firstWin ? 2 : 1);
+  saveState();
+  battle = null;
+  const allDone = S.defeated.length===NODES.length;
+  app.innerHTML = header() + `<div class="card center">
+    <div class="bigStamp">${n.icon}</div>
+    <h2 style="font-family:Cinzel,serif;color:var(--gold2);margin:4px 0">${n.boss ? "🗼 Paris ist erobert !" : "Station geschafft !"}</h2>
+    <p>${n.foeIcon} <b>${esc(n.foe)}</b> <span class="muted">(${esc(n.foeDe)})</span> ist besiegt. <b>+30 XP</b>${firstWin?" und ein neuer Stempel für dein Reisetagebuch":""}.</p>
+    ${got.map(fi=>`<div class="fact new"><div class="factT">📜 Neuer Frankreich-Fakt</div>${esc(FACTS[fi])}</div>`).join("")}
+    ${!got.length ? `<p class="hint-sm">Du kennst schon alle Fakten – Chapeau !</p>` : ""}
+    ${allDone && n.boss ? `<p><b>Félicitations !</b> Du hast alle Stationen geschafft. Übe weiter, damit die Sätze richtig sitzen.</p>` : ""}
+    <div class="btnRow center"><button class="btn" onclick="showMap()">🗺️ Zur Karte</button>
+      <button class="btn ghost" onclick="enterNode(${i})">⚔️ Nochmal hier üben</button>
+      <button class="btn ghost" onclick="showCarnet()">📔 Reisetagebuch</button></div>
+  </div>`;
+  window.scrollTo(0,0);
+}
+
+/* ---------- Reisetagebuch ---------- */
+function showCarnet(){
+  battle = null;
+  const stamps = NODES.map((n,i)=> S.defeated.includes(i)
+    ? `<div class="stamp"><div class="e">${n.icon}</div><div class="n">${esc(n.name)}</div></div>`
+    : `<div class="stamp locked"><div class="e">?</div><div class="n muted">noch nicht besucht</div></div>`).join("");
+  const facts = FACTS.map((f,i)=> S.facts.includes(i)
+    ? `<div class="fact"><div class="factT">📜 Fakt ${i+1}</div>${esc(f)}</div>`
+    : `<div class="fact locked">? · noch nicht entdeckt</div>`).join("");
+  app.innerHTML = header() + nav() + `
+    <div class="sectionTitle">📔 Mon carnet de voyage – Reisetagebuch</div>
+    <div class="hint-sm">Für jede besiegte Station gibt es einen Stempel und neue Fakten über Frankreich. Noch nicht entdeckte Fakten bleiben geheim.</div>
+    <div class="card"><div class="stamps">${stamps}</div></div>
+    <div class="sectionTitle" style="font-size:18px">Frankreich-Fakten · ${S.facts.length} / ${FACTS.length}</div>
+    ${facts}`;
+  window.scrollTo(0,0);
+}
+
+/* ---------- Auswertung ---------- */
+function bar(label, st){
+  if(!st || !st.a) return `<div class="evRow"><div>${label}</div><div class="evBar"></div><div class="evV muted">noch keine Daten</div></div>`;
+  const p = Math.round(st.c/st.a*100);
+  const cls = st.a < 3 ? "muted" : p>=85 ? "g" : p>=60 ? "y" : "r";
+  return `<div class="evRow"><div>${label}</div><div class="evBar"><div class="${cls}" style="width:${p}%"></div></div><div class="evV">${p} % <span class="muted">(${st.c}/${st.a})</span></div></div>`;
+}
+function showEval(){
+  battle = null;
+  const weakIds = Object.keys(S.weak).filter(id=>ITEM[id]);
+  const weakHTML = weakIds.length ? weakIds.slice(0,20).map(id=>{
+    const it = ITEM[id];
+    const fr = it.kind==="v" ? alts(it.fr).join(" / ") : it.frAlts[0];
+    const de = it.kind==="v" ? it.de.replace(/;/g,",") : it.deAlts[0];
+    return `<div class="weakItem"><span class="frTxt">${esc(fr)}</span><span class="muted" style="text-align:right">${esc(de)}</span></div>`;
+  }).join("") + (weakIds.length>20 ? `<div class="hint-sm">… und ${weakIds.length-20} weitere</div>` : "")
+    : `<div class="hint-sm">Gerade nichts offen – très bien !</div>`;
+  app.innerHTML = header() + nav() + `
+    <div class="sectionTitle">📊 Auswertung</div>
+    <div class="card">
+      <div class="hint-sm">Grün ab 85 % · Gelb 60–84 % · Rot unter 60 % · grau = weniger als 3 Antworten</div>
+      <div class="sectionTitle" style="font-size:16px">Nach Buchteil</div>
+      ${Object.keys(TAGS).map(t=>bar(TAGS[t], S.stats[t])).join("")}
+      <div class="sectionTitle" style="font-size:16px">Nach Aufgabenart</div>
+      ${bar("Sätze Französisch → Deutsch", S.tstats.sFD)}
+      ${bar("Sätze Deutsch → Französisch", S.tstats.sDF)}
+      ${bar("Vokabeln Französisch → Deutsch", S.tstats.vFD)}
+      ${bar("Vokabeln Deutsch → Französisch", S.tstats.vDF)}
+      <p class="hint-sm" style="margin-top:12px">Beantwortet insgesamt: <b>${S.answered}</b> · längste Serie: <b>${S.maxStreak}</b> · XP: <b>${S.xp}</b></p>
+    </div>
+    <div class="card">
+      <div class="sectionTitle" style="font-size:16px;margin-top:0">🔁 Wackelkandidaten (${weakIds.length})</div>
+      <div class="hint-sm" style="margin-bottom:6px">Diese Aufgaben waren zuletzt falsch und kommen häufiger dran, bis sie zweimal in Folge richtig sind.</div>
+      ${weakHTML}
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+/* ---------- Einstellungen & Spielstand ---------- */
+function msg(text, ok){
+  const b = document.getElementById("msg"); if(!b) return;
+  b.style.display = "block"; b.style.borderColor = ok ? "rgba(90,154,90,.7)" : "rgba(192,69,58,.7)"; b.innerHTML = text;
+}
+function setScope(s){ if(!SCOPES[s]) return; S.scope = s; resetBags(); saveState(); showSettings(); }
+function setMode(m){ S.mode = m; resetBags(); saveState(); showSettings(); }
+function showSettings(){
+  battle = null;
+  const nv = poolV().length, ns = poolS().length;
+  app.innerHTML = header() + nav() + `
+    <div class="sectionTitle">⚙️ Einstellungen</div>
+    <div class="card">
+      <b>Wortschatz-Bereich</b>
+      <div class="hint-sm" style="margin:4px 0 8px">Für gezieltes Üben vor einer Klassenarbeit kannst du den Bereich einschränken.</div>
+      <div class="seg">${Object.keys(SCOPES).map(k=>`<button class="${S.scope===k?"on":""}" onclick="setScope('${k}')">${esc(SCOPES[k].label)}</button>`).join("")}</div>
+      <div class="hint-sm" style="margin-top:8px">Im aktuellen Bereich: <b>${ns} Sätze</b> und <b>${nv} Vokabeln</b>.</div>
+    </div>
+    <div class="card">
+      <b>Modus</b>
+      <div class="seg" style="margin-top:8px">
+        <button class="${S.mode==="normal"?"on":""}" onclick="setMode('normal')">Normal (⅔ Sätze, ⅓ Vokabeln)</button>
+        <button class="${S.mode==="exam"?"on":""}" onclick="setMode('exam')">Klassenarbeit (nur Sätze)</button></div>
+      <div class="hint-sm" style="margin-top:8px">Im Klassenarbeits-Modus kommen nur ganze Sätze dran – in beiden Richtungen, wie bei der Lehrerin.</div>
+    </div>
+    <div class="card">
+      <b>Spielstand sichern & übertragen</b>
+      <div class="hint-sm" style="margin:4px 0 8px">Der Fortschritt wird automatisch auf diesem Gerät gespeichert (getrennt vom Englisch-Abenteuer).
+      <b>📤 Teilen / Sichern</b> ist auf dem iPad der zuverlässigste Weg, <b>📋 Text anzeigen</b> klappt immer.</div>
+      <div class="btnRow">
+        <button class="btn ghost" onclick="exportOrShare()">📤 Teilen / Sichern</button>
+        <button class="btn ghost" onclick="exportFile()">💾 Als Datei laden</button>
+        <button class="btn ghost" onclick="importFile()">📥 Datei laden</button>
+        <button class="btn ghost" onclick="showStateText()">📋 Text anzeigen</button></div>
+      <div id="msg"></div>
+    </div>
+    <div class="card">
+      <b>Neu anfangen</b>
+      <div class="hint-sm" style="margin:4px 0 8px">Löscht den kompletten Französisch-Spielstand auf diesem Gerät.</div>
+      <div class="btnRow" id="resetRow"><button class="btn ghost" onclick="askReset()">🗑️ Spielstand zurücksetzen</button></div>
+    </div>`;
+  window.scrollTo(0,0);
+}
+function askReset(){
+  const r = document.getElementById("resetRow"); if(!r) return;
+  r.innerHTML = `<span class="hint-sm" style="align-self:center">Wirklich alles löschen?</span>
+    <button class="btn" onclick="doReset()">Ja, löschen</button><button class="btn ghost" onclick="showSettings()">Abbrechen</button>`;
+}
+function doReset(){ S = defaultState(); resetBags(); saveState(); showStart(); }
+function fileName(){ return "Paris-Abenteuer_Spielstand_" + new Date().toISOString().slice(0,10) + ".json"; }
+async function exportOrShare(){
+  try{
+    const file = new File([JSON.stringify(S,null,1)], fileName(), {type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:fileName()});
+      msg('✅ Wähle im Teilen-Menü <b>„In Dateien sichern“</b>.', true); return;
+    }
+  }catch(e){ if(e && e.name==="AbortError"){ msg("Abgebrochen – es wurde nichts gespeichert.", false); return; } }
+  exportFile();
+}
+function exportFile(){
+  try{
+    const blob = new Blob([JSON.stringify(S,null,1)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = fileName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    msg('✅ Download gestartet: <b>'+fileName()+'</b> – zu finden unter <b>Dateien → Downloads</b>.', true);
+  }catch(e){ msg('⚠ Der Download hat nicht geklappt. Nutze bitte <b>„📋 Text anzeigen“</b>.', false); }
+}
+function applyImport(data){
+  if(typeof data!=="object" || data===null) throw 0;
+  S = Object.assign(defaultState(), data); normalizeState(); resetBags(); saveState();
+}
+function importFile(){
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
+  inp.onchange = ()=>{
+    const f = inp.files && inp.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = ()=>{
+      try{ applyImport(JSON.parse(rd.result)); showSettings(); msg('✅ Spielstand geladen: <b>'+S.xp+' XP</b>, '+S.defeated.length+' Stempel, '+S.facts.length+' Fakten.', true); }
+      catch(e){ msg('⚠ Diese Datei ist kein gültiger Spielstand.', false); }
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+function showStateText(){
+  msg('📋 Kopiere diesen Text und sichere ihn z. B. in einer Notiz. Zum Wiederherstellen hier einfügen und „Übernehmen“ tippen.'
+    + '<textarea id="stateBox" class="stateBox"></textarea>'
+    + '<div class="btnRow"><button class="btn ghost" onclick="copyStateText()">📋 Kopieren</button><button class="btn ghost" onclick="pasteStateText()">✔ Übernehmen</button></div>', true);
+  const b = document.getElementById("stateBox"); if(b) b.value = JSON.stringify(S);
+}
+function copyStateText(){
+  const b = document.getElementById("stateBox"); if(!b) return;
+  b.select(); try{ b.setSelectionRange(0, 999999); }catch(e){}
+  try{ navigator.clipboard.writeText(b.value); }catch(e){ try{ document.execCommand("copy"); }catch(e2){} }
+}
+function pasteStateText(){
+  const b = document.getElementById("stateBox"); if(!b) return;
+  try{ applyImport(JSON.parse(b.value)); showSettings(); msg('✅ Spielstand übernommen: <b>'+S.xp+' XP</b>, '+S.defeated.length+' Stempel.', true); }
+  catch(e){ msg('⚠ Der eingefügte Text ist kein gültiger Spielstand.', false); }
+}
+
+/* ---------- Start ---------- */
+loadState();
+showMap();
+</script>
+</body>
+</html>
