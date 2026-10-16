@@ -416,13 +416,13 @@ const SPECIALS = [
  {card:18, name:"Drachenschatz", desc:"Sammle insgesamt 1000 XP", cond:["xp", 1000]},
  {card:19, name:"Serienheld II", desc:"Schaffe 20 richtige Antworten am Stück", cond:["streak", 20]},
  {card:20, name:"Meisterprüfung II", desc:"Schließe 3 verschiedene Quests mit 100 % ab", cond:["perfect", 3]},
- {card:21, name:"Wortschatz-Jäger", desc:"Bestehe alle 4 Vokabel-Quests (mind. 60 %)", cond:["vocab", 0]},
+ {card:21, name:"Wortschatz-Jäger", desc:"Bestehe alle Vokabel-Quests (mind. 60 %)", cond:["vocab", 0]},
  {card:22, name:"Meisterprüfung III", desc:"Schließe 6 verschiedene Quests mit 100 % ab", cond:["perfect", 6]},
  {card:23, name:"Serienheld III", desc:"Schaffe 30 richtige Antworten am Stück", cond:["streak", 30]},
  {card:24, name:"Feuer der Tiefe", desc:"Sammle insgesamt 2000 XP", cond:["xp", 2000]},
- {card:25, name:"Grammatik-Gelehrter", desc:"Bestehe alle 12 Grammatik-Quests (mind. 60 %)", cond:["grammar", 0]},
+ {card:25, name:"Grammatik-Gelehrter", desc:"Bestehe alle Grammatik-Quests (mind. 60 %)", cond:["grammar", 0]},
  {card:26, name:"Das Auge sieht alles", desc:"Schließe 10 verschiedene Quests mit 100 % ab", cond:["perfect", 10]},
- {card:27, name:"Hüter von Mittelerde", desc:"Erreiche in allen 16 Quests 90 % oder mehr", cond:["all90", 0]},
+ {card:27, name:"Hüter von Mittelerde", desc:"Erreiche in allen Quests 90 % oder mehr", cond:["all90", 0]},
 ];
 
 
@@ -1521,6 +1521,14 @@ const QUESTS = [
 }
 ];
 
+/* Beschreibungen der Sonderkarten mit den echten Quest-Zahlen füllen – so bleiben sie auch bei neuen Quests richtig */
+SPECIALS.forEach(sp=>{
+  const nq = QUESTS.filter(q=>q.id[0]==="q").length, nv = QUESTS.filter(q=>q.id[0]==="v").length;
+  if(sp.cond[0]==="grammar") sp.desc = "Bestehe alle "+nq+" Grammatik-Quests (mind. 60 %)";
+  if(sp.cond[0]==="vocab")   sp.desc = "Bestehe alle "+nv+" Vokabel-Quests (mind. 60 %)";
+  if(sp.cond[0]==="all90")   sp.desc = "Erreiche in allen "+QUESTS.length+" Quests 90 % oder mehr";
+});
+
 /* ---------- Level-Titel ---------- */
 /* Ränge mit ansteigenden XP-Schwellen – wächst weit über 11.000 XP hinaus */
 const RANKS = [
@@ -2120,10 +2128,16 @@ function finishQuest(){
       newCards.push({extra:pick, label:"🎲 ZUFALLSFUND (95 %)"});
     }
   }
+  /* Höchstens EINE Sonderkarte pro abgeschlossener Quest: Sind mehrere Bedingungen gleichzeitig erreicht
+     (z. B. XP-Schwelle + Serie), kommt die nächste erst nach der nächsten Quest – so prasseln nicht
+     ständig mehrere Karten auf einmal herein. Erreichte Bedingungen gehen nicht verloren. */
+  let specialGiven = false, specialWaiting = 0;
   SPECIALS.forEach(sp=>{
     if(!S.cards.includes(sp.card) && specialReached(sp)){
+      if(specialGiven){ specialWaiting++; return; }
       S.cards.push(sp.card);
       newCards.push({ci:sp.card, label:"🏅 SONDERKARTE: "+sp.name});
+      specialGiven = true;
     }
   });
   saveState();
@@ -2148,6 +2162,7 @@ function finishQuest(){
            <div class="dl"><button class="btn" onclick="${dl}">⬇ Karte herunterladen</button></div>
          </div>`;}).join("")}
        ${pct>=85 && !newCards.length ? `<p style="opacity:.75">Die Quest-Karte besitzt du schon – schau ins Album!</p>`:""}
+       ${specialWaiting ? `<p style="opacity:.8">🏅 Du hast noch ${specialWaiting===1?"eine weitere Sonderkarte":specialWaiting+" weitere Sonderkarten"} verdient – ${specialWaiting===1?"sie kommt":"sie kommen"} nach deiner nächsten Quest!</p>`:""}
      </div>
      <div class="btnRow" style="justify-content:center">
        ${!passed?`<button class="btn" onclick="showIntro(${run.qi})">↺ Nochmal versuchen</button>`:""}

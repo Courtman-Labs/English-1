@@ -134,7 +134,7 @@
 <main id="app"></main>
 <script>
 /* =========================================================
-   PARIS-ABENTEUER – Französisch (À plus! Neubearbeitung, S. 176–181)
+   PARIS-ABENTEUER – Französisch (À plus! Neubearbeitung, S. 176–183)
    Eigenständige App, eigener Spielstand, nicht mit Englisch gemischt.
    Lernprinzipien: aktives Abrufen, gemischte Formate, Schwerpunkt ganze Sätze
    (beide Richtungen), Gerüst "erst Bausteine, dann tippen", sofortiges
@@ -142,12 +142,21 @@
    ========================================================= */
 const KEY = "paris-abenteuer-v1";
 
-const TAGS = {cp:"C'est parti!", u1:"Unité 1 – Thema Stadt", v1:"Unité 1 – Volet 1", v2:"Unité 1 – Volet 2"};
+const TAGS = {cp:"C'est parti!", u1:"Unité 1 – Thema Stadt", v1:"Unité 1 – Volet 1", v2:"Unité 1 – Volet 2",
+              v3:"Unité 1 – Volet 3", m1:"Module 1"};
 const SCOPES = {
-  all:{label:"Alles", tags:["cp","u1","v1","v2"]},
+  all:{label:"Alles", tags:["cp","u1","v1","v2","v3","m1"]},
   cp:{label:"C'est parti!", tags:["cp"]},
-  u1:{label:"Unité 1", tags:["u1","v1","v2"]}
+  u1:{label:"Unité 1", tags:["u1","v1","v2","v3"]}
 };
+
+/* ---------- SPERRE: schon katalogisiert, aber noch nicht abgefragt ----------
+   Volet 3 und Module 1 (S. 182 ab "Qu'est-ce qu'il y a …?" bis S. 183) sind im Unterricht noch nicht dran.
+   Sie stehen komplett in der Datenbank, kommen aber nirgends als Aufgabe oder Ablenker vor.
+   FREIGABE später: den jeweiligen Tag hier aus der Liste LOCKED entfernen (z. B. "v3") – sonst ist nichts zu ändern.
+   Einträge mit dem Zusatz "info" (7. Feld) sind reine Grammatik-Hinweise und werden nie einzeln als Vokabel abgefragt. */
+const LOCKED = ["v3","m1"];
+const isLocked = x => LOCKED.includes(x.tag);
 
 /* ---------- Vokabeldatenbank ----------
    [ID, Französisch (Varianten mit ;), Deutsch (Varianten mit ;), Teil, Beispielsatz FR, Beispielsatz DE]
@@ -298,6 +307,55 @@ const VOCAB_RAW = [
  ["v228","la danse","der Tanz; das Tanzen","v2",null,null],
  ["v229","souvent","oft","v2","Lili-Rose est souvent en retard.","Lili-Rose ist oft zu spät."],
  ["v230","en retard","zu spät; mit Verspätung","v2","Vous êtes en retard !","Ihr seid zu spät!"],
+ ["v231","c'est un peu compliqué","es/das ist etwas kompliziert; es ist ein bisschen kompliziert","v2","Avec toi, c'est un peu compliqué !","Mit dir ist es etwas kompliziert!"],
+ ["v232","tu es d'où","woher kommst du; woher bist du","v2","Tu es d'où ? – Je suis de Paris.","Woher kommst du? – Ich bin aus Paris."],
+ ["v233","tu es où","wo bist du","v2","Tu es où ? – Je suis en France.","Wo bist du? – Ich bin in Frankreich."],
+ /* ===== SPERRE: Volet 3 (S. 182–183) – katalogisiert, noch nicht abgefragt ===== */
+ ["v301","qu'est-ce qu'il y a","was gibt es","v3","Qu'est-ce qu'il y a ici ?","Was gibt es hier?"],
+ ["v302","il y a","es gibt","v3","Il y a six boulangeries ici.","Es gibt hier sechs Bäckereien."],
+ ["v303","la question","die Frage","v3",null,null],
+ ["v304","la réponse","die Antwort","v3","La réponse, c'est oui !","Die Antwort ist ja!"],
+ ["v305","la cathédrale","die Kathedrale; der Dom","v3",null,null],
+ ["v306","un; une","ein; eine","v3","Gabin est un garçon.","Gabin ist ein Junge."],
+ ["v307","des","(unbestimmter Artikel im Plural – wird nicht übersetzt)","v3","Ce sont des garçons.","Das sind Jungen.","info"],
+ ["v308","comme","wie; hier: wie z. B.","v3","Il y a des cinémas, comme le « Rex ».","Es gibt Kinos, wie z. B. das „Rex“."],
+ ["v309","la gare","der Bahnhof","v3","Voilà la gare.","Da ist der Bahnhof."],
+ ["v310","par exemple; p. ex.","zum Beispiel; z. B.","v3",null,null],
+ ["v311","pour","für","v3","Le chocolat, c'est pour moi ?","Ist die Schokolade für mich?"],
+ ["v312","le fan; la fan","der Fan","v3","Le stade, c'est pour les fans de sport.","Das Stadion ist für die Sportfans."],
+ ["v313","la science","die Wissenschaft","v3",null,null],
+ ["v314","le fan de sciences; la fan de sciences","der Wissenschaftsfan","v3","Léa est une fan de sciences.","Léa ist ein Wissenschaftsfan."],
+ ["v315","la fan de nature; le fan de nature","der Naturfan","v3",null,null],
+ ["v316","le magasin de drones","der Drohnenladen","v3",null,null],
+ ["v317","le magasin","das Geschäft; der Laden","v3","Dans un centre commercial, il y a des magasins.","In einem Einkaufszentrum gibt es Geschäfte."],
+ ["v318","le centre commercial","das Einkaufszentrum","v3",null,null],
+ ["v319","la boulangerie","die Bäckerei","v3","Il y a six boulangeries ici.","Es gibt hier sechs Bäckereien."],
+ ["v320","en plus","außerdem","v3","Il est sympa. En plus, il est cool !","Er ist nett. Außerdem ist er cool!"],
+ ["v321","entre","zwischen","v3","C'est entre la tour et le parc.","Es ist zwischen dem Turm und dem Park."],
+ ["v322","Notre-Dame de Paris","Kathedrale von Paris","v3",null,null],
+ ["v323","la Tour Montparnasse","210 m hoher Turm und Bürohaus in Paris","v3",null,null],
+ ["v324","le Stade de France","größtes Stadion Frankreichs, nördlich von Paris","v3",null,null],
+ ["v325","Bercy","Viertel im Osten von Paris","v3",null,null],
+ ["v326","le Musée des Arts forains","Jahrmarktsmuseum in Paris","v3",null,null],
+ ["v327","Bastille","Ausgehviertel im Osten von Paris","v3",null,null],
+ ["v328","le Bois de Vincennes","einer von zwei Stadtwäldern in Paris","v3",null,null],
+ ["v329","la Coulée verte","Grünanlage am Stadtrand von Paris, beliebt bei Radfahrern und Skatern","v3",null,null],
+ /* ===== SPERRE: Module 1 (S. 183) – katalogisiert, noch nicht abgefragt ===== */
+ ["v401","en cours","im Unterricht","m1","Je suis en cours de français.","Ich bin im Französischunterricht."],
+ ["v402","le français","Französisch; die französische Sprache","m1","Le français, c'est cool !","Französisch ist cool!"],
+ ["v403","qu'est-ce que c'est","was ist das","m1","La Coulée verte, qu'est-ce que c'est ?","Die Coulée verte, was ist das?"],
+ ["v404","un alphabet","ein Alphabet","m1","A, B, C… c'est l'alphabet.","A, B, C … das ist das Alphabet."],
+ ["v405","c'est terminé","hier: Das war's!; Es ist beendet!","m1",null,null],
+ ["v406","comment on dit","wie sagt man","m1","Comment on dit « die Katze » en français ?","Wie sagt man „die Katze“ auf Französisch?"],
+ ["v407","on dit","man sagt","m1","On dit « le chat ».","Man sagt „le chat“."],
+ ["v408","comment on écrit","wie schreibt man","m1","Comment on écrit « merci » ?","Wie schreibt man „merci“?"],
+ ["v409","on écrit","man schreibt","m1","On écrit M-E-R-C-I.","Man schreibt M-E-R-C-I."],
+ ["v410","en français","auf Französisch","m1","En français, on dit « merci ».","Auf Französisch sagt man „merci“."],
+ ["v411","en allemand","auf Deutsch","m1",null,null],
+ ["v412","l'allemand","Deutsch; die deutsche Sprache","m1","L'allemand, c'est un peu compliqué.","Deutsch ist ein bisschen kompliziert."],
+ ["v413","le cahier","das Heft","m1","Ce sont les cahiers de Jeanne.","Das sind Jeannes Hefte."],
+ ["v414","le stylo","der Stift; der Kugelschreiber","m1","C'est un stylo ?","Ist das ein Stift?"],
+ ["v415","la feuille","das Blatt","m1","Dans un cahier, il y a des feuilles.","In einem Heft gibt es Blätter."],
 ];
 
 /* ---------- Satzdatenbank (Sätze aus dem Buch) ----------
@@ -385,6 +443,43 @@ const SENT_RAW = [
  ["s318","Vous êtes en retard !","Ihr seid zu spät!|Sie sind zu spät!|Ihr kommt zu spät!|Sie kommen zu spät!","v2","vous = ihr ODER Sie (höflich) – beides heißt vous."],
  ["s319","Nous sommes à Paris.","Wir sind in Paris.","v2","nous sommes = wir sind."],
  ["s320","Tu es de Berlin ?","Bist du aus Berlin?|Kommst du aus Berlin?","v2","tu es = du bist."],
+ ["s321","Tu es d'où ?|D'où es-tu ?|D'où tu es ?","Woher kommst du?|Woher bist du?","v2","d'où = woher (de + où). Antwort: Je suis de Paris. Nicht verwechseln mit où = wo."],
+ ["s322","Je suis de Paris.","Ich bin aus Paris.|Ich komme aus Paris.","v2","de + Stadt = aus: Je suis de Paris."],
+ ["s323","Je suis d'Erfurt.","Ich bin aus Erfurt.|Ich komme aus Erfurt.","v2","de vor Vokal wird zu d' : d'Erfurt (wie d'où)."],
+ ["s324","Tu es où ?|Où es-tu ?|Où tu es ?","Wo bist du?","v2","où (mit Akzent) = wo · d'où = woher."],
+ ["s325","Je suis en France.","Ich bin in Frankreich.","v2","en + Land (en France, en Allemagne) · à + Stadt (à Paris)."],
+ ["s326","Je suis dans la classe de Gabin.","Ich bin in Gabins Klasse.|Ich bin in der Klasse von Gabin.","v2","dans la classe = in der Klasse · de Gabin = Gabins (Besitz mit de)."],
+ ["s327","Je suis en cinquième.","Ich bin in der siebten Klasse.|Ich bin in der 7. Klasse.|Ich gehe in die siebte Klasse.","v2","In Frankreich zählt man rückwärts: sixième = 6. Schuljahr (D: 5. Klasse), cinquième = 7. Schuljahr (D: 6. Klasse)."],
+ ["s328","Avec toi, c'est un peu compliqué !","Mit dir ist es ein bisschen kompliziert!|Mit dir ist es etwas kompliziert!|Mit dir ist das etwas kompliziert!|Mit dir ist das ein bisschen kompliziert!","v2","c'est un peu compliqué = es ist etwas kompliziert · nach avec steht toi (nicht tu)."],
+ /* ===== SPERRE: Volet 3 (S. 182–183) – katalogisiert, noch nicht abgefragt ===== */
+ ["s401","Qu'est-ce qu'il y a ici ?","Was gibt es hier?","v3","qu'est-ce qu'il y a … ? = was gibt es …? · il y a = es gibt."],
+ ["s402","Il y a six boulangeries ici.|Ici, il y a six boulangeries.","Es gibt hier sechs Bäckereien.|Hier gibt es sechs Bäckereien.","v3","il y a = es gibt (Singular und Plural gleich)."],
+ ["s403","La réponse, c'est oui !","Die Antwort ist ja!|Die Antwort lautet ja!","v3","la réponse = die Antwort · la question = die Frage."],
+ ["s404","Gabin est un garçon.","Gabin ist ein Junge.","v3","un garçon (männlich) · une fille (weiblich)."],
+ ["s405","Ce sont des garçons.","Das sind Jungen.","v3","des = unbestimmter Artikel im Plural – wird nicht übersetzt. ce sont = das sind."],
+ ["s406","Il y a des cinémas, comme le « Rex ».","Es gibt Kinos, wie z. B. das „Rex“.|Es gibt Kinos, wie zum Beispiel das „Rex“.|Es gibt Kinos, wie das „Rex“.","v3","comme = wie, hier: wie z. B. · des cinémas = Kinos (des wird nicht übersetzt)."],
+ ["s407","Voilà la gare.","Da ist der Bahnhof.|Hier ist der Bahnhof.","v3","voilà = hier ist / da ist · la gare = der Bahnhof."],
+ ["s408","Le chocolat, c'est pour moi ?","Ist die Schokolade für mich?|Die Schokolade, ist die für mich?|Die Schokolade, ist das für mich?","v3","pour = für · nach pour steht moi (nicht je)."],
+ ["s409","Le stade, c'est pour les fans de sport.","Das Stadion ist für die Sportfans.|Das Stadion ist für Sportfans.","v3","le/la fan = der Fan · fan de sport = Sportfan (zusammengesetztes Substantiv mit de)."],
+ ["s410","Léa est une fan de sciences.","Léa ist ein Wissenschaftsfan.|Léa ist eine Wissenschaftsfan.|Léa ist ein Fan der Wissenschaften.","v3","la science = die Wissenschaft · fan de sciences = Wissenschaftsfan."],
+ ["s411","Dans un centre commercial, il y a des magasins.","In einem Einkaufszentrum gibt es Geschäfte.|In einem Einkaufszentrum gibt es Läden.","v3","le magasin = das Geschäft, der Laden · des magasins = Geschäfte."],
+ ["s412","Il est sympa. En plus, il est cool !","Er ist nett. Außerdem ist er cool!|Er ist sympathisch. Außerdem ist er cool!","v3","en plus = außerdem."],
+ ["s413","C'est entre la tour et le parc.","Es ist zwischen dem Turm und dem Park.|Das ist zwischen dem Turm und dem Park.","v3","entre = zwischen."],
+ /* ===== SPERRE: Module 1 (S. 183) – katalogisiert, noch nicht abgefragt ===== */
+ ["s501","Je suis en cours de français.","Ich bin im Französischunterricht.|Ich bin in der Französischstunde.|Ich habe Französischunterricht.","m1","en cours = im Unterricht · cours de français = Französischunterricht."],
+ ["s502","Le français, c'est cool !","Französisch ist cool!","m1","le français = Französisch (die Sprache) – mit Artikel."],
+ ["s503","La Coulée verte, qu'est-ce que c'est ?","Die Coulée verte, was ist das?|Was ist die Coulée verte?|Was ist das, die Coulée verte?","m1","qu'est-ce que c'est ? = was ist das?"],
+ ["s504","A, B, C… c'est l'alphabet.","A, B, C … das ist das Alphabet.|A, B, C, das ist das Alphabet.","m1","un alphabet = ein Alphabet (l'alphabet m.)."],
+ ["s505","Comment on dit « die Katze » en français ?","Wie sagt man „die Katze“ auf Französisch?|Wie sagt man die Katze auf Französisch?","m1","comment on dit … ? = wie sagt man …? · en français = auf Französisch."],
+ ["s506","On dit « le chat ».","Man sagt „le chat“.|Man sagt le chat.","m1","on dit … = man sagt …"],
+ ["s507","Comment on écrit « merci » ?","Wie schreibt man „merci“?|Wie schreibt man merci?","m1","comment on écrit … ? = wie schreibt man …?"],
+ ["s508","On écrit M-E-R-C-I.","Man schreibt M-E-R-C-I.|Man schreibt MERCI.","m1","on écrit … = man schreibt … (écrire = schreiben)."],
+ ["s509","En français, on dit « merci ».","Auf Französisch sagt man „merci“.|Auf Französisch sagt man merci.","m1","en français = auf Französisch · en allemand = auf Deutsch."],
+ ["s510","L'allemand, c'est un peu compliqué.","Deutsch ist ein bisschen kompliziert.|Deutsch ist etwas kompliziert.|Deutsch ist ein wenig kompliziert.","m1","l'allemand = Deutsch (die Sprache) – mit Artikel."],
+ ["s511","Ce sont les cahiers de Jeanne.","Das sind Jeannes Hefte.|Das sind die Hefte von Jeanne.","m1","le cahier = das Heft · ce sont = das sind (Plural)."],
+ ["s512","C'est un stylo ?","Ist das ein Stift?|Ist das ein Kugelschreiber?|Ist es ein Stift?","m1","le stylo = der Stift, der Kugelschreiber."],
+ ["s513","Dans un cahier, il y a des feuilles.","In einem Heft gibt es Blätter.|In einem Heft sind Blätter.","m1","la feuille = das Blatt · des feuilles = Blätter."],
+ ["s514","C'est terminé !","Das war's!|Es ist beendet!|Das ist beendet!","m1","c'est terminé = hier: Das war's! (wörtlich: Es ist beendet!)"],
 ];
 
 /* ---------- Stationen in Paris (Karte 100 × 130) ---------- */
@@ -439,12 +534,20 @@ const FACTS = [
  "Die französische Flagge in Blau, Weiß und Rot heißt „le drapeau tricolore“ – die Trikolore.",
  "Viele deutsche Wörter kommen aus dem Französischen: Restaurant, Café, Portemonnaie, Trottoir oder Friseur zum Beispiel.",
  "Das Croissant hat einen österreichischen Vorfahren: das Wiener Kipferl. Berühmt geworden ist es aber in Frankreich.",
+ "Am 14. Juli 1789 stürmten die Pariser die Bastille, ein altes Gefängnis. Deshalb ist der 14. Juli bis heute Frankreichs Nationalfeiertag – und das Viertel Bastille ist heute ein beliebtes Ausgehviertel.",
+ "Die Coulée verte ist eine Grünanlage, die auf einer stillgelegten Bahnstrecke gebaut wurde. Sie liegt hoch über den Straßen – ein Park im ersten Stock sozusagen!",
+ "Das Stade de France ist Frankreichs größtes Stadion. 1998 wurde dort das WM-Finale gespielt – Frankreich wurde Weltmeister.",
+ "Die Tour Montparnasse ist mit 210 Metern ein Hochhaus mitten in Paris. Von oben kann man bis zum Eiffelturm schauen.",
+ "Frankreich hat eine eigene Gebärdensprache, die „langue des signes française“. Mit dem Fingeralphabet kann man seinen Namen buchstabieren.",
 ];
 
 /* ---------- Aufbereitung ---------- */
-const VOCAB = VOCAB_RAW.map(r=>({id:r[0], fr:r[1], de:r[2], tag:r[3], exFr:r[4]||null, exDe:r[5]||null, kind:"v"}));
+const VOCAB = VOCAB_RAW.map(r=>({id:r[0], fr:r[1], de:r[2], tag:r[3], exFr:r[4]||null, exDe:r[5]||null, info:r[6]==="info", kind:"v"}));
 const SENTS = SENT_RAW.map(r=>({id:r[0], frAlts:r[1].split("|"), deAlts:r[2].split("|"), tag:r[3], note:r[4]||"", deHint:r[5]||"", kind:"s"}));
 const ITEM = {}; VOCAB.forEach(v=>ITEM[v.id]=v); SENTS.forEach(s=>ITEM[s.id]=s);
+/* abfragbar = nicht gesperrt (und keine reine Grammatik-Info) – nur daraus kommen Aufgaben UND Ablenker */
+const QV = () => VOCAB.filter(v=>!isLocked(v) && !v.info);
+const QS = () => SENTS.filter(s=>!isLocked(s));
 
 /* ---------- Spielstand ---------- */
 function defaultState(){
@@ -508,8 +611,8 @@ function stripAcc(s){ return String(s).normalize("NFD").replace(/[\u0300-\u036f]
 /* ---------- Auswahl der nächsten Aufgabe ---------- */
 let bag = {v:[], s:[]}, recent = [];
 function resetBags(){ bag = {v:[], s:[]}; recent = []; }
-function poolV(){ const t=SCOPES[S.scope].tags; return VOCAB.filter(v=>t.includes(v.tag)); }
-function poolS(){ const t=SCOPES[S.scope].tags; return SENTS.filter(s=>t.includes(s.tag)); }
+function poolV(){ const t=SCOPES[S.scope].tags; return QV().filter(v=>t.includes(v.tag)); }
+function poolS(){ const t=SCOPES[S.scope].tags; return QS().filter(s=>t.includes(s.tag)); }
 function nextItem(){
   const pv = poolV(), ps = poolS();
   const allowed = new Set([...(S.mode==="exam" ? [] : pv), ...ps].map(x=>x.id));
@@ -543,10 +646,10 @@ function mcOptions(v, field){
   const vDe = alts(v.de).map(s=>s.toLowerCase()), vFr = alts(v.fr).map(s=>s.toLowerCase());
   const usable = x => x.id!==v.id && x.fr!==v.fr && x.de!==v.de
     && !alts(x.de).some(s=>vDe.includes(s.toLowerCase())) && !alts(x.fr).some(s=>vFr.includes(s.toLowerCase()));
-  let cand = VOCAB.filter(x=>usable(x) && vgroup(x)===g).map(x=>first(x[field]));
+  let cand = QV().filter(x=>usable(x) && vgroup(x)===g).map(x=>first(x[field]));
   cand = [...new Set(cand)].filter(c=>!okAlts.includes(c.toLowerCase()));
   if(cand.length < 3){
-    const more = VOCAB.filter(usable).map(x=>first(x[field])).filter(c=>!okAlts.includes(c.toLowerCase()) && !cand.includes(c));
+    const more = QV().filter(usable).map(x=>first(x[field])).filter(c=>!okAlts.includes(c.toLowerCase()) && !cand.includes(c));
     cand = [...new Set(cand.concat(more))];
   }
   return {opts: shuffle([correct, ...shuffle(cand).slice(0,3)]), correct};
@@ -574,7 +677,7 @@ function tileSet(answer, lang){
   shuffle(toks).forEach(t=>{ (conf[t.toLowerCase()]||[]).forEach(c=>{ if(!have.has(c) && !d.includes(c)) d.push(c); }); });
   d = shuffle(d).slice(0,2);
   if(d.length < 2){
-    const src = SENTS.map(s=> lang==="fr" ? s.frAlts[0] : s.deAlts[0]).flatMap(tokens);
+    const src = QS().map(s=> lang==="fr" ? s.frAlts[0] : s.deAlts[0]).flatMap(tokens);
     const extra = shuffle([...new Set(src)]).filter(t=>!have.has(t.toLowerCase()) && !d.includes(t));
     d = d.concat(extra.slice(0, 2-d.length));
   }
@@ -1034,7 +1137,8 @@ function showEval(){
     <div class="card">
       <div class="hint-sm">Grün ab 85 % · Gelb 60–84 % · Rot unter 60 % · grau = weniger als 3 Antworten</div>
       <div class="sectionTitle" style="font-size:16px">Nach Buchteil</div>
-      ${Object.keys(TAGS).map(t=>bar(TAGS[t], S.stats[t])).join("")}
+      ${Object.keys(TAGS).filter(t=>!LOCKED.includes(t)).map(t=>bar(TAGS[t], S.stats[t])).join("")}
+      ${LOCKED.length ? `<div class="hint-sm" style="margin-top:6px">🔒 Noch nicht dran: ${LOCKED.map(t=>esc(TAGS[t])).join(", ")}</div>` : ""}
       <div class="sectionTitle" style="font-size:16px">Nach Aufgabenart</div>
       ${bar("Sätze Französisch → Deutsch", S.tstats.sFD)}
       ${bar("Sätze Deutsch → Französisch", S.tstats.sDF)}
@@ -1060,6 +1164,7 @@ function setMode(m){ S.mode = m; resetBags(); saveState(); showSettings(); }
 function showSettings(){
   battle = null;
   const nv = poolV().length, ns = poolS().length;
+  const lv = VOCAB.filter(isLocked).length, ls = SENTS.filter(isLocked).length;
   app.innerHTML = header() + nav() + `
     <div class="sectionTitle">⚙️ Einstellungen</div>
     <div class="card">
@@ -1067,6 +1172,7 @@ function showSettings(){
       <div class="hint-sm" style="margin:4px 0 8px">Für gezieltes Üben vor einer Klassenarbeit kannst du den Bereich einschränken.</div>
       <div class="seg">${Object.keys(SCOPES).map(k=>`<button class="${S.scope===k?"on":""}" onclick="setScope('${k}')">${esc(SCOPES[k].label)}</button>`).join("")}</div>
       <div class="hint-sm" style="margin-top:8px">Im aktuellen Bereich: <b>${ns} Sätze</b> und <b>${nv} Vokabeln</b>.</div>
+      ${LOCKED.length ? `<div class="hint-sm" style="margin-top:6px">🔒 Schon im Katalog, aber noch nicht dran (${LOCKED.map(t=>esc(TAGS[t])).join(", ")}): ${ls} Sätze und ${lv} Vokabeln – sie werden erst abgefragt, wenn sie im Unterricht behandelt wurden.</div>` : ""}
     </div>
     <div class="card">
       <b>Modus</b>
