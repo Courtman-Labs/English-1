@@ -119,6 +119,9 @@
   .evBar{height:12px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}
   .evBar>div{height:100%}.evBar .g{background:#6fbf6f}.evBar .y{background:#e8c25a}.evBar .r{background:#e0564a}.evBar .muted{background:#888}
   .evV{font-weight:800;white-space:nowrap}
+  .seenRow{margin:10px 0}.seenRow .top{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:4px}
+  .seenBar{height:10px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}.seenBar>div{height:100%;background:#6fa8e8}
+  details.unseen{margin-top:6px;font-size:13px}details.unseen summary{cursor:pointer;color:var(--gold2)}
   .weakItem{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px}
   .seg{display:flex;flex-wrap:wrap;gap:6px}
   .seg button{font-family:inherit;font-weight:800;font-size:14px;padding:9px 13px;border-radius:10px;border:1px solid rgba(217,168,60,.5);background:rgba(0,0,0,.3);color:var(--ink);cursor:pointer}
@@ -552,7 +555,7 @@ const QS = () => SENTS.filter(s=>!isLocked(s));
 /* ---------- Spielstand ---------- */
 function defaultState(){
   return {started:false, scope:"all", mode:"normal", node:0, xp:0, maxStreak:0, answered:0,
-          stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}};
+          stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}};
 }
 let S = defaultState();
 function normalizeState(){
@@ -568,6 +571,9 @@ function normalizeState(){
   S.defeated = S.defeated.filter(i=>Number.isInteger(i) && i>=0 && i<NODES.length);
   S.facts = S.facts.filter(i=>Number.isInteger(i) && i>=0 && i<FACTS.length);
   Object.keys(S.weak).forEach(id=>{ if(!ITEM[id] || !Number.isFinite(S.weak[id])) delete S.weak[id]; });
+  /* "gesehen"-Zähler: nur gültige IDs; was schon als Wackelkandidat vorkommt, wurde garantiert schon gefragt */
+  Object.keys(S.seen).forEach(id=>{ if(!ITEM[id] || !(S.seen[id]>0)) delete S.seen[id]; });
+  Object.keys(S.weak).forEach(id=>{ if(!S.seen[id]) S.seen[id]=1; });
 }
 function store(){ try{ return window.localStorage; }catch(e){ return null; } }
 function loadState(){
@@ -973,6 +979,7 @@ function resolve(ok, given, r){
   const tkey = it.kind==="v" ? (battle.q==="vFD" ? "vFD" : "vDF") : (battle.dir==="fd" ? "sFD" : "sDF");
   bump(S.stats, it.tag, ok); bump(S.tstats, tkey, ok);
   S.answered++;
+  S.seen[it.id] = (S.seen[it.id]||0) + 1;
   const notes = [];
   /* Wiederholungs-Logik: falsche Aufgaben merken, bis sie 2× in Folge richtig waren */
   if(ok){
@@ -1132,6 +1139,17 @@ function showEval(){
     return `<div class="weakItem"><span class="frTxt">${esc(fr)}</span><span class="muted" style="text-align:right">${esc(de)}</span></div>`;
   }).join("") + (weakIds.length>20 ? `<div class="hint-sm">… und ${weakIds.length-20} weitere</div>` : "")
     : `<div class="hint-sm">Gerade nichts offen – très bien !</div>`;
+  const seenHTML = Object.keys(TAGS).filter(t=>!LOCKED.includes(t)).map(t=>{
+    const vs = QV().filter(v=>v.tag===t), ss = QS().filter(x=>x.tag===t);
+    const all = vs.concat(ss), seen = all.filter(x=>S.seen[x.id]).length;
+    if(!all.length) return "";
+    const pct = Math.round(seen/all.length*100);
+    const unseen = all.filter(x=>!S.seen[x.id]);
+    const line = x => x.kind==="v" ? `${esc(alts(x.fr).join(" / "))} <span class="muted">– ${esc(x.de.replace(/;/g,","))}</span>` : `${esc(x.frAlts[0])} <span class="muted">– ${esc(x.deAlts[0])}</span>`;
+    return `<div class="seenRow"><div class="top"><span>${esc(TAGS[t])}</span><span><b>${seen}</b> von ${all.length} <span class="muted">(${vs.filter(v=>S.seen[v.id]).length}/${vs.length} Vokabeln · ${ss.filter(x=>S.seen[x.id]).length}/${ss.length} Sätze)</span></span></div>
+      <div class="seenBar"><div style="width:${pct}%"></div></div>
+      ${unseen.length ? `<details class="unseen"><summary>Noch nicht gesehen (${unseen.length})</summary>${unseen.map(x=>`<div class="weakItem">${line(x)}</div>`).join("")}</details>` : `<div class="hint-sm">Alles mindestens einmal gesehen ✓</div>`}</div>`;
+  }).join("");
   app.innerHTML = header() + nav() + `
     <div class="sectionTitle">📊 Auswertung</div>
     <div class="card">
@@ -1139,6 +1157,9 @@ function showEval(){
       <div class="sectionTitle" style="font-size:16px">Nach Buchteil</div>
       ${Object.keys(TAGS).filter(t=>!LOCKED.includes(t)).map(t=>bar(TAGS[t], S.stats[t])).join("")}
       ${LOCKED.length ? `<div class="hint-sm" style="margin-top:6px">🔒 Noch nicht dran: ${LOCKED.map(t=>esc(TAGS[t])).join(", ")}</div>` : ""}
+      <div class="sectionTitle" style="font-size:16px">👀 Schon gesehen – nach Buchteil</div>
+      <div class="hint-sm">Zeigt, wie viel vom Stoff Lukas schon mindestens einmal beantwortet hat. Die Zählung beginnt mit dieser Version; frühere Antworten sind nur bei den aktuellen Wackelkandidaten bekannt.</div>
+      ${seenHTML}
       <div class="sectionTitle" style="font-size:16px">Nach Aufgabenart</div>
       ${bar("Sätze Französisch → Deutsch", S.tstats.sFD)}
       ${bar("Sätze Deutsch → Französisch", S.tstats.sDF)}
