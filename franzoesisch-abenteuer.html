@@ -119,6 +119,8 @@
   .evBar{height:12px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}
   .evBar>div{height:100%}.evBar .g{background:#6fbf6f}.evBar .y{background:#e8c25a}.evBar .r{background:#e0564a}.evBar .muted{background:#888}
   .evV{font-weight:800;white-space:nowrap}
+  .discBox{margin-top:10px;font-size:13px}.discBox .top{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
+  .discNote{background:rgba(111,191,111,.18);border:1px solid rgba(111,191,111,.5);border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:14px}
   .seenRow{margin:10px 0}.seenRow .top{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:4px}
   .seenBar{height:10px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}.seenBar>div{height:100%;background:#6fa8e8}
   details.unseen{margin-top:6px;font-size:13px}details.unseen summary{cursor:pointer;color:var(--gold2)}
@@ -555,7 +557,7 @@ const QS = () => SENTS.filter(s=>!isLocked(s));
 /* ---------- Spielstand ---------- */
 function defaultState(){
   return {started:false, scope:"all", mode:"normal", node:0, xp:0, maxStreak:0, answered:0,
-          stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}};
+          stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}, rd:{}, rounds:{}, miss:{}, discOrder:"book"};
 }
 let S = defaultState();
 function normalizeState(){
@@ -565,7 +567,7 @@ function normalizeState(){
     if(!ok) S[k]=d[k];
   });
   if(!SCOPES[S.scope]) S.scope="all";
-  if(!["normal","exam"].includes(S.mode)) S.mode="normal";
+  if(!["normal","exam","discover"].includes(S.mode)) S.mode="normal";
   S.node = Math.max(0, Math.min(NODES.length-1, parseInt(S.node)||0));
   S.xp = Number(S.xp)||0; S.maxStreak = Number(S.maxStreak)||0; S.answered = Number(S.answered)||0;
   S.defeated = S.defeated.filter(i=>Number.isInteger(i) && i>=0 && i<NODES.length);
@@ -574,6 +576,19 @@ function normalizeState(){
   /* "gesehen"-Zähler: nur gültige IDs; was schon als Wackelkandidat vorkommt, wurde garantiert schon gefragt */
   Object.keys(S.seen).forEach(id=>{ if(!ITEM[id] || !(S.seen[id]>0)) delete S.seen[id]; });
   Object.keys(S.weak).forEach(id=>{ if(!S.seen[id]) S.seen[id]=1; });
+  /* Entdecker-Runden: pro Bereich eine Rundennummer; rd[bereich][id] = Runde, in der die Aufgabe zuletzt beantwortet wurde.
+     Neu angelegte Bereiche übernehmen einmalig, was schon als "gesehen" bekannt ist (Runde 1). */
+  Object.keys(S.miss).forEach(id=>{ if(!ITEM[id] || !(S.miss[id]>0)) delete S.miss[id]; });
+  Object.keys(S.weak).forEach(id=>{ if(!S.miss[id]) S.miss[id]=1; });
+  Object.keys(SCOPES).forEach(k=>{
+    if(!(S.rounds[k]>=1)) S.rounds[k]=1;
+    if(typeof S.rd[k]!=="object" || !S.rd[k] || Array.isArray(S.rd[k])){
+      S.rd[k]={};
+      if(S.rounds[k]===1) Object.keys(S.seen).forEach(id=>{ if(ITEM[id] && SCOPES[k].tags.includes(ITEM[id].tag)) S.rd[k][id]=1; });
+    }
+    Object.keys(S.rd[k]).forEach(id=>{ if(!ITEM[id]) delete S.rd[k][id]; });
+  });
+  if(!["book","mix"].includes(S.discOrder)) S.discOrder="book";
 }
 function store(){ try{ return window.localStorage; }catch(e){ return null; } }
 function loadState(){
@@ -619,6 +634,41 @@ let bag = {v:[], s:[]}, recent = [];
 function resetBags(){ bag = {v:[], s:[]}; recent = []; }
 function poolV(){ const t=SCOPES[S.scope].tags; return QV().filter(v=>t.includes(v.tag)); }
 function poolS(){ const t=SCOPES[S.scope].tags; return QS().filter(s=>t.includes(s.tag)); }
+/* ---------- Modus "Neu entdecken" ----------
+   Fragt zuerst nur Aufgaben, die in der aktuellen Runde noch nicht beantwortet wurden (Runde 1 = noch nie gesehen).
+   Vokabeln und Sätze werden im Verhältnis ihrer Restmenge gemischt, damit beide gleichzeitig fertig werden.
+   Runde 1 nach Buchreihenfolge (oder gemischt), ab Runde 2 nach Priorität: oft falsche zuerst.
+   Die Wiederholung falscher Aufgaben (S.weak) läuft in nextItem() weiter wie immer. */
+let roundNotice = "";
+function discoverRemaining(){
+  const r = S.rounds[S.scope], rd = S.rd[S.scope];
+  return {v: poolV().filter(x=>rd[x.id]!==r), s: poolS().filter(x=>rd[x.id]!==r)};
+}
+function discoverStats(){
+  const r = S.rounds[S.scope], rd = S.rd[S.scope], all = poolV().concat(poolS());
+  return {round:r, done: all.filter(x=>rd[x.id]===r).length, total: all.length};
+}
+function completeRound(){
+  const st = discoverStats(), r = S.rounds[S.scope];
+  S.xp += 100;
+  S.rounds[S.scope] = r + 1;
+  roundNotice = `🎉 Runde ${r} geschafft! Alle ${st.total} Aufgaben dieses Bereichs hast du entdeckt (+100 XP). Runde ${r+1} beginnt – zuerst kommen die kniffligen.`;
+  saveState();
+}
+function discoverPick(){
+  let rem = discoverRemaining();
+  if(!rem.v.length && !rem.s.length){ completeRound(); rem = discoverRemaining(); }
+  const kind = !rem.v.length ? "s" : !rem.s.length ? "v" : (Math.random() < rem.s.length/(rem.s.length+rem.v.length) ? "s" : "v");
+  let list = rem[kind];
+  const round = S.rounds[S.scope];
+  if(round > 1){
+    const key = {}; list.forEach(x=>key[x.id]=Math.random());
+    list = list.slice().sort((a,b)=>((S.miss[b.id]||0)-(S.miss[a.id]||0)) || (key[a.id]-key[b.id]));
+  } else if(S.discOrder==="mix"){
+    list = shuffle(list);
+  }
+  return list.find(x=>!recent.includes(x.id)) || list[0];
+}
 function nextItem(){
   const pv = poolV(), ps = poolS();
   const allowed = new Set([...(S.mode==="exam" ? [] : pv), ...ps].map(x=>x.id));
@@ -627,6 +677,8 @@ function nextItem(){
   let item = null;
   if(due.length && Math.random() < 0.5){
     item = ITEM[rnd(due)];
+  } else if(S.mode==="discover"){
+    item = discoverPick();
   } else {
     const kind = (S.mode==="exam" || !pv.length) ? "s" : (Math.random() < 0.65 ? "s" : "v");
     const pool = kind==="s" ? ps : pv;
@@ -818,7 +870,7 @@ function showMap(){
   const allDone = S.defeated.length===NODES.length;
   app.innerHTML = header() + nav() + `
     <div class="sectionTitle">🗺️ Deine Reise durch Paris</div>
-    <div class="hint-sm">Bereich: <b>${SCOPES[S.scope].label}</b> · Modus: <b>${S.mode==="exam"?"Klassenarbeit (nur Sätze)":"Normal (Sätze + Vokabeln)"}</b> – ändern unter Einstellungen.
+    <div class="hint-sm">Bereich: <b>${SCOPES[S.scope].label}</b> · Modus: <b>${modeName()}</b> – ändern unter Einstellungen.
     Tippe auf eine freigeschaltete Station.</div>
     <div class="mapWrap">${mapSVG()}${pins}</div>
     <div class="card center">
@@ -894,6 +946,14 @@ function renderBattle(){
       <div class="btnRow center"><button class="btn" onclick="checkType()">Prüfen ✔</button></div>
       ${fd?"":`<div class="hint-sm center">Akzente und Apostrophe zählen (j'habite, à, é …). Groß-/Kleinschreibung und Satzzeichen nicht.</div>`}`;
   }
+  let discHTML = "";
+  if(S.mode==="discover"){
+    const d = discoverStats(), pct = d.total ? Math.round(d.done/d.total*100) : 0;
+    discHTML = `<div class="discBox">${roundNotice ? `<div class="discNote">${esc(roundNotice)}</div>` : ""}
+      <div class="top"><span>🔍 Neu entdecken · Runde ${d.round}</span><span><b>${d.done}</b> von ${d.total}</span></div>
+      <div class="seenBar"><div style="width:${pct}%"></div></div></div>`;
+    roundNotice = "";
+  }
   const dots = Array.from({length:15},(_,i)=>`<span class="dot ${i>=10?"t3":i>=5?"t2":""} ${i<battle.streak?"on":""}"></span>`).join("");
   app.innerHTML = header() + `
     <div class="card">
@@ -903,6 +963,7 @@ function renderBattle(){
           <div class="hint-sm" id="hpTxt">${battle.foeHP} / ${battle.foeMax} KP</div></div></div>
       <div class="dots">${dots}</div>
       <div class="hint-sm center">Serie: <b>${battle.streak}</b> · bei 5/10/15 richtigen Antworten in Folge gibt es einen Extra-Angriff</div>
+      ${discHTML}
     </div>
     <div class="card">${q}</div>
     <div id="feedback"></div>
@@ -980,6 +1041,8 @@ function resolve(ok, given, r){
   bump(S.stats, it.tag, ok); bump(S.tstats, tkey, ok);
   S.answered++;
   S.seen[it.id] = (S.seen[it.id]||0) + 1;
+  Object.keys(SCOPES).forEach(k=>{ if(SCOPES[k].tags.includes(it.tag)) S.rd[k][it.id] = S.rounds[k]; });
+  if(!ok) S.miss[it.id] = (S.miss[it.id]||0) + 1;
   const notes = [];
   /* Wiederholungs-Logik: falsche Aufgaben merken, bis sie 2× in Folge richtig waren */
   if(ok){
@@ -1160,6 +1223,7 @@ function showEval(){
       <div class="sectionTitle" style="font-size:16px">👀 Schon gesehen – nach Buchteil</div>
       <div class="hint-sm">Zeigt, wie viel vom Stoff Lukas schon mindestens einmal beantwortet hat. Die Zählung beginnt mit dieser Version; frühere Antworten sind nur bei den aktuellen Wackelkandidaten bekannt.</div>
       ${seenHTML}
+      <div class="hint-sm" style="margin-top:10px">🔍 Entdecker-Runde im Bereich <b>${esc(SCOPES[S.scope].label)}</b>: Runde <b>${discoverStats().round}</b> – <b>${discoverStats().done}</b> von ${discoverStats().total} Aufgaben dran.</div>
       <div class="sectionTitle" style="font-size:16px">Nach Aufgabenart</div>
       ${bar("Sätze Französisch → Deutsch", S.tstats.sFD)}
       ${bar("Sätze Deutsch → Französisch", S.tstats.sDF)}
@@ -1180,7 +1244,9 @@ function msg(text, ok){
   const b = document.getElementById("msg"); if(!b) return;
   b.style.display = "block"; b.style.borderColor = ok ? "rgba(90,154,90,.7)" : "rgba(192,69,58,.7)"; b.innerHTML = text;
 }
+function modeName(){ return S.mode==='exam' ? 'Klassenarbeit (nur Sätze)' : S.mode==='discover' ? '🔍 Neu entdecken' : 'Normal (Sätze + Vokabeln)'; }
 function setScope(s){ if(!SCOPES[s]) return; S.scope = s; resetBags(); saveState(); showSettings(); }
+function setOrder(o){ S.discOrder = o; resetBags(); saveState(); showSettings(); }
 function setMode(m){ S.mode = m; resetBags(); saveState(); showSettings(); }
 function showSettings(){
   battle = null;
@@ -1199,8 +1265,14 @@ function showSettings(){
       <b>Modus</b>
       <div class="seg" style="margin-top:8px">
         <button class="${S.mode==="normal"?"on":""}" onclick="setMode('normal')">Normal (⅔ Sätze, ⅓ Vokabeln)</button>
-        <button class="${S.mode==="exam"?"on":""}" onclick="setMode('exam')">Klassenarbeit (nur Sätze)</button></div>
+        <button class="${S.mode==="exam"?"on":""}" onclick="setMode('exam')">Klassenarbeit (nur Sätze)</button>
+        <button class="${S.mode==="discover"?"on":""}" onclick="setMode('discover')">🔍 Neu entdecken</button></div>
       <div class="hint-sm" style="margin-top:8px">Im Klassenarbeits-Modus kommen nur ganze Sätze dran – in beiden Richtungen, wie bei der Lehrerin.</div>
+      <div class="hint-sm" style="margin-top:6px"><b>Neu entdecken:</b> Es kommen nur Aufgaben dran, die in dieser Runde noch nicht beantwortet wurden – Vokabeln und Sätze gemischt, bis alles einmal dran war (+100 XP). Danach startet die nächste Runde mit den kniffligen Aufgaben zuerst. Falsch beantwortete Aufgaben kommen weiter häufiger wieder, bis sie zweimal in Folge richtig sind.</div>
+      ${S.mode==="discover" ? `<div style="margin-top:10px"><b>Reihenfolge in Runde 1</b>
+        <div class="seg" style="margin-top:6px"><button class="${S.discOrder==="book"?"on":""}" onclick="setOrder('book')">Nach Buchseite</button>
+        <button class="${S.discOrder==="mix"?"on":""}" onclick="setOrder('mix')">Gemischt</button></div>
+        <div class="hint-sm" style="margin-top:6px">${(()=>{ const d=discoverStats(); return `Runde ${d.round} in diesem Bereich: <b>${d.done}</b> von <b>${d.total}</b> Aufgaben entdeckt.`; })()}</div></div>` : ""}
     </div>
     <div class="card">
       <b>Spielstand sichern & übertragen</b>
