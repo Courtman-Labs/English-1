@@ -591,7 +591,8 @@ function showMap(){
    <div class="btnRow"><button class="btn ghost" onclick="showRoster()">🧝 Mein Team</button>
      <button class="btn ghost" onclick="showSettings()">⚙️ Einstellungen</button>
      <button class="btn ghost" onclick="showEval()">📊 Auswertung</button>
-     <a class="btn ghost" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center">📚 Zum Englisch-Abenteuer</a></div>
+     <a class="btn ghost" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center">📚 Zum Englisch-Abenteuer</a>
+     <a class="btn ghost" href="faecher.html" style="text-decoration:none;display:inline-flex;align-items:center">🌍 Fächer</a></div>
    <div class="sectionTitle">Der Weg durch Mittelerde</div>
    <div class="hint-sm">Aktueller Wortschatz-Bereich: <b>${scopeLabel()}</b>. Tippe auf einen freien Wegpunkt, um die Schlacht zu beginnen.</div>
    <div class="mapWrap" style="aspect-ratio:${MAP_ASPECT}">
@@ -653,7 +654,7 @@ function renderBattle(){
   } else if(battle.qType==="type"){
     qHTML = `<div class="qLabel">Tippe das englische Wort</div><div class="qText">${esc(v.de.split(";")[0].trim())}</div>
       <input class="fillIn" id="fillInput" autocomplete="off" autocapitalize="off" placeholder="…"
-        onkeydown="if(event.key==='Enter')checkFill()">
+        onkeydown="if(event.key==='Enter'){event.preventDefault();checkFill();}">
       <div class="btnRow" style="justify-content:center"><button class="btn" onclick="checkFill()">Prüfen ✔</button></div>`;
   } else {
     const blanked = v.example.replace("___","<i>____</i>");
@@ -661,7 +662,7 @@ function renderBattle(){
     qHTML = `<div class="qLabel">Ergänze den Satz</div><div class="qText">${blanked}</div>
       <div class="hint-sm" style="margin-top:2px">Gesucht ist die englische Übersetzung von: <b style="color:var(--gold2)">${esc(deHint)}</b></div>
       <input class="fillIn" id="fillInput" autocomplete="off" autocapitalize="off" placeholder="fehlendes Wort …"
-        onkeydown="if(event.key==='Enter')checkFill()">
+        onkeydown="if(event.key==='Enter'){event.preventDefault();checkFill();}">
       <div class="btnRow" style="justify-content:center"><button class="btn" onclick="checkFill()">Prüfen ✔</button></div>`;
   }
 
@@ -791,7 +792,9 @@ function showFeedback(ok, given, attack, reviewNote){
         <button class="btn" id="nextBtn" onclick="continueBattle()">${done?"Sieg ansehen →":"Weiter →"}</button>
       </div>
     </div>`;
-  const b=document.getElementById("nextBtn"); if(b) b.focus();
+  // Fokus erst im nächsten Tick setzen: sonst kann derselbe Enter-Tastendruck,
+  // der die Antwort abgeschickt hat, sofort auch den frisch fokussierten Weiter-Button auslösen.
+  setTimeout(()=>{ const b=document.getElementById("nextBtn"); if(b) b.focus(); }, 0);
 }
 function continueBattle(){
   const box=document.getElementById("feedback"); if(box) box.innerHTML="";

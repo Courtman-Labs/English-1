@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fächer – Lernwelt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--gold:#d9a83c;--gold2:#f3d27a;--ink:#f5ecd8;--ok:#5aa65a;--bad:#c9503f;--card:rgba(14,28,24,.88);
+        --acc:#7cc576;--acc2:#b9e6a0;--bg1:#12382a;--bg2:#07140f}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{min-height:100vh;color:var(--ink);font-family:'Nunito',system-ui,-apple-system,sans-serif;font-size:16px;
+    background:radial-gradient(ellipse at top,var(--bg1) 0%,var(--bg2) 72%);background-attachment:fixed}
+  main{position:relative;max-width:880px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px calc(48px + env(safe-area-inset-bottom))}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{font-size:34px;line-height:1}
+  h1{font-family:'Cinzel',serif;color:var(--acc2);font-size:24px;margin:0;line-height:1.1}
+  .sub{display:block;font-size:12.5px;opacity:.75}
+  .hud{display:flex;flex-wrap:wrap;gap:6px}
+  .badge{background:rgba(0,0,0,.35);border:1px solid rgba(124,197,118,.5);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:800;white-space:nowrap}
+  .badge.warnb{border-color:#e89a3c;color:#ffd39a}
+  .btn{font-family:'Cinzel',serif;font-weight:700;font-size:15px;border:none;border-radius:12px;padding:12px 18px;cursor:pointer;min-height:44px;
+    background:linear-gradient(#a6dd8e,#5fae58);color:#0d2412;box-shadow:0 4px 0 #2f6a2c;text-decoration:none;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 #2f6a2c}
+  .btn.ghost{background:rgba(0,0,0,.3);color:var(--ink);border:1px solid rgba(124,197,118,.5);box-shadow:none}
+  .btn.gold{background:linear-gradient(#f6d27a,#d9a83c);color:#2a1d07;box-shadow:0 4px 0 #8a6420}
+  .btn.small{padding:8px 12px;font-size:13px;min-height:38px}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btnRow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .btnRow.center{justify-content:center}
+  .card{background:var(--card);border:1px solid rgba(124,197,118,.32);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .center{text-align:center}
+  .sectionTitle{font-family:'Cinzel',serif;color:var(--acc2);font-size:20px;margin:18px 0 6px}
+  .hint-sm{font-size:14px;opacity:.82;line-height:1.5}
+  .muted{opacity:.62}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .tile{background:var(--card);border:1px solid rgba(124,197,118,.32);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px}
+  .tile h3{margin:0;font-size:17px;font-family:'Cinzel',serif;color:var(--acc2)}
+  .tile .ic{font-size:30px}
+  a.tile{color:var(--ink);text-decoration:none}
+  .bar{height:9px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,#7cc576,#c9e86f)}
+  .bar.thin{height:6px}
+  .stars{letter-spacing:2px;font-size:15px}
+  .pill{display:inline-block;background:rgba(124,197,118,.2);border:1px solid rgba(124,197,118,.5);border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:800}
+  .pill.warn{background:rgba(232,154,60,.2);border-color:#e89a3c;color:#ffd39a}
+  /* Aufgabe */
+  .qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;font-size:13px}
+  .qtype{font-size:12.5px;opacity:.75;text-transform:uppercase;letter-spacing:.06em;font-weight:800}
+  .qtext{font-size:18.5px;line-height:1.5;margin:6px 0 12px}
+  .qtext b{color:var(--acc2)}
+  .opts{display:grid;gap:9px}
+  .opt{display:block;width:100%;text-align:left;font:inherit;font-size:16.5px;line-height:1.4;color:var(--ink);background:rgba(255,255,255,.07);
+    border:2px solid rgba(255,255,255,.18);border-radius:12px;padding:12px 14px;cursor:pointer;min-height:48px}
+  .opt.sel{border-color:var(--acc);background:rgba(124,197,118,.18)}
+  .opt.ok{border-color:#5fc25f;background:rgba(80,180,80,.28)}
+  .opt.bad{border-color:#e0604f;background:rgba(220,80,60,.28)}
+  .opt:disabled{cursor:default;opacity:1}
+  .tfRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  input.txt,textarea.txt{width:100%;font:inherit;font-size:17px;color:var(--ink);background:rgba(0,0,0,.35);border:2px solid rgba(124,197,118,.5);border-radius:12px;padding:12px;outline:none}
+  textarea.txt{min-height:130px;resize:vertical;line-height:1.5}
+  input.txt:focus,textarea.txt:focus{border-color:var(--acc2)}
+  .gap{display:inline-block;min-width:92px;border-bottom:3px solid var(--acc);padding:1px 8px;margin:0 3px;text-align:center;cursor:pointer;font-weight:800;color:var(--acc2);min-height:28px}
+  .gap.ok{border-color:#5fc25f;color:#b6f0b6}.gap.bad{border-color:#e0604f;color:#ffb3a8}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .chip{font:inherit;font-size:16px;color:var(--ink);background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:42px}
+  .chip.used{opacity:.25;pointer-events:none}
+  .ordList{list-style:none;margin:8px 0;padding:0;display:grid;gap:8px;counter-reset:o}
+  .ordList li{counter-increment:o;background:rgba(124,197,118,.14);border:2px solid rgba(124,197,118,.5);border-radius:12px;padding:10px 12px 10px 44px;position:relative;cursor:pointer;min-height:46px}
+  .ordList li::before{content:counter(o);position:absolute;left:10px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--acc);color:#0d2412;font-weight:900;display:flex;align-items:center;justify-content:center}
+  .ordList li.ok{border-color:#5fc25f}.ordList li.bad{border-color:#e0604f;background:rgba(220,80,60,.2)}
+  .ordList li.empty{border-style:dashed;opacity:.35;cursor:default}
+  .mt{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mtc{display:grid;gap:8px;align-content:start}
+  .mti{font:inherit;font-size:15.5px;text-align:left;color:var(--ink);background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:10px 12px;cursor:pointer;position:relative;min-height:48px;line-height:1.35}
+  .mti.sel{border-color:var(--gold2);background:rgba(243,210,122,.2)}
+  .mti .nb{position:absolute;right:8px;top:8px;min-width:24px;height:24px;border-radius:50%;color:#0d2412;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .mti.ok{border-color:#5fc25f}.mti.bad{border-color:#e0604f}
+  .fb{border-radius:14px;padding:12px 14px;margin-top:14px;line-height:1.55;font-size:16px}
+  .fb.ok{background:rgba(80,180,80,.2);border:1px solid #5fc25f}
+  .fb.bad{background:rgba(220,80,60,.2);border:1px solid #e0604f}
+  .fb.hyper{background:rgba(243,210,122,.18);border:1px solid var(--gold2)}
+  .fb h4{margin:0 0 4px;font-size:17px}
+  .conf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .conf .btn{padding:10px 6px;font-size:13.5px;flex-direction:column;gap:2px;line-height:1.2}
+  .conf .btn.c0{background:linear-gradient(#e9d9b0,#c9b07a);box-shadow:0 4px 0 #7c6a3a;color:#2a1d07}
+  .conf .btn.c1{background:linear-gradient(#a9d9a0,#6fb667);box-shadow:0 4px 0 #3a7a35}
+  .conf .btn.c2{background:linear-gradient(#7fd0c2,#3f9f93);box-shadow:0 4px 0 #1f6a60;color:#05231f}
+  .fig{background:#f4efe0;border-radius:12px;padding:6px;margin:6px 0 12px;border:1px solid rgba(0,0,0,.2)}
+  .fig svg{display:block;width:100%;height:auto;max-height:340px}
+  .fig .cap{font-size:12px;color:#4a4430;text-align:center;padding:2px 0 0}
+  .pts{list-style:none;padding:0;margin:8px 0;display:grid;gap:8px}
+  .pts label{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border-radius:10px;background:rgba(255,255,255,.07);cursor:pointer;line-height:1.4}
+  .pts input{width:22px;height:22px;margin-top:2px;accent-color:#7cc576;flex:none}
+  .muster{background:rgba(243,210,122,.12);border-left:4px solid var(--gold2);padding:10px 12px;border-radius:0 10px 10px 0;margin:10px 0;line-height:1.55}
+  .progTop{height:8px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden;margin-bottom:10px}
+  .progTop>i{display:block;height:100%;background:linear-gradient(90deg,#7cc576,#e6d36f)}
+  .fact{text-align:center;padding:22px 16px}
+  .fact .big{font-size:48px}
+  .fact p{font-size:18px;line-height:1.55;margin:10px 0}
+  table.tb{width:100%;border-collapse:collapse;font-size:14.5px}
+  table.tb td,table.tb th{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left;vertical-align:top}
+  .cardTxt ul{margin:6px 0 6px 18px;padding:0;line-height:1.55}
+  .cardTxt li{margin:3px 0}
+  .cardTxt h4{margin:14px 0 4px;color:var(--acc2);font-family:'Cinzel',serif;font-size:16px}
+  .merk{background:rgba(124,197,118,.16);border:1px dashed var(--acc);border-radius:12px;padding:10px 12px;margin:10px 0;font-weight:800}
+  textarea.big{width:100%;min-height:150px;font:13px/1.4 monospace;color:var(--ink);background:rgba(0,0,0,.4);border:1px solid rgba(124,197,118,.5);border-radius:10px;padding:10px}
+  label.row{display:flex;align-items:center;gap:10px;margin:8px 0}
+  input[type=date],select{font:inherit;font-size:16px;padding:9px 10px;border-radius:10px;border:2px solid rgba(124,197,118,.5);background:rgba(0,0,0,.35);color:var(--ink)}
+  .seg{display:inline-flex;border:2px solid rgba(124,197,118,.5);border-radius:12px;overflow:hidden}
+  .seg button{font:inherit;font-weight:800;color:var(--ink);background:transparent;border:none;padding:9px 14px;cursor:pointer;min-height:42px}
+  .seg button.on{background:rgba(124,197,118,.35)}
+  .backRow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;align-items:center}
+  .stat{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;margin:4px 0}
+  .noteBox{font-size:13.5px;line-height:1.5;opacity:.85;border-left:3px solid var(--acc);padding-left:10px;margin:10px 0}
+  @media(max-width:560px){.mt{grid-template-columns:1fr}.qtext{font-size:17.5px}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+"use strict";
+/* ======================================================================
+   Fächer – Lernwelt: Hub + gemeinsame Lern-Engine für Sachfächer
+   Inhalte liegen als "Themenpakete" vor (siehe BUILTIN weiter unten)
+   ====================================================================== */
+const KEY="faecher-v1", PKEY="faecher-packs-v1";
+const app=document.getElementById("app");
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const H=s=>esc(s).replace(/&lt;(\/?)(b|i|br)&gt;/g,"<$1$2>");   // nur <b>, <i>, <br> erlaubt
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function dayNum(d){d=d||new Date();return Math.floor((d.getTime()-d.getTimezoneOffset()*60000)/864e5);}
+function dayStr(n){return new Date(n*864e5).toISOString().slice(0,10);}
+function nz(s){return String(s).toLowerCase().replace(/ß/g,"ss").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/[^a-z0-9]/g,"");}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=[];for(let j=0;j<=n;j++)p[j]=j;
+  for(let i=1;i<=m;i++){let c=[i];for(let j=1;j<=n;j++){c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));}p=c;}return p[n];}
+
+/* ---------- Bilder (SVG) – schematisch nachgezeichnet, helles Papier-Panel ---------- */
+const FIG=(function(){
+  const wrap=(vb,inner,cap)=>`<div class="fig"><svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" font-family="Nunito,Arial,sans-serif">${inner}</svg>${cap?`<div class="cap">${cap}</div>`:""}</div>`;
+  const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.s||11}" fill="${o.c||'#2a2a22'}" text-anchor="${o.a||'start'}" font-weight="${o.w||600}"${o.h?' stroke="#f4efe0" stroke-width="3" paint-order="stroke"':''}>${s}</text>`;};
+  const arrowDefs=`<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2b5ca8"/></marker><marker id="ao" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#d2691e"/></marker></defs>`;
+  return {
+  stock(m){ m=m||"full";
+    const K=[[0,262],[5,230],[10,198],[40,110],[70,28]];
+    const y=h=>{for(let i=0;i<K.length-1;i++){if(h<=K[i+1][0]){const a=K[i],b=K[i+1];return a[1]+(b[1]-a[1])*(h-a[0])/(b[0]-a[0]);}}return K[K.length-1][1];};
+    const x0=70,x1=340;
+    const L=[["Urwaldriesen","Dachgeschoss",40,70,"#4f9a3e","A"],["Baumschicht","Obergeschoss",10,40,"#74b250","B"],["Strauchschicht","Mittelgeschoss",5,10,"#9bc96d","C"],["Krautschicht","Erdgeschoss",0,5,"#c0db8c","D"]];
+    let s=`<rect x="0" y="0" width="360" height="300" fill="#f4efe0"/>`;
+    L.forEach(l=>{const t=y(l[3]),b=y(l[2]);s+=`<rect x="${x0}" y="${t}" width="${x1-x0}" height="${b-t}" fill="${l[4]}"/>`;
+      const cy=(t+b)/2;
+      if(m==="letters"){s+=`<circle cx="${(x0+x1)/2}" cy="${cy}" r="13" fill="#fff" stroke="#333"/>`+T((x0+x1)/2,cy+5,l[5],{a:"middle",w:800,s:15});}
+      else s+=T(x1-6,cy+4,`${l[0]} (${l[1]})`,{a:"end",c:(l[3]-l[2]>=30)?"#fff":"#1d3a12",w:800,s:(l[3]-l[2]>=30)?12.5:11});});
+    s+=`<line x1="${x0}" y1="${y(70)}" x2="${x0}" y2="${y(0)}" stroke="#333" stroke-width="2"/>`;
+    [0,5,10,40,70].forEach((h,i)=>{s+=`<line x1="${x0-5}" y1="${y(h)}" x2="${x1}" y2="${y(h)}" stroke="#333" stroke-width="1" stroke-dasharray="${h===0?'':'3 3'}"/>`;
+      s+= m==="nums" ? T(x0-10,y(h)+4,"("+(i+1)+")",{a:"end",w:800,c:"#c4453a",s:13}) : T(x0-10,y(h)+4,h+" m",{a:"end",w:800,s:12});});
+    s+=T(8,14,"Höhe (m)",{w:800,s:11});
+    s+=T((x0+x1)/2,y(0)+16,"Boden",{a:"middle",w:800,s:11,c:"#5b3b1b"});
+    s+=`<text x="${x0+10}" y="${y(60)}" font-size="20">🦜</text><text x="${x0+40}" y="${y(68)}" font-size="18">🐦</text><text x="${x0+44}" y="${y(46)}" font-size="20">🦥</text>`;
+    s+=`<text x="${x0+12}" y="${y(24)}" font-size="20">🐒</text><text x="${x0+70}" y="${y(3.5)}" font-size="15">🐜</text><text x="${x0+12}" y="${y(3.5)}" font-size="15">🐗</text>`;
+    return wrap("0 0 360 290",s,m==="full"?"Stockwerkbau des tropischen Regenwaldes (schematisch, Höhen nicht maßstabsgetreu, nach Schulbuch S. 95)":"Stockwerkbau (schematisch)");},
+  klima(hl){
+    const P=[255,250,260,255,190,100,60,40,55,125,150,215], M="JFMAMJJASOND", x0=48,w=24, base=200, k=0.62;
+    let s=`<rect width="360" height="245" fill="#f4efe0"/>`;
+    for(let v=0;v<=260;v+=40){const y=base-v*k;s+=`<line x1="${x0}" y1="${y}" x2="${x0+12*w}" y2="${y}" stroke="#d8d0b8"/>`+T(x0+12*w+4,y+4,v,{s:10});}
+    P.forEach((v,i)=>{const h=v*k;s+=`<rect x="${x0+i*w+3}" y="${base-h}" width="${w-6}" height="${h}" fill="${hl===i?'#c4453a':'#7fb2d9'}"/>`+T(x0+i*w+w/2,base+13,M[i],{a:"middle",w:800,s:11});});
+    const yT=base-54*k;
+    s+=`<line x1="${x0}" y1="${yT}" x2="${x0+12*w}" y2="${yT}" stroke="#a3243c" stroke-width="2.5"/>`;
+    s+=T(x0+4,yT-5,"Temperatur: ca. 27 °C (fast gleich)",{c:"#a3243c",w:800,s:10.5,h:1});
+    [0,10,20,30].forEach(t=>{s+=T(x0-6,base-t*2*k+4,t,{a:"end",s:10,c:"#a3243c"});});
+    s+=T(4,base-62*k-12,"°C",{s:10,c:"#a3243c",w:800})+T(x0+12*w+4,base-270*k,"mm",{s:10,w:800});
+    s+=T(x0,16,"Manaus (Brasilien) · T = 26,9 °C · N = 1897 mm",{w:800,s:11.5});
+    s+=T(x0,232,"Balken: Niederschlag (mm) · rote Linie: Temperatur (°C)",{s:10,c:"#555"});
+    return wrap("0 0 360 245",s,"Klimadiagramm Manaus (nachgezeichnet, Werte ungefähr)");},
+  tag(m){
+    const T0=[[4,20],[6,20],[8,22],[10,25],[12,28],[14,30],[15,31],[16,30],[18,26],[20,23]];
+    const X=h=>40+(h-4)*(300/16), Y=t=>200-(t-15)*(150/20);
+    let s=`<rect width="360" height="250" fill="#f4efe0"/><rect x="40" y="30" width="300" height="170" fill="#e6efe0"/>`;
+    for(let t=15;t<=35;t+=5)s+=`<line x1="40" y1="${Y(t)}" x2="340" y2="${Y(t)}" stroke="#cfd8c4"/>`+T(34,Y(t)+4,t+"°",{a:"end",s:10});
+    for(let h=4;h<=20;h+=2)s+=T(X(h),214,h+"",{a:"middle",s:10});
+    s+=T(190,230,"Uhrzeit",{a:"middle",s:10,w:800});
+    s+=`<polyline fill="none" stroke="#c4453a" stroke-width="3" points="${T0.map(p=>X(p[0])+","+Y(p[1])).join(" ")}"/>`;
+    T0.forEach(p=>{s+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="3.5" fill="#c4453a"/>`;});
+    const lab=[[5,"Nebel, Dunst","1",44],[8,"Verdunstung","2",57],[11,"Wolkenbildung","3",44],[15.5,"Gewitter","4",57],[18.5,"Dampfschwaden","5",44]];
+    lab.forEach(l=>{ if(m==="mask"){s+=`<circle cx="${X(l[0])}" cy="${l[3]-4}" r="11" fill="#fff" stroke="#333"/>`+T(X(l[0]),l[3],l[2],{a:"middle",w:800,s:13});}
+      else s+=T(X(l[0]),l[3],l[1],{a:"middle",s:9.5,w:800,c:"#2b5ca8"});});
+    s+=T(X(12),Y(28)-8,"28°",{a:"middle",s:10,c:"#a3243c",w:800})+T(X(15)+8,Y(31)-6,"31°",{s:10,c:"#a3243c",w:800});
+    s+=T(40,20,"Tagesverlauf im tropischen Regenwald",{w:800,s:12});
+    return wrap("0 0 360 245",s,"Temperatur im Tagesverlauf (4–20 Uhr), nach Schulbuch S. 93");},
+  wetter(m){ const q=m==="mask";
+    let s=arrowDefs+`<rect width="360" height="250" fill="#f4efe0"/><rect x="0" y="170" width="360" height="80" fill="#b9d6a0"/>`;
+    for(let i=0;i<9;i++){const x=40+i*35;s+=`<rect x="${x-3}" y="150" width="6" height="40" fill="#6b4a2b"/><circle cx="${x}" cy="140" r="22" fill="#4f9a3e"/>`;}
+    s+=`<ellipse cx="90" cy="58" rx="46" ry="20" fill="#cfd8e6"/><ellipse cx="120" cy="50" rx="34" ry="18" fill="#dfe6f0"/>`;
+    s+=`<line x1="90" y1="82" x2="90" y2="120" stroke="#2b5ca8" stroke-width="3" marker-end="url(#ah)"/>`;
+    s+=T(8,22,q?"A":"Niederschlag 100 %",{w:800,s:11.5,c:"#2b5ca8"});
+    for(let i=0;i<4;i++)s+=`<line x1="${200+i*20}" y1="115" x2="${200+i*20}" y2="80" stroke="#2b5ca8" stroke-width="2.5" marker-end="url(#ah)"/>`;
+    s+=T(352,72,q?"B":"Wasserdampfabgabe durch Pflanzen 74 %",{a:"end",w:800,s:11,c:"#2b5ca8"});
+    s+=`<line x1="350" y1="44" x2="290" y2="44" stroke="#2b5ca8" stroke-width="3" marker-end="url(#ah)"/>`;
+    s+=T(352,34,q?"C":"Zufuhr (Wind) 26 %",{a:"end",w:800,s:11,c:"#2b5ca8"});
+    s+=`<line x1="40" y1="215" x2="320" y2="215" stroke="#2b5ca8" stroke-width="3" marker-end="url(#ah)"/>`;
+    s+=T(180,236,q?"D":"Wasserabfluss 26 %",{a:"middle",w:800,s:11.5,c:"#2b5ca8"});
+    return wrap("0 0 360 250",s,"Der Regenwald als Wettermaschine (schematisch, nach Schulbuch S. 93)");},
+  kreis(m){ const q=m==="mask";
+    let s=arrowDefs+`<rect width="360" height="270" fill="#f4efe0"/>`;
+    s+=`<rect x="0" y="140" width="360" height="8" fill="#7bbf5a"/><rect x="0" y="148" width="360" height="20" fill="#3b2a18"/><rect x="0" y="168" width="360" height="64" fill="#e0b98a"/><rect x="0" y="232" width="360" height="38" fill="#9a9a9a"/>`;
+    [[70,100],[160,90],[250,100]].forEach(p=>{s+=`<rect x="${p[0]-4}" y="${p[1]}" width="8" height="40" fill="#6b4a2b"/><circle cx="${p[0]}" cy="${p[1]-8}" r="26" fill="#4f9a3e"/>`;});
+    s+=`<path d="M118,70 C118,100 125,125 130,138" fill="none" stroke="#d2691e" stroke-width="3" marker-end="url(#ao)"/>`;
+    s+=`<path d="M205,146 C214,125 214,100 208,78" fill="none" stroke="#d2691e" stroke-width="3" marker-end="url(#ao)"/>`;
+    s+=`<path d="M40,146 C10,130 10,80 45,62" fill="none" stroke="#2b5ca8" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ah)"/>`;
+    s+=T(8,162,q?"1":"Humus (wenige cm)",{s:10.5,w:800,c:"#fff"});
+    s+=T(352,162,q?"6":"Bakterien &amp; Pilze zersetzen",{a:"end",s:10.5,w:800,c:"#f3d27a"});
+    s+=T(180,205,q?"2":"nährstoffarmer Boden",{a:"middle",s:12,w:800,c:"#4a2f10"});
+    s+=T(180,255,q?"3":"Ausgangsgestein",{a:"middle",s:12,w:800,c:"#222"});
+    s+=T(8,22,q?"4":"abgestorbene Blätter fallen",{s:10.5,w:800,c:"#a3501a"});
+    s+=T(352,40,q?"5":"Wurzeln nehmen Nährstoffe auf",{a:"end",s:10.5,w:800,c:"#a3501a"});
+    return wrap("0 0 360 270",s,"Kurzgeschlossener Nährstoffkreislauf (schematisch nach Schulbuch S. 98)");},
+  wander(m){ const q=m==="mask";
+    const box=(x,y,w,h,c,t1,t2,n)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${c}" stroke="#333"/>`+T(x+w/2,y+22,q?("Schritt "+n):t1,{a:"middle",w:800,s:11.5})+T(x+w/2,y+40,q?"?":t2,{a:"middle",s:10.5});
+    let s=arrowDefs+`<rect width="360" height="250" fill="#f4efe0"/>`;
+    s+=box(100,14,160,54,"#e9c9a0","① Rodung + Brandrodung","Asche = Dünger",1);
+    s+=box(220,100,130,54,"#f2d27a","② Anbau","nur ca. 3 Jahre",2);
+    s+=box(10,100,130,54,"#b8d98a","③ Brache","mind. 7 Jahre Erholung",3);
+    s+=box(100,186,160,54,"#7bbf5a","④ Sekundärwald wächst","Boden erholt sich",4);
+    s+=`<path d="M260,42 C305,50 300,70 290,98" fill="none" stroke="#2b5ca8" stroke-width="2.5" marker-end="url(#ah)"/>`;
+    s+=`<path d="M290,156 C290,190 275,205 262,212" fill="none" stroke="#2b5ca8" stroke-width="2.5" marker-end="url(#ah)"/>`;
+    s+=`<path d="M98,212 C60,205 55,185 60,158" fill="none" stroke="#2b5ca8" stroke-width="2.5" marker-end="url(#ah)"/>`;
+    s+=`<path d="M60,98 C55,70 70,46 98,42" fill="none" stroke="#2b5ca8" stroke-width="2.5" marker-end="url(#ah)"/>`;
+    return wrap("0 0 360 250",s,"Ablauf des Wanderfeldbaus (Kreislauf) – das Haus bleibt ca. 15 Jahre am selben Ort");},
+  lage(m){ const q=m==="mask";
+    const y=l=>100-l*1.05;
+    let s=`<rect width="360" height="205" fill="#dcebf5"/>`;
+    s+=`<rect x="0" y="${y(23.5)}" width="360" height="${y(-23.5)-y(23.5)}" fill="#a9d98f" opacity=".85"/>`;
+    const L=[[66.5,"Nördlicher Polarkreis","A",-3],[23.5,"Nördlicher Wendekreis","B",-3],[0,"Äquator","C",-3],[-23.5,"Südlicher Wendekreis","D",13],[-66.5,"Südlicher Polarkreis","E",-3]];
+    L.forEach(l=>{s+=`<line x1="0" y1="${y(l[0])}" x2="360" y2="${y(l[0])}" stroke="#333" stroke-width="${l[0]===0?2.5:1.3}" stroke-dasharray="${l[0]===0?'':'6 4'}"/>`;
+      if(q){s+=`<circle cx="340" cy="${y(l[0])-9}" r="9" fill="#fff" stroke="#333"/>`+T(340,y(l[0])-5,l[2],{a:"middle",w:800,s:11});}
+      else s+=T(6,y(l[0])+l[3],l[1],{s:10.5,w:800});});
+    s+=T(190,y(-16),q?"?":"Tropen – hier liegt der tropische Regenwald",{a:"middle",w:800,s:12,c:"#1d5a14"});
+    return wrap("0 0 360 205",s,"Schema der Breitenkreise (nicht maßstabsgetreu)");},
+  oel(m){ const D=[["Soja",0.4],["Kokos",0.7],["Sonnenblume",0.7],["Raps",0.7],["Ölpalme",3.3]];
+    let s=`<rect width="360" height="240" fill="#f4efe0"/>`;
+    D.forEach((d,i)=>{const h=d[1]*50,x=26+i*66;s+=`<rect x="${x}" y="${200-h}" width="46" height="${h}" fill="${i===4?'#c4733a':'#9bb36a'}"/>`+T(x+23,194-h,(m==="mask"&&i===4)?"?":String(d[1]).replace(".",",")+" t",{a:"middle",w:800,s:12})+T(x+23,216,d[0],{a:"middle",s:11,w:700});});
+    s+=`<line x1="14" y1="200" x2="350" y2="200" stroke="#333" stroke-width="2"/>`+T(14,18,"Ölerträge in Tonnen pro Hektar (t/ha)",{w:800,s:12});
+    return wrap("0 0 360 230",s,"Ölerträge im Vergleich (Quelle im Schulbuch: WWF 2016), 1 ha = 100 m × 100 m");},
+  ertrag(){ const B=[100,78,47,17], A=[70,80,92,120], k=1.3;
+    let s=`<rect width="360" height="240" fill="#f4efe0"/>`;
+    for(let i=0;i<4;i++){const x=48+i*76;
+      s+=`<rect x="${x}" y="${200-B[i]*k}" width="26" height="${B[i]*k}" fill="#d9a83c"/><rect x="${x+28}" y="${200-A[i]*k}" width="26" height="${A[i]*k}" fill="#4f9a3e"/>`+T(x+27,216,(i+1)+". Jahr",{a:"middle",s:11,w:800});}
+    s+=`<line x1="36" y1="200" x2="350" y2="200" stroke="#333" stroke-width="2"/><line x1="36" y1="40" x2="36" y2="200" stroke="#333" stroke-width="2"/>`;
+    s+=T(40,18,"Erträge im Verlauf der Jahre (Tendenz, nicht genau)",{w:800,s:11.5});
+    s+=`<rect x="48" y="26" width="12" height="12" fill="#d9a83c"/>`+T(64,36,"Brandrodung",{s:11})+`<rect x="150" y="26" width="12" height="12" fill="#4f9a3e"/>`+T(166,36,"Agroforstwirtschaft",{s:11});
+    return wrap("0 0 360 230",s,"Erträge: Brandrodung sinkt schnell, Agroforstwirtschaft bleibt langfristig hoch (Tendenz nach Schulbuch S. 99)");}
+  };})();
+
+/* ---------- Operatoren-Hilfe ---------- */
+const OPERATORS=[
+ ["Lokalisieren","Einen Ort oder Raum <b>auf der Karte einordnen</b>: Kontinent, Land, Lage zum Äquator/Breitenkreisen.","Der tropische Regenwald liegt …"],
+ ["Beschreiben","Merkmale und Sachverhalte <b>sachlich und genau</b> in eigenen Worten wiedergeben – ohne Erklärung, ohne Meinung.","Man sieht / Es gibt / Die Temperatur liegt bei …"],
+ ["Darstellen","Einen Sachverhalt <b>zusammenhängend schildern</b> (z. B. das Wetter oder einen Ablauf).","Zuerst …, danach …, am Ende …"],
+ ["Erklären","<b>Ursachen und Zusammenhänge</b> aufzeigen: Wie kommt es dazu?","… weil …, dadurch …, deshalb …"],
+ ["Erläutern","Wie Erklären, aber zusätzlich mit <b>Beispielen und Belegen</b> veranschaulichen.","Das zeigt sich zum Beispiel …"],
+ ["Begründen","Eine Aussage mit <b>Argumenten</b> stützen.","… denn …, das liegt daran, dass …"],
+ ["Vergleichen","<b>Gemeinsamkeiten und Unterschiede</b> herausarbeiten – am besten in Tabellenform denken.","Beide …, aber im Gegensatz zu …"],
+ ["Bewerten / Stellung nehmen","Ein <b>eigenes, begründetes Urteil</b> fällen: Pro und Contra abwägen, am Ende ein Fazit ziehen.","Einerseits …, andererseits …, Insgesamt finde ich …"]
+];
+
+/* ---------- Pakete ---------- */
+/* ---------- Hilfsfunktionen zum Schreiben der Aufgaben ---------- */
+const TK=[], _N={};
+function _id(sec){_N[sec]=(_N[sec]||0)+1;return sec+"-"+_N[sec];}
+function mc(sec,lvl,q,a,w,why,o){TK.push(Object.assign({id:_id(sec),sec,lvl,type:"mc",q,a,w,why},o||{}));}
+function tf(sec,lvl,q,truth,why,fix,o){TK.push(Object.assign({id:_id(sec),sec,lvl,type:"tf",q,truth,why,fix:fix||""},o||{}));}
+function ty(sec,lvl,q,a,why,o){TK.push(Object.assign({id:_id(sec),sec,lvl,type:"ty",q,a,why},o||{}));}
+function cl(sec,lvl,text,a,extra,why,o){TK.push(Object.assign({id:_id(sec),sec,lvl,type:"cl",text,a,extra:extra||[],why},o||{}));}
+function od(sec,lvl,q,items,why,o){TK.push(Object.assign({id:_id(sec),sec,lvl,type:"od",q,items,why},o||{}));}
+function mt(sec,lvl,q,pairs,why,o){TK.push(Object.assign({id:_id(sec),sec,lvl,type:"mt",q,pairs,why},o||{}));}
+function op(sec,lvl,verb,q,pts,muster,o){TK.push(Object.assign({id:_id(sec),sec,lvl,type:"op",verb,q,pts,muster},o||{}));}
+
+/* ---------- Abschnitte mit Lernkarten ---------- */
+const ERD_SECTIONS=[
+{id:"lage",name:"Lage & Verbreitung",icon:"🗺️",fig:[["lage","full"]],card:`
+<h4>Wo liegt der tropische Regenwald?</h4>
+<ul><li>Rund um den <b>Äquator</b> (0°), in den <b>Tropen</b> zwischen dem Nördlichen und dem Südlichen <b>Wendekreis</b> (ca. 23,5° N/S).</li>
+<li><b>Südamerika:</b> größtes zusammenhängendes Regenwaldgebiet der Erde (Amazonasgebiet).</li>
+<li><b>Afrika:</b> Regenwald vor allem in Zentralafrika (Kongobecken).</li>
+<li><b>Südostasien:</b> z. B. Indonesien; Forscher entdecken jedes Jahr neue Arten, besonders im Bergland zwischen Laos und Vietnam.</li>
+<li><b>Madagaskar:</b> Regenwälder mit einzigartiger Pflanzen- und Tierwelt.</li></ul>
+<div class="merk">Merke: Regenwald gibt es nur in den Tropen – nicht in Europa.</div>`},
+{id:"klima",name:"Klima & Tagesverlauf",icon:"🌦️",fig:[["klima",null],["tag","full"],["wetter","full"]],card:`
+<h4>Das Klima im Regenwald</h4>
+<ul><li>Das ganze Jahr <b>warm und feucht</b>. Manaus: <b>T = 26,9 °C</b>, <b>N = 1897 mm</b> pro Jahr.</li>
+<li>Temperatur bleibt fast gleich (ca. 27 °C), der Niederschlag schwankt: viel am Jahresanfang, am wenigsten im <b>August</b> (ca. 40 mm).</li>
+<li><b>Tageszeitenklima:</b> große Schwankungen im Laufe eines <b>Tages</b>; die Tageslänge bleibt das ganze Jahr gleich.</li>
+<li><b>Jahreszeitenklima</b> (Deutschland): vier Jahreszeiten, Tageslänge, Niederschlag und Temperatur unterscheiden sich deutlich.</li></ul>
+<h4>Tagesablauf in den Tropen</h4>
+<ul><li><b>6 Uhr:</b> kurze Dämmerung, Sonnenaufgang, Dunst, ca. 20 °C</li>
+<li><b>Vormittag:</b> Sonne wird stärker, Wasser verdunstet, Wolken bilden sich</li>
+<li><b>12 Uhr:</b> starke Wolkenbildung, ca. 28 °C</li>
+<li><b>Nachmittag:</b> heftige Gewitter und Regenfälle, ca. 31 °C (am wärmsten)</li>
+<li><b>18 Uhr:</b> Sonnenuntergang, kurze Dämmerung, hohe Luftfeuchtigkeit, ca. 26 °C</li>
+<li><b>Nachts:</b> über 20 °C = <b>Tropennacht</b></li></ul>
+<h4>Wettermaschine</h4>
+<ul><li>Pflanzen geben 74 % des Niederschlags als Wasserdampf wieder ab, 26 % kommen durch Wind dazu, 26 % fließen ab.</li>
+<li>Verdunstung → Wolken → Regen → Feuchtigkeit für Pflanzen und Boden → alles beginnt von vorn.</li>
+<li>Wird der Wald gerodet, trocknet der Boden viel schneller aus.</li></ul>
+<div class="merk">Merke: „Der Regenwald macht seinen Regen selbst.“</div>`},
+{id:"arten",name:"Artenvielfalt & Lebensraum",icon:"🦜",card:`
+<h4>Naturwunder Regenwald</h4>
+<ul><li>Größte <b>Artenvielfalt (Biodiversität)</b> der Erde: etwa <b>50 %</b> aller Tier- und Pflanzenarten. Forscher schätzen bis zu <b>30 Mio. Tierarten</b> und 100 000 Pflanzenarten. Die meisten sind noch gar nicht entdeckt.</li>
+<li>Auf 20 m² wachsen über <b>1 000 Pflanzen</b>, ca. <b>120 Baumarten</b> pro Hektar, 8 600 Vogelarten.</li>
+<li>Nur <b>2 %</b> des Lichts erreichen den Waldboden.</li>
+<li><b>Hotspot</b> (= Brennpunkt) der Artenvielfalt.</li>
+<li><b>Flora</b> = alle Pflanzen, <b>Fauna</b> = alle Tiere. Sie bilden eine <b>Überlebensgemeinschaft</b>: voneinander abhängig, schützen und ergänzen sich.</li>
+<li>Das feuchtheiße Klima wirkt wie ein <b>Treibhaus</b>: gleichmäßiges Wachstum das ganze Jahr, <b>keine Jahresringe</b>, Urwaldriesen bis 70 m.</li>
+<li>Früher auch „<b>Grüne Hölle</b>“ (schwer zugängliches Gelände). Das Innere: dicht bewachsen, Dunst, wenig Licht, viele Farne, Moose, Lianen.</li>
+<li>Viele Tiere sind <b>Spezialisten</b>: Schutz vor Fressfeinden, Leben hoch oben in den Bäumen.</li></ul>`},
+{id:"stock",name:"Stockwerkbau",icon:"🏢",fig:[["stock","full"]],card:`
+<h4>Die vier Stockwerke (plus Boden)</h4>
+<ul><li><b>Urwaldriesen</b> (Kronenschicht): 40–70 m = <b>Dachgeschoss</b> (Tukan, Faultier, Kolibri)</li>
+<li><b>Baumschicht:</b> 10–40 m = <b>Obergeschoss</b> (Kapuzineraffe)</li>
+<li><b>Strauchschicht:</b> 5–10 m = <b>Mittelgeschoss</b></li>
+<li><b>Krautschicht:</b> 0–5 m = <b>Erdgeschoss</b> (Tapir, Blattameise, Vogelspinne)</li>
+<li>darunter der <b>Boden</b></li></ul>
+<h4>Anpassungen</h4>
+<ul><li><b>Lianen</b> (Schlingpflanzen) wachsen an Bäumen entlang zum Licht. Der Baum geht durch Lichtmangel manchmal ein.</li>
+<li><b>Aufsitzerpflanzen</b> bilden keinen Stamm aus (sparen Energie) und sitzen auf anderen Pflanzen, ohne sie direkt zu schädigen.</li>
+<li><b>Brett- oder Stützwurzeln</b> geben großen Bäumen Standfestigkeit.</li>
+<li>Die meisten Arten leben nicht am Boden, sondern in den <b>oberen Stockwerken</b>.</li></ul>
+<div class="merk">Merke von unten nach oben: Kraut – Strauch – Baum – Urwaldriesen (0 · 5 · 10 · 40 · 70 m).</div>`},
+{id:"bed",name:"Bedeutung des Regenwaldes",icon:"🌍",card:`
+<ul><li><b>„Grüne Lunge“</b> der Erde: unzählige Pflanzen wandeln Kohlenstoffdioxid in Sauerstoff um.</li>
+<li><b>Hotspot der Artenvielfalt:</b> so viele Pflanzen- und Tierarten wie in allen anderen Lebensräumen zusammen.</li>
+<li>Viele Lebensmittel und Gewürze stammen ursprünglich von dort (laut Buch: Mais, Reis, Kartoffeln, Vanille, Ananas), auch viele menschliche Erfindungen haben dort ihren Ursprung.</li>
+<li><b>Wasserspeicher</b> und „Wettermaschine“.</li></ul>
+<div class="merk">Merke: Lunge · Artenvielfalt · Nahrung/Rohstoffe · Wasserkreislauf.</div>`},
+{id:"boden",name:"Boden & Nährstoffkreislauf",icon:"🍂",fig:[["kreis","full"]],card:`
+<ul><li>Der Boden ist <b>nährstoffarm</b>. Die <b>Humusschicht</b> ist nur wenige Zentimeter dick (darunter nährstoffarmer Boden, ganz unten Ausgangsgestein).</li>
+<li>In Mitteleuropa sind die Nährstoffe im <b>Boden</b> gespeichert, im Regenwald in den <b>Pflanzen und ihren Wurzeln</b>.</li>
+<li>Abgestorbene Blätter werden bei Hitze und Feuchtigkeit schnell von <b>Bakterien und Pilzen zersetzt</b>. Nach dem täglichen Regen nehmen die Wurzeln die Nährstoffe <b>über Pilze gleich wieder auf</b>.</li>
+<li>Deshalb: <b>kurzgeschlossener Nährstoffkreislauf</b>. Das erklärt den scheinbaren Widerspruch: nährstoffarmer Boden, aber üppiger Wald.</li>
+<li>Wird der Wald abgeholzt, <b>wäscht der Regen die Nährstoffe aus</b> (Auswaschung), es droht Bodenerosion.</li></ul>
+<div class="merk">Merke: Blatt fällt → Bakterien/Pilze zersetzen → Wurzeln nehmen sofort wieder auf.</div>`},
+{id:"nutz",name:"Wanderfeldbau & Agroforst",icon:"🌱",fig:[["wander","full"],["ertrag",null]],card:`
+<h4>Wanderfeldbau (shifting cultivation)</h4>
+<ul><li><b>Ablauf:</b> Unterholz abschlagen → <b>Brandrodung</b> (Asche = Dünger, zerstört Schädlinge, einige große Bäume als Schattenspender) → Bearbeitung mit der Hacke → Anbau von Maniok, Batate, Yams.</li>
+<li><b>2–3 Jahre</b> Ernte, dann sind die Nährstoffe verbraucht. <b>Brache</b> mindestens <b>7 Jahre</b> (Sekundärwald). Das Haus bleibt ca. 15 Jahre, dann Umzug.</li>
+<li><b>Vorteile:</b> kurzfristig hohe Erträge; Erholung des Bodens in der Brache.</li>
+<li><b>Nachteile:</b> Bodenerosion bei zu früher Nutzung; hoher Flächenverbrauch; reicht bei wachsender Bevölkerung nicht mehr.</li></ul>
+<h4>Agroforstwirtschaft</h4>
+<ul><li><b>Ablauf:</b> Nutzpflanzen werden zwischen Bäumen angepflanzt – ein <b>mehrstöckiges Anbausystem</b> ahmt den Regenwald nach.</li>
+<li><b>Vorteile:</b> langanhaltende Nährstoffversorgung durch Bäume, Schutz vor Bodenerosion, Erhalt der Humusschicht, langfristig hohe Erträge.</li>
+<li><b>Nachteile:</b> hoher Aufwand und Pflege, langfristige Planung.</li></ul>
+<h4>Fachbegriffe</h4>
+<ul><li><b>Food Crops:</b> Grundnahrungsmittel für die einheimische Bevölkerung · <b>Subsistenzbauer:</b> baut für die Selbstversorgung an · <b>Brache:</b> Fläche, die sich erholt · <b>Erosion:</b> Abtragung des Bodens · <b>Primärwald:</b> ursprünglicher Wald · <b>Sekundärwald:</b> nachgewachsener Wald</li></ul>`},
+{id:"cash",name:"Cash Crops & Ölpalme",icon:"🌴",fig:[["oel",null]],card:`
+<ul><li><b>Cash Crops:</b> landwirtschaftliche Produkte, die nicht auf lokalen Märkten, sondern auf dem <b>Weltmarkt</b> verkauft werden. <b>Weltmarkt:</b> weltweiter Wirtschaftsraum, Handel an der Börse (Gegenteil: lokaler/nationaler Markt).</li>
+<li><b>Ölpalme:</b> vor ca. 200 Jahren von Afrika nach Südamerika, später Asien gebracht. Braucht <b>viel Licht, 26 °C, genug Wasser, lockeren Boden</b>. Wird bis <b>120 Jahre</b> alt, trägt nach <b>3 Jahren</b> erstmals Früchte, jährlich ca. 15 Fruchtstände. Frucht etwa so groß wie eine Zwetschge.</li>
+<li><b>Ölertrag:</b> Ölpalme 3,3 t/ha – Soja 0,4 · Kokos, Sonnenblume, Raps je 0,7. Etwa ein Drittel des Welt-Ölbedarfs (Nahrung) stammt von der Ölpalme.</li>
+<li><b>Verwendung:</b> Margarine, Schokolade, Kekse, Chips, Fertiggerichte, Kosmetik, Seife, Kerzen, Lacke, Biokraftstoff. Erkennbar an „pflanzliches Öl“ oder „vegetabiles Fett“.</li>
+<li><b>Plantagen (Monokultur):</b> über 12 Mio. ha = etwa ein Drittel der Fläche Deutschlands.</li>
+<li><b>Vorteile:</b> maschinell gut bearbeitbar, hohe Erträge, viele Arbeitsplätze, Versorgung des Welthandels, niedrige Kosten und Preise.</li>
+<li><b>Nachteile:</b> Verlust großer Regenwaldflächen und der Artenvielfalt, viel Dünger und Pflanzenschutzmittel, Belastung von Boden, Grundwasser und Flüssen.</li>
+<li><b>Verarbeitung:</b> reife Früchte fallen herunter → innerhalb von <b>24 Stunden</b> verarbeiten → kochen → Rohpalmöl (orangerot) aus dem Fruchtfleisch, Kernpalmöl (fest, farblos) aus den Samen.</li></ul>`},
+{id:"pruef",name:"Prüfungsaufgaben",icon:"📝",card:"<p>Hier gibt es keine Lernkarte – diese Aufgaben kommen in der Prüfungssimulation und im gemischten Training.</p>"}
+];
+
+/* ---------- Fun-Fakten ---------- */
+const ERD_FACTS=[
+{id:"f1",e:"🧸",t:"Auf nur 20 m² – so viel wie ein Kinderzimmer – wachsen im Regenwald über <b>1 000 Pflanzen</b>."},
+{id:"f2",e:"🌳",t:"Auf einem einzigen Hektar (ein großes Fußballfeld) stehen etwa <b>120 verschiedene Baumarten</b>. In einem deutschen Wald sind es meist nur eine Handvoll."},
+{id:"f3",e:"🦜",t:"Im Regenwald leben rund <b>8 600 verschiedene Vogelarten</b>."},
+{id:"f4",e:"🔦",t:"Auf den Waldboden kommen nur etwa <b>2 %</b> des Sonnenlichts. Deshalb ist es unten fast wie in der Dämmerung."},
+{id:"f5",e:"🌍",t:"Etwa die <b>Hälfte aller Tier- und Pflanzenarten</b> der Welt lebt im tropischen Regenwald – obwohl er nur einen kleinen Teil der Erde bedeckt."},
+{id:"f6",e:"🔬",t:"Forscher schätzen: Im Regenwald könnten bis zu <b>30 Millionen Tierarten</b> leben. Die meisten davon hat noch nie ein Mensch beschrieben."},
+{id:"f7",e:"🏢",t:"Urwaldriesen werden bis zu <b>70 Meter</b> hoch – so hoch wie ein Hochhaus mit über 20 Stockwerken."},
+{id:"f8",e:"🪵",t:"Regenwaldbäume haben <b>keine Jahresringe</b>, weil es keine Jahreszeiten gibt. Ihr Alter kann man deshalb nur schätzen."},
+{id:"f9",e:"😈",t:"Früher nannten Entdecker den Regenwald „<b>Grüne Hölle</b>“, weil man dort fast nicht vorankam. Heute heißt er „Grüne Lunge“."},
+{id:"f10",e:"☔",t:"„Der Regenwald macht seinen Regen selbst“: Rund <b>74 %</b> des Wassers verdunsten wieder über die Pflanzen und regnen später erneut ab."},
+{id:"f11",e:"🌙",t:"Im Regenwald wird es nachts kaum kühler: Bleibt es über 20 °C, nennt man das eine <b>Tropennacht</b>."},
+{id:"f12",e:"🕛",t:"Am Äquator ist jeder Tag das ganze Jahr über etwa <b>12 Stunden</b> lang. Deshalb gibt es dort keine Jahreszeiten wie bei uns."},
+{id:"f13",e:"⛈️",t:"Fast jeden Nachmittag gibt es im Regenwald ein Gewitter. Man kann die Uhr danach stellen!"},
+{id:"f14",e:"🦥",t:"Faultiere bewegen sich so langsam, dass auf ihrem Fell Algen wachsen. Zum Toilettengang klettern sie nur etwa <b>einmal pro Woche</b> vom Baum."},
+{id:"f15",e:"🐜",t:"Blattschneiderameisen tragen Blattstücke, die ein Vielfaches ihres eigenen Gewichts wiegen. Sie essen die Blätter nicht, sondern züchten darauf einen <b>Pilz</b> als Nahrung."},
+{id:"f16",e:"🦜",t:"Der Tukan hat einen riesigen Schnabel – er ist aber innen fast hohl und deshalb <b>erstaunlich leicht</b>."},
+{id:"f17",e:"🐦",t:"Kolibris können in der Luft <b>stehen bleiben</b> und sogar rückwärts fliegen. Ihre Flügel schlagen dabei viele Dutzend Mal pro Sekunde."},
+{id:"f18",e:"🦋",t:"Der blaue Morpho-Schmetterling ist gar nicht „blau gefärbt“: Die Farbe entsteht durch winzige Strukturen auf seinen Flügelschuppen, die Licht spiegeln."},
+{id:"f19",e:"🐗",t:"Der Flachlandtapir ist ein guter <b>Schwimmer und Taucher</b>. Mit seiner beweglichen Nase greift er Blätter und Früchte."},
+{id:"f20",e:"🐒",t:"Manche Kapuzineraffen benutzen <b>Steine als Werkzeug</b>, um Nüsse zu knacken."},
+{id:"f21",e:"🕷️",t:"Die Goliath-Vogelspinne zählt zu den größten Spinnen der Welt – mit Beinen so groß wie ein Essteller (bis etwa 30 cm Spannweite)."},
+{id:"f22",e:"🐸",t:"Bunte Pfeilgiftfrösche warnen mit ihren knalligen Farben: „Vorsicht, giftig!“ Manche Kaulquappen wachsen in kleinen Wasserbecken, die sich in Bromelien-Blättern sammeln."},
+{id:"f23",e:"🌿",t:"Aufsitzerpflanzen (z. B. Bromelien) leben hoch oben auf Ästen. Sie haben <b>keine Wurzeln im Boden</b> und fangen Regenwasser in ihren Blättern auf."},
+{id:"f24",e:"🧗",t:"Lianen klettern wie lange Kletterseile an Bäumen nach oben zum Licht. Manche werden viele Dutzend Meter lang."},
+{id:"f25",e:"🌉",t:"Brettwurzeln können so groß wie Zimmerwände werden. Sie halten die hohen Bäume auf dem dünnen Boden fest."},
+{id:"f26",e:"🌊",t:"Der Amazonas führt mehr Wasser als jeder andere Fluss der Erde."},
+{id:"f27",e:"🍫",t:"Schokolade stammt von der <b>Kakaobohne</b>. Der Kakaobaum wächst nur in den feuchtheißen Tropen – und oft im Schatten höherer Bäume."},
+{id:"f28",e:"🍍",t:"Ananas und Vanille stammen laut Schulbuch ursprünglich aus dem Gebiet der Regenwälder."},
+{id:"f29",e:"🛢️",t:"Eine Ölpalme liefert pro Hektar <b>über 8-mal so viel Öl wie Soja</b> (3,3 t gegen 0,4 t). Das ist ihr großer Vorteil – und der Grund, warum sie so beliebt ist."},
+{id:"f30",e:"🇩🇪",t:"Alle Ölpalmen-Plantagen der Erde zusammen sind größer als ein Drittel Deutschlands (über 12 Millionen Hektar) – und jedes Jahr kommen neue dazu."},
+{id:"f31",e:"💄",t:"Palmöl steckt nicht nur in Schokolade und Keksen, sondern auch in <b>Lippenstift, Seife, Kerzen</b> und sogar in Biokraftstoff."},
+{id:"f32",e:"⏱️",t:"Geerntete Ölpalmfrüchte müssen <b>innerhalb von 24 Stunden</b> verarbeitet werden, sonst verdirbt das Öl."},
+{id:"f33",e:"🌴",t:"Eine Ölpalme kann bis zu <b>120 Jahre</b> alt werden und trägt schon nach etwa drei Jahren die ersten Früchte."},
+{id:"f34",e:"💊",t:"Viele Medikamente enthalten Wirkstoffe, die zuerst in Regenwaldpflanzen entdeckt wurden. Mit jeder ausgestorbenen Art können solche Heilmittel für immer verloren gehen."}
+];
+
+/* ============ LAGE (20) ============ */
+mc("lage",1,"Rund um welchen Breitenkreis liegt der tropische Regenwald?","Äquator",["Nördlicher Polarkreis","Nördlicher Wendekreis","Nullmeridian"],"Der Äquator (0°) verläuft mitten durch die Tropen. Dort ist es das ganze Jahr warm und feucht.");
+mc("lage",1,"Welcher Buchstabe markiert den Äquator?","C",["A","B","D"],"Der Äquator ist der Breitenkreis 0° und liegt in der Mitte. A und E sind die Polarkreise, B und D die Wendekreise.",{fig:["lage","mask"]});
+mc("lage",1,"Zwischen welchen beiden Linien liegen die Tropen?","B und D (den Wendekreisen)",["A und E (den Polarkreisen)","B und C","C und D"],"Die Tropen liegen zwischen dem Nördlichen (B) und dem Südlichen Wendekreis (D).",{fig:["lage","mask"]});
+mc("lage",1,"Auf welchen drei Kontinenten gibt es große tropische Regenwälder?","Südamerika, Afrika und Asien (Südostasien)",["Europa, Nordamerika und Asien","Australien, Europa und Afrika","Nordamerika, Antarktis und Südamerika"],"Auf der Karte im Buch (S. 92) sind Regenwälder in Südamerika, Afrika und Südostasien eingezeichnet.");
+mc("lage",1,"Wo liegt das größte zusammenhängende Regenwaldgebiet der Erde?","in Südamerika (Amazonasgebiet)",["in Afrika (Kongobecken)","in Südostasien","in Mittelamerika"],"Im Info-Kasten auf S. 92 steht: In Südamerika liegt das größte zusammenhängende Gebiet der Erde.");
+mc("lage",2,"Welche Regenwälder sind „einzigartig“ in ihrer Pflanzen- und Tierwelt (Info-Kasten S. 92)?","die Regenwälder Madagaskars",["die Regenwälder Islands","die Regenwälder Grönlands","die Regenwälder Neuseelands"],"Madagaskar liegt im Indischen Ozean und hat viele Arten, die es sonst nirgends gibt.");
+mc("lage",2,"Wo entdecken Forscher jedes Jahr neue Tier- und Pflanzenarten, vor allem im Bergland zwischen Laos und Vietnam?","in Südostasien",["in Südamerika","in Mitteleuropa","in Nordafrika"],"Laos und Vietnam liegen in Südostasien.");
+tf("lage",1,"Tropischen Regenwald gibt es nur in Südamerika.",false,"Es gibt ihn auch in Afrika und in Südostasien (z. B. Indonesien).","Es gibt tropischen Regenwald in Südamerika, Afrika und Südostasien.");
+tf("lage",1,"Der tropische Regenwald liegt in der Nähe des Äquators.",true,"Rund um den Äquator ist es das ganze Jahr warm und feucht – ideal für den Regenwald.");
+tf("lage",2,"In Deutschland wächst tropischer Regenwald.",false,"Deutschland liegt weit entfernt von den Tropen, in der gemäßigten Zone mit vier Jahreszeiten.","Tropischer Regenwald wächst nur in den Tropen, nicht in Mitteleuropa.");
+tf("lage",2,"Die Tropen liegen zwischen dem Nördlichen und dem Südlichen Wendekreis.",true,"Die Wendekreise bei etwa 23,5° Nord und Süd begrenzen die Tropen.");
+ty("lage",1,"Wie heißt der Breitenkreis mit 0°, der die Erde in Nord- und Südhalbkugel teilt?",["Äquator"],"Äquator = 0°. Fast alle Regenwälder liegen nahe an ihm.");
+ty("lage",1,"Wie heißt das riesige Regenwaldgebiet in Südamerika? (Es ist nach einem Fluss benannt.)",["Amazonas","Amazonasgebiet","Amazonasregenwald","Amazonien"],"Das Amazonasgebiet ist das größte zusammenhängende Regenwaldgebiet der Erde.");
+ty("lage",2,"Wie heißen die beiden Breitenkreise bei 23,5° Nord und Süd, die die Tropen begrenzen?",["Wendekreise","Wendekreis"],"Nördlicher und Südlicher Wendekreis begrenzen die Tropen.");
+cl("lage",1,"Der tropische Regenwald liegt beiderseits des ___ in den ___ .",["Äquators","Tropen"],["Nordens","Wüsten","Polarkreises"],"Beiderseits des Äquators heißt: nördlich und südlich davon.",{intro:"Setze die passenden Wörter ein."});
+cl("lage",2,"Das größte zusammenhängende Regenwaldgebiet liegt in ___ am ___ .",["Südamerika","Amazonas"],["Afrika","Kongo"],"Südamerika – Amazonas.",{intro:"Setze die passenden Wörter ein."});
+mt("lage",2,"Ordne den Regenwald-Regionen die passende Besonderheit zu.",[["Südamerika","größtes zusammenhängendes Regenwaldgebiet der Erde"],["Madagaskar","einzigartige Pflanzen- und Tierwelt"],["Südostasien","jedes Jahr werden neue Arten entdeckt"],["Äquator","Breitenkreis 0° mitten in den Tropen"]],"Diese vier Angaben stehen im Info-Kasten auf S. 92 bzw. folgen aus der Karte.");
+mt("lage",2,"Ordne jeder Linie ihren Breitengrad zu.",[["Äquator","0°"],["Wendekreise","ca. 23,5° Nord und Süd"],["Polarkreise","ca. 66,5° Nord und Süd"]],"Merke: 0° – 23,5° – 66,5°. Zwischen den Wendekreisen liegen die Tropen.");
+mc("lage",2,"Warum gibt es in Europa keinen tropischen Regenwald?","Europa liegt weit vom Äquator entfernt, nicht in den Tropen.",["In Europa fällt nie Regen.","Europa liegt zu nah am Äquator.","In Europa wachsen keine Bäume."],"Tropischer Regenwald braucht das ganze Jahr Wärme und viel Regen. Das gibt es nur in den Tropen.");
+op("lage",3,"Lokalisiere","Lokalisiere den tropischen Regenwald (Buch S. 92, Aufgabe 1).",[["Er liegt in den Tropen rund um den Äquator (zwischen den Wendekreisen).",["tropen","aequator","wendekreis"]],["In Südamerika, vor allem im Amazonasgebiet.",["suedamerika","amazon"]],["In Afrika (z. B. Zentralafrika, Kongobecken).",["afrika"]],["In Südostasien, z. B. Indonesien.",["asien","indonesien"]]],"Der tropische Regenwald liegt in den Tropen, also rund um den Äquator zwischen dem Nördlichen und dem Südlichen Wendekreis. Große Gebiete gibt es in Südamerika (Amazonasgebiet), in Afrika (Zentralafrika) und in Südostasien (z. B. Indonesien).");
+mc("lage",2,"Welche Aussage zur Lage des tropischen Regenwaldes ist richtig?","Er liegt in einem Gürtel um den Äquator und kommt auf mehreren Kontinenten vor.",["Er liegt nur am Nordpol.","Er liegt in einem Gürtel um die Polarkreise.","Er liegt nur auf einem einzigen Kontinent."],"Der Regenwaldgürtel zieht sich um die Erde, mit Schwerpunkten in Südamerika, Afrika und Südostasien.");
+
+/* ============ KLIMA (28) ============ */
+mc("klima",1,"Wie ist das Klima im tropischen Regenwald?","das ganze Jahr warm und feucht",["im Sommer heiß und trocken, im Winter kalt","das ganze Jahr kalt und trocken","im Winter feucht, im Sommer trocken"],"Wärme und Regen gibt es dort das ganze Jahr. Das nennt man auch Tropenklima.");
+mc("klima",1,"Wie hoch ist die Jahresdurchschnittstemperatur in Manaus (Klimadiagramm)?","26,9 °C",["16,9 °C","20,9 °C","36,9 °C"],"Im Klimadiagramm steht T = 26,9 °C.",{fig:["klima",null]});
+mc("klima",1,"Wie viel Niederschlag fällt in Manaus im Jahr?","1897 mm",["897 mm","18 970 mm","189 mm"],"Im Klimadiagramm steht N = 1897 mm. Zum Vergleich: In Deutschland fallen etwa 700 mm.",{fig:["klima",null]});
+mc("klima",1,"Welcher Monat ist in Manaus am trockensten?","August",["Februar","Dezember","Januar"],"Der kürzeste Balken ist der im August (etwa 40 mm).",{fig:["klima",7]});
+ty("klima",1,"Wie viel Niederschlag fällt in Manaus im trockensten Monat (August) etwa? (Zahl in mm)",["40"],"Im August fallen nur knapp 40 mm – im regenreichsten Monat (Anfang des Jahres) sind es über 200 mm.",{num:true,tol:10,fig:["klima",7]});
+mc("klima",2,"Was zeigt die rote Linie im Klimadiagramm?","die Temperatur",["den Niederschlag","die Luftfeuchtigkeit","die Windstärke"],"Balken = Niederschlag in mm, Linie = Temperatur in °C.",{fig:["klima",null]});
+tf("klima",2,"In Manaus schwankt die Temperatur im Jahresverlauf stark.",false,"Die rote Linie ist fast waagerecht.","Die Temperatur bleibt über das ganze Jahr fast gleich (ca. 27 °C).",{fig:["klima",null]});
+tf("klima",2,"Der Niederschlag verteilt sich in Manaus gleichmäßig auf alle Monate.",false,"Die Balken sind unterschiedlich hoch.","Anfang des Jahres regnet es sehr viel (über 200 mm), im August nur etwa 40 mm.",{fig:["klima",null]});
+mc("klima",1,"Wie nennt man ein Klima, das vor allem durch Schwankungen im Laufe eines Tages gekennzeichnet ist?","Tageszeitenklima",["Jahreszeitenklima","Wüstenklima","Polarklima"],"Im Regenwald schwanken Temperatur und Niederschlag im Tagesverlauf, nicht im Jahresverlauf.");
+mc("klima",1,"Welches Klima hat Deutschland?","Jahreszeitenklima",["Tageszeitenklima","Tropenklima","Dauerfrostklima"],"Bei uns gibt es vier Jahreszeiten.");
+mc("klima",2,"Was ist beim Tageszeitenklima größer als beim Jahreszeitenklima?","die Schwankungen im Verlauf eines Tages",["die Unterschiede der Tageslänge","die Unterschiede zwischen Sommer und Winter","die Zahl der Jahreszeiten"],"So steht es im Info-Kasten auf S. 93: Die Tagesschwankungen sind größer als beim Jahreszeitenklima.");
+tf("klima",1,"Im tropischen Regenwald bleibt die Tageslänge das ganze Jahr gleich.",true,"Am Äquator sind alle Tage etwa gleich lang.");
+tf("klima",2,"In Deutschland sind alle Tage im Jahr gleich lang.",false,"Bei uns sind die Sommertage lang und die Wintertage kurz.","Sommertage in Deutschland sind länger, Wintertage viel kürzer als ein Tropentag.");
+mt("klima",2,"Vergleiche: Ordne zu.",[["Tropischer Regenwald","Tageszeitenklima, immer gleich lange Tage"],["Deutschland","Jahreszeitenklima, vier Jahreszeiten"],["Sommertag in Deutschland","länger als ein Tropentag"],["Wintertag in Deutschland","viel kürzer als ein Tropentag"]],"Vergleich nach M7 (Tageslängen im Vergleich).");
+od("klima",2,"Bringe den Tagesablauf in den Tropen in die richtige Reihenfolge.",["Morgens (6 Uhr): kurze Dämmerung, Sonnenaufgang, Dunst, ca. 20 °C","Vormittag: Sonne strahlt stärker, Wasser verdunstet, Wolken bilden sich","Mittags (12 Uhr): starke Wolkenbildung, ca. 28 °C","Nachmittags: heftige Gewitter und Regenfälle, ca. 31 °C","Abends (18 Uhr): Sonnenuntergang, kurze Dämmerung, hohe Luftfeuchtigkeit, ca. 26 °C","Nachts: über 20 °C (Tropennacht)"],"Merke den Rhythmus: Dunst → Verdunstung → Wolken → Gewitter → Abendkühle.");
+mc("klima",1,"Wann ist es im Regenwald am wärmsten?","am Nachmittag (ca. 31 °C)",["morgens um 6 Uhr","mittags um 12 Uhr (28 °C)","nachts"],"Um etwa 15 Uhr wird der Höchstwert von etwa 31 °C erreicht – dann kommt das Gewitter.",{fig:["tag","full"]});
+ty("klima",1,"Wie warm ist es morgens um 6 Uhr im Regenwald etwa? (Zahl in °C)",["20"],"Morgens sind es ca. 20 °C bei Dunst.",{num:true,tol:1,fig:["tag","full"]});
+mc("klima",1,"Was passiert am Nachmittag im tropischen Regenwald fast jeden Tag?","heftige Gewitter und Regenfälle",["Schneefall","ein Sandsturm","trockene Hitze ohne Wolken"],"Am Vormittag verdunstet viel Wasser, ab Mittag bilden sich Wolken, am Nachmittag regnet es.");
+mc("klima",2,"Welche Wettererscheinung gehört zu Nummer 4 (Nachmittag, ca. 31 °C)?","Gewitter",["Nebel, Dunst","Verdunstung","Wolkenbildung"],"Nach der Wolkenbildung am Mittag folgen am Nachmittag Gewitter.",{fig:["tag","mask"]});
+mc("klima",2,"Was gehört zu Nummer 2 (am Vormittag)?","Verdunstung",["Gewitter","Dampfschwaden","Nebel, Dunst"],"Die Sonne wird stärker, Wasser verdunstet.",{fig:["tag","mask"]});
+cl("klima",2,"Am Vormittag ___ viel Wasser, dabei bilden sich ___ . Am Nachmittag ___ es heftig.",["verdunstet","Wolken","regnet"],["gefriert","Schnee","schneit"],"Verdunstung → Wolkenbildung → Regen.",{intro:"Setze die passenden Wörter ein."});
+ty("klima",2,"Wie nennt man eine Nacht, in der die Temperatur nicht unter 20 °C sinkt?",["Tropennacht"],"In den Tropen kühlt es nachts kaum ab (über 20 °C).");
+mc("klima",2,"Warum sieht der Regenwald das ganze Jahr fast gleich aus?","Temperatur und Tageslänge bleiben das ganze Jahr fast gleich.",["Es fällt dort jedes Jahr Schnee.","Menschen pflanzen ihn jedes Jahr neu.","Es gibt dort nur zwei Jahreszeiten."],"Weil es keine Jahreszeiten gibt, bleibt der Wald immer grün (anders als bei uns im Herbst/Winter).");
+mc("klima",2,"Wie viel Prozent des Niederschlags geben die Pflanzen wieder als Wasserdampf ab (Wettermaschine)?","74 %",["26 %","50 %","100 %"],"74 % verdunsten über die Pflanzen, 26 % kommen durch Wind dazu, 26 % fließen ab.",{fig:["wetter","full"]});
+ty("klima",2,"Wie viel Prozent beträgt der Wasserabfluss in der Grafik „Wettermaschine“? (Zahl)",["26"],"Wasserabfluss: 26 %. Auch die Zufuhr durch Wind beträgt 26 %.",{num:true,fig:["wetter","full"]});
+od("klima",3,"Bringe den Kreislauf der „Wettermaschine“ in die richtige Reihenfolge.",["Vormittags verdunstet in der Hitze viel Wasser (Pflanzen, Boden)","Der Wasserdampf steigt auf, es bilden sich Wolken","Ab Mittag kommen viele Wolken zusammen, auch der Wind bringt Wolken mit","Die Wolken regnen sich am Nachmittag ab","Pflanzen und Boden bekommen wieder Feuchtigkeit – der Kreislauf beginnt von vorn"],"Das ist die Antwort auf Aufgabe 5: Der Regenwald macht seinen Regen selbst.");
+op("klima",3,"Erkläre","„Der Regenwald macht seinen Regen selbst.“ Erkläre diese Aussage (Buch S. 92, Aufgabe 5).",[["Pflanzen geben viel Wasser als Wasserdampf ab (Verdunstung, etwa 74 %).",["verdunst","wasserdampf","74"]],["Der Wasserdampf bildet Wolken, die sich nachmittags abregnen.",["wolke","regnen","regen"]],["Pflanzen und Boden erhalten durch den Regen wieder Feuchtigkeit – es ist ein Kreislauf.",["kreislauf","feucht"]],["Wird der Wald gerodet, trocknet der Boden schneller aus und der Kreislauf bricht ab.",["rod","trocknet","abgeholzt"]]],"Die vielen Pflanzen verdunsten vor allem vormittags viel Wasser, etwa 74 % des Niederschlags. Der Wasserdampf bildet ab Mittag Wolken, die sich nachmittags abregnen. So bekommen Pflanzen und Boden wieder Feuchtigkeit und der Kreislauf beginnt von vorn, wie bei einer Wettermaschine. Wenn große Flächen gerodet werden, trocknet der Boden viel schneller aus.");
+op("klima",3,"Vergleiche","Vergleiche den Tagesverlauf in einem Jahr im Regenwald mit dem in Deutschland (Buch S. 92, Aufgabe 4b).",[["Im Regenwald sind alle Tage das ganze Jahr gleich lang.",["gleich"]],["In Deutschland sind die Sommertage länger und die Wintertage viel kürzer.",["sommer","winter"]],["Deshalb verändert sich die Natur bei uns in den Jahreszeiten stärker als im Regenwald.",["jahreszeit","veraender","verändert"]],["Regenwald: Tageszeitenklima – Deutschland: Jahreszeitenklima (andere Temperaturen).",["tageszeit","jahreszeitenklima","temperatur"]]],"Im Regenwald sind die Tage das ganze Jahr gleich lang, bei uns in Deutschland sind die Sommertage länger als Tropentage, die Wintertage aber viel kürzer. Deshalb verändert sich die Natur bei uns in den Jahreszeiten stärker als im Regenwald, und auch die Temperaturen sind anders. Im Regenwald schwanken Wetter und Temperatur im Tagesverlauf (Tageszeitenklima), bei uns im Jahresverlauf (Jahreszeitenklima).");
+
+/* ============ ARTEN (25) ============ */
+mc("arten",1,"Was bedeutet Artenvielfalt (Biodiversität)?","wie viele verschiedene Tier- und Pflanzenarten es gibt",["wie viele Tiere auf einem Quadratmeter leben","wie groß ein Wald ist","wie viele Menschen in einem Gebiet wohnen"],"Je mehr verschiedene Arten, desto größer die Artenvielfalt.");
+ty("arten",1,"Wie nennt man die Artenvielfalt noch? (Fachwort, beginnt mit B)",["Biodiversität"],"Biodiversität = Artenvielfalt. In deinem Heft steht es beim Stockwerkbau.");
+mc("arten",1,"Welcher Anteil aller Tier- und Pflanzenarten der Erde lebt im tropischen Regenwald?","etwa die Hälfte (50 %)",["etwa 5 %","etwa 10 %","fast alle (99 %)"],"Im Info-Kasten steht: etwa 50 Prozent aller Tier- und Pflanzenarten.");
+mc("arten",1,"Wie nennt man den Regenwald wegen seiner enormen Artenvielfalt?","Hotspot der Artenvielfalt",["Wüste der Artenvielfalt","Schlusslicht der Artenvielfalt","Eiszeit der Artenvielfalt"],"Hotspot heißt Brennpunkt – hier ist besonders viel los.");
+ty("arten",2,"„Hotspot“ ist Englisch. Was bedeutet das Wort auf Deutsch?",["Brennpunkt"],"Hotspot = Brennpunkt (der Artenvielfalt).");
+mc("arten",2,"Wie viele Pflanzen wachsen laut Schulbuch auf nur 20 m² (so groß wie ein Kinderzimmer)?","über 1 000",["etwa 10","etwa 100","genau 20"],"Auf 20 m² wachsen über 1 000 Pflanzen!");
+ty("arten",2,"Wie viele verschiedene Baumarten gibt es im Regenwald pro Hektar etwa? (Zahl)",["120"],"Pro Hektar (ein großes Fußballfeld) ca. 120 Baumarten.",{num:true});
+mc("arten",2,"Wie viel Prozent des Lichts, das oben auf die Baumschichten trifft, erreicht den Waldboden?","nur etwa 2 %",["etwa 20 %","etwa 50 %","fast 100 %"],"Das dichte Blätterdach schluckt fast alles Licht. Deshalb ist es unten so dämmrig.");
+mc("arten",2,"Wie viele Tier- und Pflanzenarten vermuten Forscher im Regenwald?","bis zu 30 Millionen Tierarten und 100 000 Pflanzenarten",["etwa 3 000 Tierarten und 100 Pflanzenarten","bis zu 30 000 Tierarten und 100 Millionen Pflanzenarten","genau 1 Million Tierarten und 1 Million Pflanzenarten"],"Genau lässt sich die Zahl nur schätzen.");
+tf("arten",1,"Die meisten Tier- und Pflanzenarten des Regenwaldes sind schon erforscht.",false,"Die meisten Arten sind noch nicht einmal entdeckt.","Die meisten Arten sind noch nicht entdeckt; ihre Zahl lässt sich nur schätzen.");
+tf("arten",1,"Der Regenwald wurde früher wegen seines schwer zugänglichen Geländes auch „Grüne Hölle“ genannt.",true,"Im Reisebericht auf S. 94 steht genau das.");
+tf("arten",2,"Das feuchtheiße Klima wirkt wie ein Treibhaus und ermöglicht den Pflanzen ein gleichmäßiges Wachstum das ganze Jahr.",true,"Warm, feucht und gleichbleibend – ideale Bedingungen für Pflanzen.");
+mc("arten",1,"Was bedeutet Flora?","die Gesamtheit der Pflanzen",["die Gesamtheit der Tiere","der Boden eines Waldes","das Klima"],"Flora = Pflanzenwelt.");
+mc("arten",1,"Was bedeutet Fauna?","die Gesamtheit der Tiere",["die Gesamtheit der Pflanzen","der Boden eines Waldes","das Klima"],"Fauna = Tierwelt.");
+mt("arten",2,"Ordne die Fachwörter zu.",[["Flora","Gesamtheit der Pflanzen"],["Fauna","Gesamtheit der Tiere"],["Biodiversität","Artenvielfalt"],["Hotspot","Brennpunkt (Ort mit besonders vielen Arten)"]],"Diese vier Fachwörter sind Klassiker in der Arbeit.");
+cl("arten",2,"Flora und Fauna bilden eine ausgeklügelte ___ , die voneinander ___ ist, sich aber auch gegenseitig ___ und ergänzt.",["Überlebensgemeinschaft","abhängig","schützt"],["Feindschaft","unabhängig","stört"],"Text M3 auf S. 94.",{intro:"Setze die passenden Wörter ein."});
+mc("arten",2,"Warum können im Regenwald Bäume derselben Art gleichzeitig Blätter abwerfen, blühen und Früchte tragen?","Es gibt keine Jahreszeiten, das Wachstum ist das ganze Jahr möglich.",["Es ist dort immer Winter.","Die Bäume werden von Menschen gegossen.","Tiere pflanzen die Früchte."],"Ohne Jahreszeiten hat jeder Baum seinen eigenen Rhythmus.");
+mc("arten",2,"Warum haben Urwaldriesen keine Jahresringe?","Es gibt keine Jahreszeiten – ihr Alter lässt sich nur schätzen.",["Sie sind zu hoch.","Sie wachsen jedes Jahr neu aus dem Boden.","Sie haben keine Wurzeln."],"Jahresringe entstehen durch den Wechsel von Wachstum im Sommer und Pause im Winter.");
+mc("arten",1,"Wie hoch können Urwaldriesen werden?","bis zu 70 m",["bis zu 7 m","bis zu 17 m","bis zu 700 m"],"Die günstigen Wachstumsbedingungen lassen manche Bäume bis 70 m hoch werden.");
+tf("arten",2,"Im Regenwald sieht man viele Tiere sofort auf den ersten Blick.",false,"Viele Tiere sind scheu und versteckt.","Viele Tiere sind scheu und leben versteckt im Wurzelwerk, in den Bäumen und unter den Sträuchern.");
+mc("arten",2,"Welche Pflanzen sind im Inneren des Regenwaldes besonders häufig (nach deinem Heft und dem Reisebericht)?","Farne, Moose und Lianen",["Kakteen und Gräser","Tannen und Fichten","Getreide und Mais"],"Der Reisebericht nennt Moose, Lianen und Farne.");
+mc("arten",2,"Warum ist es im Inneren des Regenwaldes so dämmrig?","Das dichte Blätterdach lässt nur wenig Licht auf den Boden.",["Dort gibt es keine Sonne.","Die Bäume sind schwarz.","Es regnet dort den ganzen Tag ohne Pause."],"Nur etwa 2 % des Lichts kommen unten an.");
+op("arten",3,"Beschreibe","Beschreibe das „Innere“ des Regenwaldes (Buch S. 94, Aufgabe 1).",[["Es ist dicht bewachsen: Die Bäume stehen dicht beieinander oder sind miteinander verschlungen.",["dicht","bewachsen","verschlung"]],["Überall ist Dunst und Feuchtigkeit, alles ist grün.",["feucht","dunst","gruen"]],["Es kommt nur wenig Licht auf den Boden.",["licht","dunkel","daemmer"]],["Es gibt viele Farne, Moose und Lianen; man stolpert über Wurzelwerk.",["farn","moos","wurzel","liane"]]],"Das Innere des Regenwaldes ist dicht bewachsen. Die Bäume stehen dicht aneinander oder sind miteinander verschlungen. Überall ist Dunst, alles ist feucht und grün, und es kommt nur wenig Licht auf den Boden. Außerdem gibt es viele Farne, Moose und Lianen.");
+op("arten",3,"Erkläre","Erkläre die Besonderheiten des Lebensraumes Regenwald (Buch S. 94, Aufgabe 2).",[["Treibhausklima: sehr feucht und heiß, täglich Regen.",["feucht","heiß","regen","treibhaus"]],["Dadurch wachsen Pflanzen das ganze Jahr gleichmäßig; die Artenvielfalt ist sehr hoch.",["wachstum","artenvielfalt","viele arten"]],["Urwaldriesen werden bis 70 m hoch und haben keine Jahresringe.",["70","urwaldriese","jahresring"]],["Flora und Fauna bilden eine Überlebensgemeinschaft: abhängig voneinander, schützen und ergänzen sich.",["gemeinschaft","abhängig","abhaengig"]]],"Im Regenwald ist es sehr feucht und heiß, es regnet täglich. Das Klima wirkt wie ein Treibhaus, deshalb wachsen die Pflanzen das ganze Jahr gleichmäßig und es gibt eine sehr hohe Artenvielfalt. Manche Bäume werden als Urwaldriesen bis zu 70 m hoch und haben keine Jahresringe. Pflanzen und Tiere bilden eine Überlebensgemeinschaft, die voneinander abhängig ist, sich aber auch schützt und ergänzt.");
+op("arten",3,"Begründe","Begründe, warum viele Tiere im Regenwald Spezialisten sind (Buch S. 94, Aufgabe 4).",[["Sie müssen sich vor Fressfeinden schützen (Tarnung, Verstecke).",["fressfeind","schütz","schuetz","versteck"]],["Viele leben hoch oben in den Bäumen und sind daran angepasst (z. B. Faultier, Kolibri, Tukan).",["baeume","bäume","oben","kron","faultier"]],["Jede Art besetzt ihren eigenen Platz: manche leben nur auf Bäumen, nur am Boden oder überall.",["boden","nur auf","nische","ueberall","überall"]]],"Viele Tiere müssen sich im Regenwald spezialisieren, weil sie sich vor Fressfeinden schützen müssen oder weil sie weit oben in den Bäumen leben. Es gibt Tiere, die nur auf Bäumen leben, Tiere, die nur auf dem Boden leben, und Tiere, die überall leben.");
+
+/* ============ STOCKWERKBAU (28) ============ */
+ty("stock",1,"Wie nennt man den Aufbau des Regenwaldes in Schichten übereinander?",["Stockwerkbau","Stockwerksbau"],"Wie in einem Haus gibt es Stockwerke – nur dass sie aus Pflanzen bestehen.");
+mc("stock",1,"Wie viele Schichten über dem Boden zeigt das Schulbuch im Stockwerkbau?","4",["2","3","6"],"Krautschicht, Strauchschicht, Baumschicht und Urwaldriesen.");
+mc("stock",1,"Welche Schicht liegt zwischen 0 und 5 m Höhe?","Krautschicht",["Strauchschicht","Baumschicht","Urwaldriesen"],"Ganz unten, direkt über dem Boden: Krautschicht (Erdgeschoss).",{fig:["stock","full"]});
+mc("stock",1,"Wie heißt die Schicht in 5 bis 10 m Höhe?","Strauchschicht",["Krautschicht","Baumschicht","Urwaldriesen"],"Strauchschicht = Mittelgeschoss.");
+mc("stock",1,"Wie heißt die Schicht in 10 bis 40 m Höhe?","Baumschicht",["Krautschicht","Strauchschicht","Urwaldriesen"],"Baumschicht = Obergeschoss. Sie ist mit 30 m die dickste Schicht.");
+mc("stock",1,"Wie heißt die oberste Schicht (40 bis 70 m)?","Urwaldriesen (Kronenschicht)",["Strauchschicht","Krautschicht","Baumschicht"],"Urwaldriesen = Dachgeschoss. Dein Heft nennt sie auch „Kronenschicht“.");
+mc("stock",1,"Welche Schicht ist mit A markiert?","Urwaldriesen",["Baumschicht","Strauchschicht","Krautschicht"],"A ist die oberste Schicht (40–70 m).",{fig:["stock","letters"]});
+mc("stock",1,"Welche Schicht ist mit C markiert?","Strauchschicht",["Urwaldriesen","Baumschicht","Krautschicht"],"C liegt zwischen 5 und 10 m.",{fig:["stock","letters"]});
+mc("stock",2,"Welche Höhe gehört zur Linie (4)?","40 m",["10 m","5 m","70 m"],"Von unten: (1) 0 m, (2) 5 m, (3) 10 m, (4) 40 m, (5) 70 m.",{fig:["stock","nums"]});
+mc("stock",2,"Welche Höhe gehört zur Linie (3)?","10 m",["5 m","40 m","0 m"],"Von unten: 0 · 5 · 10 · 40 · 70 m.",{fig:["stock","nums"]});
+mt("stock",1,"Ordne die Schichten ihren Höhen zu.",[["Krautschicht","0 – 5 m"],["Strauchschicht","5 – 10 m"],["Baumschicht","10 – 40 m"],["Urwaldriesen","40 – 70 m"]],"Merke: 0 – 5 – 10 – 40 – 70.");
+mt("stock",2,"Ordne die Schichten den Etagen eines Hauses zu.",[["Urwaldriesen","Dachgeschoss"],["Baumschicht","Obergeschoss"],["Strauchschicht","Mittelgeschoss"],["Krautschicht","Erdgeschoss"]],"Das Haus-Bild steht am Rand der Abbildung auf S. 95.");
+od("stock",1,"Ordne die Schichten von unten (Boden) nach oben.",["Boden","Krautschicht (0–5 m)","Strauchschicht (5–10 m)","Baumschicht (10–40 m)","Urwaldriesen (40–70 m)"],"Von unten nach oben wird es immer heller und höher.");
+ty("stock",2,"Wie heißt das oberste Stockwerk (40–70 m) im Vergleich mit einem Haus?",["Dachgeschoss"],"Dachgeschoss = Urwaldriesen.");
+mc("stock",2,"Welches Tier lebt hoch oben im „Dachgeschoss“ (40–70 m)?","Tukan",["Tapir","Vogelspinne","Blattameise"],"Tukan, Faultier und Kolibri leben ganz oben.");
+mc("stock",2,"Welches Tier lebt am Boden bzw. in der Krautschicht?","Flachlandtapir",["Kolibri","Tukan","Faultier"],"Der Tapir ist ein Bodenbewohner, ebenso Blattameise und Vogelspinne.");
+mc("stock",2,"Welches Tier zeigt das Schulbuch in der Baumschicht (10–40 m)?","Kapuzineraffe",["Faultier","Tapir","Vogelspinne"],"Der Kapuzineraffe klettert im Obergeschoss.");
+mt("stock",2,"Welches Tier lebt in welcher Schicht?",[["Tukan, Faultier, Kolibri","Urwaldriesen (40–70 m)"],["Kapuzineraffe","Baumschicht (10–40 m)"],["Flachlandtapir, Vogelspinne, Blattameise","Boden / Krautschicht (0–5 m)"]],"Nach der Abbildung M4 auf S. 95.");
+mc("stock",2,"Wofür sind Brett- oder Stützwurzeln gut?","Sie geben großen Bäumen die nötige Standfestigkeit.",["Sie speichern Wasser für Tiere.","Sie fangen Sonnenlicht ein.","Sie lassen die Bäume schneller wachsen."],"Der Boden ist dünn, die Bäume sind riesig – sie brauchen breite Wurzeln, damit sie nicht umkippen.");
+mc("stock",2,"Was sind Aufsitzerpflanzen?","Pflanzen, die auf anderen Pflanzen sitzen, ohne einen Stamm auszubilden",["Pflanzen, die im Boden wurzeln und sehr groß werden","Pflanzen, die im Wasser schwimmen","Bäume mit Brettwurzeln"],"Sie schaden dem Baum nicht direkt und kommen so höher ans Licht.");
+mc("stock",2,"Warum sparen Aufsitzerpflanzen Energie?","Sie bilden keinen eigenen Stamm aus.",["Sie brauchen kein Wasser.","Sie wachsen im Dunkeln.","Sie fressen Insekten."],"Ein Stamm kostet viel Energie – Aufsitzerpflanzen nutzen den Ast des Baumes.");
+mc("stock",2,"Was machen Lianen (Schlingpflanzen)?","Sie wachsen an Bäumen entlang dem Licht entgegen.",["Sie wachsen nur am Boden.","Sie schwimmen auf Flüssen.","Sie ernähren sich von Tieren."],"Lianen nutzen die Bäume als Kletterhilfe.");
+tf("stock",2,"Lianen können dem Baum schaden: Durch Lichtmangel geht der Baum oft langsam ein, sodass nur die Liane überlebt.",true,"So steht es im Kasten in M4.");
+tf("stock",2,"Die meisten Tier- und Pflanzenarten des Regenwaldes leben auf dem Boden.",false,"Es ist umgekehrt.","Die meisten Arten leben nicht auf dem Boden, sondern in den oberen „Stockwerken“.");
+mc("stock",2,"Warum spricht man beim Aufbau des Regenwaldes von einem Stockwerkbau? (Buch S. 94, Aufgabe 3b)","Die Pflanzen wachsen in Schichten übereinander wie die Etagen eines Hauses.",["Menschen bauen dort Häuser auf Bäume.","Der Regenwald wächst auf einem Berg.","Jedes Stockwerk entspricht einem Jahr."],"Jede Schicht hat eigene Pflanzen, Tiere und Lichtverhältnisse.");
+cl("stock",2,"Das unterste Stockwerk ist die ___ , darüber liegen die ___ , dann die ___ und ganz oben die ___ .",["Krautschicht","Strauchschicht","Baumschicht","Urwaldriesen"],["Moosschicht"],"Von unten nach oben: 0–5 m, 5–10 m, 10–40 m, 40–70 m.",{intro:"Setze die Schichten von unten nach oben ein."});
+op("stock",3,"Gib wieder","Gib den Stockwerkbau des tropischen Regenwaldes wieder (Buch S. 94, Aufgabe 3a).",[["Krautschicht: 0–5 m (Erdgeschoss).",["kraut"]],["Strauchschicht: 5–10 m (Mittelgeschoss).",["strauch"]],["Baumschicht: 10–40 m (Obergeschoss).",["baumschicht","baum"]],["Urwaldriesen (Kronenschicht): 40–70 m (Dachgeschoss).",["urwaldriesen","krone","70"]]],"Der Regenwald ist in Stockwerken aufgebaut. Direkt über dem Boden liegt die Krautschicht (0–5 m), darüber die Strauchschicht (5–10 m), dann die Baumschicht (10–40 m) und ganz oben die Urwaldriesen (40–70 m), auch Kronenschicht genannt.");
+op("stock",3,"Begründe","Begründe die Angepasstheit der Spezialisten im Stockwerkbau, z. B. von Lianen, Aufsitzerpflanzen und Brettwurzeln (Buch S. 94, Aufgabe 4).",[["Lianen wachsen an Bäumen zum Licht – so kommen sie trotz Dunkelheit am Boden nach oben.",["liane","licht"]],["Aufsitzerpflanzen sparen Energie (kein Stamm) und sitzen höher im Licht.",["aufsitzer","stamm","energie"]],["Brett- oder Stützwurzeln geben hohen Bäumen auf dem dünnen Boden Standfestigkeit.",["brett","stütz","stuetz","standfest"]]],"Weil am Boden fast kein Licht ankommt, sind die Pflanzen angepasst: Lianen wachsen an Bäumen dem Licht entgegen, Aufsitzerpflanzen sitzen ohne eigenen Stamm auf anderen Pflanzen und sparen so Energie, und Brettwurzeln geben den riesigen Bäumen auf dem dünnen Boden Halt.");
+
+/* ============ BEDEUTUNG (12) ============ */
+mc("bed",1,"Warum wird der Amazonasregenwald oft „Grüne Lunge“ der Erde genannt?","Seine Pflanzen wandeln Kohlenstoffdioxid in Sauerstoff um.",["Er hat die Form einer Lunge.","Dort atmen besonders viele Menschen.","Er wandelt Sauerstoff in Kohlenstoffdioxid um."],"Pflanzen nehmen Kohlenstoffdioxid auf und geben Sauerstoff ab – das ist die Grundlage des Lebens (Buch S. 92, M4).");
+cl("bed",1,"Die Pflanzen im Regenwald wandeln ___ in ___ um.",["Kohlenstoffdioxid","Sauerstoff"],["Stickstoff","Wasserstoff"],"Kohlenstoffdioxid → Sauerstoff. Deshalb „Grüne Lunge“.",{intro:"Setze die passenden Wörter ein."});
+mc("bed",2,"Welches Nahrungsmittel stammt laut Schulbuch ursprünglich aus dem Regenwald?","Ananas",["Roggen","Hafer","Spargel"],"Das Buch nennt Mais, Reis, Kartoffeln, Vanille und Ananas.");
+tf("bed",2,"Mais, Reis, Kartoffeln, Vanille und Ananas stammen laut Schulbuch ursprünglich aus dem Gebiet der Regenwälder.",true,"So steht es in M4 auf S. 92.");
+tf("bed",2,"Im Regenwald gibt es genauso viele Pflanzen- und Tierarten wie in allen anderen Lebensräumen der Erde zusammen.",true,"Darum nennt man ihn „Hotspot der Artenvielfalt“.");
+mc("bed",1,"Was bedeutet es, dass der Regenwald ein „Hotspot der Artenvielfalt“ ist?","Er ist ein Ort mit besonders vielen verschiedenen Arten.",["Er ist besonders heiß.","Er ist besonders groß.","Er ist besonders gefährlich."],"Hotspot = Brennpunkt.");
+mc("bed",2,"Was passiert, wenn große Waldflächen gerodet werden (Wettermaschine)?","Der Boden trocknet viel schneller aus.",["Es regnet mehr.","Es wird kälter.","Es entsteht mehr Nebel."],"Ohne Pflanzen fehlt die Verdunstung – der Wasserkreislauf bricht ab.");
+tf("bed",2,"Viele menschliche Erfindungen haben ihren Ursprung im Regenwald.",true,"Das steht in M4: „Viele menschliche Erfindungen haben hier ihren Ursprung.“");
+ty("bed",2,"Die vielen Pflanzen im Regenwald benötigen Wasser, sind aber auch wichtige … (ein Wort)",["Wasserspeicher"],"Pflanzen speichern Wasser und geben es als Wasserdampf wieder ab.");
+mc("bed",3,"Welche Aussage erklärt die Bedeutung des Regenwaldes am besten?","Er liefert Sauerstoff, beherbergt die Hälfte aller Arten und liefert Nahrungsmittel und Rohstoffe.",["Er ist nur wichtig, weil dort Holz wächst.","Er hat für Menschen außerhalb der Tropen keine Bedeutung.","Er ist wichtig, weil er das Klima in Deutschland kalt hält."],"Bedeutung hat der Regenwald für die ganze Welt, nicht nur für die Tropen.");
+op("bed",3,"Erkläre","Erkläre die Bedeutung des tropischen Regenwaldes (Buch S. 92, Aufgabe 3).",[["„Grüne Lunge“: Pflanzen wandeln Kohlenstoffdioxid in Sauerstoff um.",["lunge","sauerstoff"]],["Hotspot der Artenvielfalt: so viele Arten wie alle anderen Lebensräume zusammen.",["hotspot","artenvielfalt","arten"]],["Ursprung vieler Nahrungsmittel und Gewürze (z. B. Mais, Vanille, Ananas) und menschlicher Erfindungen.",["mais","vanille","ananas","lebensmittel","gewuerz","gewürz","erfindung"]],["Wasserspeicher und „Wettermaschine“.",["wasser","wetter"]]],"Der Regenwald wird „Grüne Lunge“ genannt, weil seine Pflanzen Kohlenstoffdioxid in Sauerstoff umwandeln. Er ist ein Hotspot der Artenvielfalt mit so vielen Arten wie alle anderen Lebensräume zusammen. Viele Nahrungsmittel und Gewürze wie Mais, Vanille oder Ananas stammen ursprünglich von dort, und viele Erfindungen haben dort ihren Ursprung. Außerdem speichert er Wasser und wirkt wie eine Wettermaschine.");
+op("bed",3,"Beschreibe","Beschreibe die Wirkung des Regenwaldes auf dich persönlich (Buch S. 92, Aufgabe 2). Hier gibt es keine falsche Antwort – schreibe 3–4 Sätze und nutze Fachwörter.",[["Ich nenne Eindrücke (z. B. dicht, grün, feucht, heiß, dunkel, laut).",["dicht","gruen","feucht","heiss","heiß","warm","dunkel"]],["Ich schreibe, wie ich mich dort fühlen würde, und begründe es.",["weil","fuehl","fühl","wuerde","würde"]],["Ich verwende Fachwörter (z. B. Artenvielfalt, Stockwerkbau, Tropen).",["artenvielfalt","stockwerk","tropen"]]],"Beispiel: Auf mich wirkt der Regenwald dicht, feucht und geheimnisvoll. Ich würde mich dort klein fühlen, weil die Bäume so hoch sind, und ich wäre gespannt, welche Tiere ich entdecke. Gleichzeitig wäre es mir zu heiß und feucht. Faszinierend finde ich die große Artenvielfalt.");
+
+/* ============ BODEN & NÄHRSTOFFKREISLAUF (22) ============ */
+mc("boden",1,"Wie sind die Böden im tropischen Regenwald?","sehr nährstoffarm",["sehr nährstoffreich","immer trocken","aus reinem Sand"],"Das ist der „scheinbare Widerspruch“: nährstoffarmer Boden, aber üppiger Wald.");
+mc("boden",1,"Wo befinden sich im Regenwald die meisten Nährstoffe?","in der Humusschicht und in den Pflanzen",["tief im Gestein","im Grundwasser","in der Luft"],"Die Humusschicht ist nur wenige Zentimeter dick.");
+mc("boden",1,"Wie dick ist die Humusschicht im tropischen Regenwald?","nur wenige Zentimeter",["mehrere Meter","etwa 20 Meter","gar nicht vorhanden"],"Dünn, aber wichtig: Hier steckt fast alles, was die Pflanzen brauchen.");
+mc("boden",2,"Wo werden die Nährstoffe in Mitteleuropa vor allem gespeichert?","im Boden",["in den Pflanzen","in der Luft","in den Wolken"],"Bei uns ist der Boden der Nährstoffspeicher. Im Regenwald sind es die Pflanzen selbst.");
+mc("boden",2,"Wo sind die Nährstoffe im tropischen Regenwald gespeichert?","in den Pflanzen und ihren Wurzeln",["tief im Boden","im Regenwasser","in den Flüssen"],"Deshalb spricht man vom kurzgeschlossenen Nährstoffkreislauf.");
+ty("boden",1,"Wie nennt man die dünne, nährstoffreiche Schicht aus zersetzten Pflanzenresten?",["Humus","Humusschicht"],"Humus entsteht, wenn Bakterien und Pilze abgestorbenes Material zersetzen.");
+ty("boden",2,"Wie nennt man den Nährstoffkreislauf im Regenwald? Er ist … (ein Wort: auf kurzem Weg geschlossen)",["kurzgeschlossen","kurzgeschlossener"],"Der Weg der Nährstoffe ist sehr kurz: vom toten Blatt zurück in die Pflanze.");
+mc("boden",2,"Wer zersetzt die abgestorbenen Blätter am Boden schnell?","Bakterien und Pilze",["Vögel","Regen und Wind","das Sonnenlicht"],"Bakterien und Pilze wandeln totes Material in Nährstoffe um.");
+mc("boden",2,"Warum werden die Blätter im Regenwald so schnell zersetzt?","wegen der hohen Temperaturen und der hohen Luftfeuchtigkeit",["weil es dort so kalt ist","weil kaum Pflanzen dort leben","weil das Licht fehlt"],"Warm und feucht = ideal für Bakterien und Pilze.");
+mc("boden",2,"Wie kommen die Nährstoffe wieder zu den Pflanzen?","Die Wurzeln nehmen sie über Pilze gleich wieder auf.",["Tiere tragen sie hoch.","Der Wind bläst sie in die Blätter.","Sie müssen gedüngt werden."],"Nach dem täglichen Regen werden die Nährstoffteilchen von den Wurzeln über Pilze aufgenommen.");
+od("boden",2,"Bringe den kurzgeschlossenen Nährstoffkreislauf in die richtige Reihenfolge (Start bei den lebenden Pflanzen).",["Pflanzen nehmen Nährstoffe auf und wachsen","Blätter und Pflanzenteile sterben ab und fallen auf den Boden","Bakterien und Pilze zersetzen das tote Material schnell","Nährstoffe werden frei","Die Wurzeln nehmen die Nährstoffe über Pilze gleich wieder auf"],"Der Kreislauf ist so kurz, dass kaum Nährstoffe im Boden bleiben.");
+tf("boden",1,"Der Boden im Regenwald ist sehr fruchtbar – deshalb wachsen dort so viele Pflanzen.",false,"Das ist ein verbreiteter Denkfehler.","Der Boden ist nährstoffarm; die Pflanzen wachsen wegen des kurzgeschlossenen Nährstoffkreislaufs so üppig.");
+tf("boden",2,"Im Regenwald werden Nährstoffe lange im Boden gespeichert.",false,"Es geht schnell: zersetzen, aufnehmen.","Sie werden schnell zersetzt und sofort wieder von den Wurzeln aufgenommen.");
+mc("boden",2,"Was gehört zu Nummer 3 (ganz unten)?","Ausgangsgestein (Festgestein)",["Humusschicht","nährstoffarmer Boden","Wurzelwerk"],"Ganz unten liegt das feste Gestein, darüber nährstoffarmer Boden und oben der Humus.",{fig:["kreis","mask"]});
+mc("boden",2,"Welche Schicht ist mit 1 gekennzeichnet (dünne dunkle Schicht ganz oben)?","Humus",["Ausgangsgestein","nährstoffarmer Boden","Grundwasser"],"Die Humusschicht ist nur wenige Zentimeter dick.",{fig:["kreis","mask"]});
+mt("boden",2,"Ordne den Bodenschichten ihre Eigenschaft zu.",[["Humusschicht","dünn, nährstoffreich, aus zersetzten Pflanzenresten"],["nährstoffarmer Boden","darunterliegende, kaum fruchtbare Schicht"],["Ausgangsgestein","festes Gestein ganz unten"]],"Von oben nach unten: Humus – nährstoffarmer Boden – Ausgangsgestein.");
+mc("boden",3,"Was passiert, wenn der Regenwald abgeholzt wird? (Abbildung S. 96)","Der Regen wäscht die Nährstoffe aus dem Boden aus.",["Die Nährstoffe vermehren sich.","Der Boden wird fruchtbarer.","Die Humusschicht wird dicker."],"Ohne Pflanzen bleiben die Nährstoffe nicht im Kreislauf – sie werden ausgewaschen.");
+tf("boden",2,"Nach einer Rodung werden Nährstoffe vom Regen aus dem Boden ausgewaschen.",true,"Das nennt man Auswaschung.");
+ty("boden",2,"Wie nennt man es, wenn Regen die Nährstoffe aus dem Boden spült?",["Auswaschung","Auswaschen"],"Auswaschung der Nährstoffteilchen – in M1 durch blaue Pfeile dargestellt.");
+cl("boden",2,"Die Böden im Regenwald sind ___ , trotzdem wachsen dort viele Pflanzen, weil die Nährstoffe in einem ___ Kreislauf bleiben.",["nährstoffarm","kurzgeschlossenen"],["nährstoffreich","langen"],"Das ist die Kernaussage des Textes auf S. 98.",{intro:"Setze die passenden Wörter ein."});
+op("boden",3,"Erkläre","Erkläre das Wachstum üppiger Vegetation trotz Nährstoffarmut der Böden (Buch S. 98, Aufgabe 1b).",[["Die Humusschicht ist nur wenige Zentimeter dick, der Boden selbst ist nährstoffarm.",["humus","wenige","naehrstoffarm","nährstoffarm"]],["Abgestorbene Blätter werden durch Hitze und Feuchtigkeit schnell von Bakterien und Pilzen zersetzt.",["bakterien","pilz","zersetz"]],["Die Wurzeln nehmen die frei gewordenen Nährstoffe über Pilze gleich wieder auf.",["wurzel","aufgenommen","aufnehm"]],["Die Nährstoffe sind in den Pflanzen gespeichert – ein kurzgeschlossener Kreislauf.",["kurzgeschlossen","kreislauf","gespeichert"]]],"Der Boden im Regenwald ist nährstoffarm, die Humusschicht ist nur wenige Zentimeter dick. Abgestorbene Blätter werden bei der Hitze und hohen Luftfeuchtigkeit schnell von Bakterien und Pilzen zersetzt. Nach dem täglichen Regen nehmen die Wurzeln die frei gewordenen Nährstoffe über Pilze sofort wieder auf. Die Nährstoffe sind also in den Pflanzen gespeichert und bleiben in einem kurzgeschlossenen Kreislauf. Deshalb wächst der Wald trotz armem Boden so üppig.");
+op("boden",3,"Beschreibe","Beschreibe den Nährstoffkreislauf im tropischen Regenwald (Buch S. 98, Aufgabe 1a).",[["Pflanzen nehmen Nährstoffe auf und speichern sie.",["aufnehm","aufgenommen","speicher"]],["Abgestorbene Pflanzenteile fallen auf den Boden.",["abgestorben","fallen","boden"]],["Bakterien und Pilze zersetzen sie schnell.",["bakterien","pilz","zersetz"]],["Die Wurzeln nehmen die Nährstoffe sofort wieder auf – der Kreislauf ist kurzgeschlossen.",["wurzel","wieder","kurz"]]],"Die Pflanzen nehmen Nährstoffe auf und speichern sie. Wenn Blätter und Pflanzenteile absterben, fallen sie auf den Boden und werden von Bakterien und Pilzen schnell zersetzt. Die frei gewordenen Nährstoffe nehmen die Wurzeln über Pilze gleich wieder auf. Deshalb ist der Nährstoffkreislauf kurzgeschlossen.");
+
+/* ============ NUTZUNG: Wanderfeldbau & Agroforst (30) ============ */
+ty("nutz",1,"Wie nennt man die Anbauweise, bei der Bauern nach einigen Jahren zu neuen Feldern weiterziehen?",["Wanderfeldbau"],"Wanderfeldbau = shifting cultivation.");
+mc("nutz",2,"Wie heißt Wanderfeldbau auf Englisch (Klammer im Buch)?","shifting cultivation",["slash driving","moving farming","field walking"],"„Shifting cultivation“ – wörtlich: verschiebender Anbau.");
+od("nutz",1,"Bringe den Ablauf des Wanderfeldbaus in die richtige Reihenfolge.",["Unterholz und Büsche werden mit der Machete abgeschlagen","Das Gebiet wird angezündet (Brandrodung)","Die Asche düngt den Boden; die Felder werden mit der Hacke bearbeitet und bepflanzt","Zwei bis drei Jahre liefern die Felder Nahrung","Die Nährstoffe sind verbraucht – das Feld liegt mindestens sieben Jahre brach"],"Diese Reihenfolge solltest du auswendig aufsagen können – sie wird gern gefragt.");
+mc("nutz",1,"Wie nennt man das Abbrennen des Waldes zur Gewinnung von Ackerland?","Brandrodung",["Holzernte","Wiederaufforstung","Aussaat"],"Brand = Feuer, Rodung = Wald beseitigen.");
+mc("nutz",1,"Wozu dient die Asche nach der Brandrodung?","Sie düngt die Felder und zerstört Schädlinge.",["Sie schützt vor Regen.","Sie macht den Boden hart.","Sie lockt Tiere an."],"Die Asche enthält Nährstoffe und tötet Schädlinge ab.");
+mc("nutz",2,"Warum bleiben beim Wanderfeldbau einige große Bäume stehen?","Sie spenden den Feldern Schatten.",["Sie liefern Dünger.","Sie dienen als Hütte.","Sie schützen vor Wanderern."],"So steht es im Bericht des Bauern (M3).");
+mt("nutz",2,"Ordne die Zahlen zu: Welche Zeitspanne gehört wozu?",[["Anbau auf einer Fläche","ca. 2–3 Jahre"],["Erholung (Brache)","mindestens 7 Jahre"],["Haus bleibt am Platz","ca. 15 Jahre"]],"Nach M2 und M3 (S. 96/97).");
+ty("nutz",1,"Wie viele Jahre kann eine Fläche beim Wanderfeldbau höchstens bepflanzt werden, bevor die Nährstoffe verbraucht sind? (Zahl)",["3"],"Zwei bis drei Jahre, dann ist Schluss.",{num:true});
+ty("nutz",1,"Wie viele Jahre muss sich ein Feld nach dem Anbau mindestens erholen? (Zahl)",["7"],"Mindestens sieben Jahre, damit neue Bäume wachsen und Nährstoffe gespeichert werden.",{num:true});
+ty("nutz",1,"Wie nennt man eine Fläche, die zur Erholung unbepflanzt liegen bleibt?",["Brache","Brachfläche","Brachflächen"],"Auf der Brache wächst Sekundärwald.");
+mc("nutz",2,"Was wächst auf der Brache nach, während sich der Boden erholt?","Sekundärwald",["Primärwald","Ölpalmen","Wüste"],"Primärwald = ursprünglicher Wald. Sekundärwald = nachgewachsener Wald.");
+mt("nutz",2,"Ordne die Fachbegriffe zu.",[["Primärwald","ursprünglicher, nie gerodeter Regenwald"],["Sekundärwald","nachgewachsener Wald auf einer Brache"],["Brache","Fläche, die zur Erholung liegen gelassen wird"],["Subsistenzbauer","Landwirt, der für die Selbstversorgung anbaut"]],"Diese Begriffe stehen auch auf deinem Arbeitsblatt.");
+mc("nutz",1,"Was ist ein Subsistenzbauer?","ein Landwirt, der auf Selbstversorgung ausgerichtet ist",["ein Landwirt, der nur für den Weltmarkt produziert","ein Großgrundbesitzer mit Plantagen","ein Forscher im Regenwald"],"Subsistenz = Selbstversorgung: Er baut an, was er und seine Familie essen.");
+mc("nutz",1,"Was sind Food Crops?","Grundnahrungsmittel, die überwiegend für die Ernährung der einheimischen Bevölkerung angebaut werden",["Pflanzen, die nur für den Export angebaut werden","Futtermittel für Rinder","Pflanzen, die nur als Brennholz dienen"],"Food Crops = Nahrungspflanzen für die Menschen vor Ort (Gegenteil: Cash Crops).");
+mc("nutz",2,"Welche Pflanzen baut der Bauer im Bericht an?","Maniok, Batate (Süßkartoffel) und Yams",["Weizen, Roggen und Gerste","Kaffee, Tee und Kakao","Ölpalmen und Soja"],"Das sind typische Food Crops.");
+tf("nutz",2,"Beim Wanderfeldbau kann man dasselbe Feld immer wieder ohne Pause bewirtschaften.",false,"Der Boden ist nach 2–3 Jahren erschöpft.","Nach 2–3 Jahren sind die Nährstoffe verbraucht, die Fläche muss mindestens 7 Jahre brachliegen.");
+tf("nutz",2,"Wenn die Brache zu früh wieder genutzt wird, droht Bodenerosion.",true,"Der Boden hat sich noch nicht erholt und wird abgetragen.");
+ty("nutz",2,"Wie nennt man die Abtragung von Boden durch Wasser (oder Wind)?",["Bodenerosion","Erosion"],"Erosion = Abtragung. Ohne Pflanzenwurzeln wird die dünne Humusschicht weggespült.");
+mc("nutz",2,"Welcher Nachteil gilt für den Wanderfeldbau?","hoher Flächenverbrauch",["hoher Maschineneinsatz","teure Dünger","langfristige Planung nötig"],"Man braucht viel Platz, weil die Felder jahrelang brachliegen.");
+mc("nutz",2,"Welchen Vorteil hat der Wanderfeldbau?","kurzfristig hohe Erträge; der Boden erholt sich während der Brache",["langanhaltende Nährstoffversorgung durch Bäume","niedrige Kosten durch Maschinen","Schutz der Humusschicht durch Dauerbewuchs"],"Vorteile (Arbeitsblatt): kurzfristig hohe Erträge; Erholung des Bodens während der Brache.");
+mc("nutz",1,"Was versteht man unter Agroforstwirtschaft?","Nutzpflanzen werden zwischen Bäumen angepflanzt.",["Roden und Abbrennen großer Flächen","Anbau nur einer Pflanzenart auf riesigen Flächen","Weidewirtschaft auf gerodeten Flächen"],"Agro = Landwirtschaft, Forst = Wald.");
+mc("nutz",2,"Wie ahmt die Agroforstwirtschaft den Regenwald nach?","mit einem mehrstöckigen Anbausystem (Bäume, Sträucher, niedrige Pflanzen)",["mit einer einzigen Pflanzenart in Reihen","mit Anbau auf nacktem Boden","mit künstlicher Bewässerung ohne Pflanzen"],"Wie beim Stockwerkbau gibt es mehrere Etagen von Pflanzen.");
+mt("nutz",2,"Ordne Vorteile und Nachteile der beiden Anbauformen zu.",[["Wanderfeldbau – Vorteil","kurzfristig hohe Erträge, Boden erholt sich in der Brache"],["Wanderfeldbau – Nachteil","Erosionsgefahr bei zu früher Nutzung, hoher Flächenverbrauch"],["Agroforst – Vorteil","langanhaltende Nährstoffversorgung, Schutz vor Erosion, langfristig hohe Erträge"],["Agroforst – Nachteil","hoher Aufwand und Pflege, langfristige Planung"]],"Genau diese Tabelle steht auf deinem Arbeitsblatt.");
+mc("nutz",2,"Was zeigt die Grafik zu den Erträgen im Vergleich der Jahre?","Bei Brandrodung sinken die Erträge schnell, bei Agroforstwirtschaft bleiben sie langfristig hoch.",["Bei Brandrodung steigen die Erträge jedes Jahr.","Beide Anbauarten bringen immer gleich viel.","Bei Agroforstwirtschaft sinken die Erträge schneller als bei Brandrodung."],"Der Boden ist nach Brandrodung bald erschöpft; Agroforst erhält die Nährstoffe im Kreislauf.",{fig:["ertrag",null]});
+mc("nutz",2,"Wie schützt die Agroforstwirtschaft den Boden?","Bäume und Pflanzenreste schützen vor Erosion und liefern Humus.",["Sie bedeckt den Boden mit Beton.","Sie bewässert den Boden dauernd.","Sie brennt den Boden regelmäßig ab."],"Die Kronen vermindern die Kraft der Regengüsse, Pflanzenreste und Stalldung liefern Humus (M5).");
+mc("nutz",2,"Welche Tiere gehören in M5 zur Viehhaltung in der Agroforstwirtschaft?","Schweine, Rinder und Hühner",["Kamele, Esel und Ziegen","Tapire, Faultiere und Affen","Haie, Delfine und Lachse"],"Das Vieh liefert Dünger und Nahrung.");
+cl("nutz",2,"Bei der Agroforstwirtschaft werden Nutzpflanzen zwischen ___ angebaut. Das schützt vor ___ und erhält die ___ .",["Bäumen","Bodenerosion","Humusschicht"],["Gebäuden","Dünger","Sandschicht"],"Vorteile der Agroforstwirtschaft.",{intro:"Setze die passenden Wörter ein."});
+op("nutz",3,"Erläutere","Erläutere den Ablauf des Wanderfeldbaus. Gehe auf Vorbereitung, Bepflanzung und sonstige Nutzung der Felder ein (Buch S. 98, Aufgabe 2).",[["Vorbereitung: Unterholz abschlagen, Fläche anzünden (Brandrodung), Asche düngt, einige große Bäume bleiben als Schattenspender.",["rodung","brand","asche","machete"]],["Bepflanzung: Bearbeitung mit der Hacke, Anbau von Maniok, Batate und Yams.",["hacke","maniok","batate","yams"]],["Nach 2–3 Jahren sind die Nährstoffe verbraucht.",["jahre","verbraucht"]],["Die Felder ruhen mindestens 7 Jahre (Brache, Sekundärwald); die Bauern ziehen zu neuen Flächen um.",["7","sieben","brache","umzieh","zieht um"]]],"Zuerst schlagen die Bauern mit der Machete Unterholz und Büsche ab und zünden das Gebiet an (Brandrodung). Die Asche dient als Dünger und zerstört Schädlinge, einige große Bäume bleiben als Schattenspender stehen. Dann werden die Felder mit der Hacke bearbeitet und mit Maniok, Batate und Yams bepflanzt. Zwei bis drei Jahre liefern die Felder Nahrung, dann sind die Nährstoffe verbraucht. Die Felder müssen sich mindestens sieben Jahre erholen (Brache, Sekundärwald), während die Bauern neue Flächen roden und das Haus nach einigen Jahren umziehen.");
+op("nutz",3,"Vergleiche","Vergleiche Wanderfeldbau mit Agroforstwirtschaft (Buch S. 99, Aufgabe 4).",[["Wanderfeldbau: roden und abbrennen, einige Jahre Anbau, dann Brache. Agroforst: Nutzpflanzen zwischen Bäumen (mehrstöckig).",["roden","brand","zwischen","baeumen","bäumen","mehrstoeck","mehrstöck"]],["Wanderfeldbau: kurzfristig hohe Erträge, danach Boden erschöpft. Agroforst: langfristig hohe Erträge.",["kurzfristig","langfristig"]],["Wanderfeldbau: Erosionsgefahr und hoher Flächenverbrauch. Agroforst: Schutz vor Erosion, Erhalt der Humusschicht.",["erosion","humus","flaeche","fläche"]],["Agroforst braucht mehr Aufwand, Pflege und langfristige Planung.",["aufwand","pflege","planung"]]],"Beim Wanderfeldbau werden Waldstücke gerodet und abgebrannt, einige Jahre bepflanzt und dann als Brache liegen gelassen. Bei der Agroforstwirtschaft werden Nutzpflanzen in einem mehrstöckigen System zwischen Bäumen angebaut. Der Wanderfeldbau bringt kurzfristig hohe Erträge, aber der Boden ist bald erschöpft, es droht Erosion und der Flächenverbrauch ist hoch. Die Agroforstwirtschaft versorgt die Pflanzen langanhaltend mit Nährstoffen, schützt vor Erosion und erhält die Humusschicht, braucht aber mehr Aufwand, Pflege und langfristige Planung.");
+op("nutz",3,"Bewerte","Bewerte die Nachhaltigkeit von Wanderfeldbau und Agroforstwirtschaft (Buch S. 99, Aufgabe 5).",[["Wanderfeldbau ist nur nachhaltig, wenn die Brache lang genug ist; bei wachsender Bevölkerung reicht das nicht (Flächenverbrauch, Erosion).",["brache","bevoelkerung","bevölkerung","flaeche","fläche","erosion"]],["Agroforstwirtschaft ist nachhaltiger: Nährstoffe bleiben im Kreislauf, Humus und Boden sind geschützt, langfristig hohe Erträge.",["nährstoff","naehrstoff","humus","langfristig"]],["Aber: hoher Aufwand, Pflege und langfristige Planung sind nötig.",["aufwand","pflege","planung"]],["Ich ziehe ein eigenes, begründetes Fazit.",["fazit","insgesamt","deshalb","daher","meiner meinung","ich finde"]]],"Der Wanderfeldbau ist nur nachhaltig, solange die Brache lang genug ist. Weil die Bevölkerung wächst, reicht die Fläche aber nicht mehr, es droht Erosion. Die Agroforstwirtschaft ist nachhaltiger, weil sie den Regenwald nachahmt: Die Nährstoffe bleiben im Kreislauf, die Humusschicht und der Boden sind geschützt und die Erträge bleiben langfristig hoch. Allerdings sind Aufwand, Pflege und Planung höher. Insgesamt finde ich die Agroforstwirtschaft besser, weil sie Mensch und Natur langfristig nützt.");
+
+/* ============ CASH CROPS & ÖLPALME (36) ============ */
+mc("cash",1,"Was sind Cash Crops?","landwirtschaftliche Produkte, die nicht auf lokalen Märkten, sondern auf dem Weltmarkt verkauft werden",["Pflanzen, die nur für die Selbstversorgung angebaut werden","Pflanzen, die nur als Viehfutter dienen","Pflanzen, die ohne Dünger wachsen"],"Cash = Bargeld. Cash Crops sind Pflanzen, die man verkauft, um Geld zu verdienen.");
+ty("cash",1,"Cash Crops werden auf dem … verkauft. (ein Wort, Gegenstück zum lokalen Markt)",["Weltmarkt"],"Weltmarkt = weltweiter Wirtschaftsraum, auf dem Produkte an der Börse gehandelt werden.");
+mc("cash",2,"Was ist der Weltmarkt?","ein weltweiter Wirtschaftsraum, auf dem Produkte angeboten und an der Börse gehandelt werden",["der Markt im Heimatdorf","ein Markt nur für Lebensmittel","ein Markt, den es nur im Internet gibt"],"Gegenteil: lokaler oder nationaler Markt.");
+mt("cash",2,"Ordne die Begriffe zu.",[["Food Crops","für die Ernährung der einheimischen Bevölkerung"],["Cash Crops","für den Verkauf auf dem Weltmarkt"],["Subsistenzbauer","baut für den eigenen Bedarf an"],["Monokultur","auf großen Flächen nur eine Pflanzenart"]],"Die Fachbegriffe von deinem Arbeitsblatt und aus dem Buch.");
+mc("cash",1,"Was bedeutet Monokultur?","Auf einer Fläche wird nur eine Pflanzenart angebaut.",["Auf einer Fläche wachsen viele Arten durcheinander.","Es wird nur im Winter angebaut.","Es wird nur für den Eigenbedarf angebaut."],"Mono = ein. Eine Art, riesige Fläche – ganz anders als der artenreiche Regenwald.");
+mc("cash",1,"Was ist eine Plantage?","eine große Anbaufläche, auf der meist eine einzige Pflanzenart angebaut wird",["ein Garten für den Eigenbedarf","ein kleiner Wald","ein Dorfmarkt"],"Oft gehören Plantagen großen Firmen.");
+mc("cash",1,"Aus welcher Pflanze wird Palmöl gewonnen?","Ölpalme",["Kokospalme","Sonnenblume","Sojabohne"],"Aus der Frucht und den Kernen der Ölpalme.");
+mc("cash",2,"Woher stammt die Ölpalme ursprünglich?","aus Afrika",["aus Südamerika","aus Europa","aus Australien"],"Seeleute brachten ihre Samen von Afrika nach Südamerika und später nach Asien.");
+mc("cash",2,"Wann brachten Seeleute Samen der Ölpalme von Afrika nach Südamerika?","vor rund 200 Jahren",["vor rund 20 Jahren","vor rund 2 000 Jahren","vor rund 20 000 Jahren"],"Heute wächst sie überall in den Tropen.");
+mc("cash",2,"Welche Wachstumsbedingungen braucht die Ölpalme?","viel Licht, 26 °C, genügend Wasser, guter lockerer Boden",["wenig Licht, 5 °C, trockener Sand","Frost, Schnee, nährstoffreicher Lehm","Schatten, 40 °C, kein Wasser"],"Das findest du im Info-Kasten „Die Ölpalme“.");
+ty("cash",1,"Welche Lufttemperatur braucht die Ölpalme zum Wachsen? (Zahl in °C)",["26"],"26 °C – das ist fast die Jahresdurchschnittstemperatur von Manaus!",{num:true});
+ty("cash",1,"Wie alt kann eine Ölpalme werden? (Zahl in Jahren)",["120"],"Bis zu 120 Jahre.",{num:true});
+ty("cash",2,"Nach wie vielen Jahren trägt die Ölpalme zum ersten Mal Früchte? (Zahl)",["3"],"Nach drei Jahren.",{num:true});
+ty("cash",2,"Wie viele Fruchtstände entwickeln sich jährlich an einer Ölpalme? (Zahl)",["15"],"Jährlich etwa 15 Fruchtstände mit unzähligen Einzelfrüchten.",{num:true});
+mc("cash",2,"Wie groß ist eine einzelne Ölpalmfrucht etwa?","so groß wie eine Zwetschge",["so groß wie eine Melone","so groß wie eine Erbse","so groß wie ein Kürbis"],"Das Fruchtfleisch schützt einen runden Kern.");
+mc("cash",1,"Welche Ölpflanze liefert pro Hektar den höchsten Ertrag?","Ölpalme (3,3 t/ha)",["Soja (0,4 t/ha)","Raps (0,7 t/ha)","Kokos (0,7 t/ha)"],"Die Ölpalme liefert pro Fläche ein Vielfaches der anderen Pflanzen.",{fig:["oel",null]});
+ty("cash",2,"Wie viele Tonnen Öl liefert ein Hektar Ölpalmen? (Zahl, z. B. 3,3)",["3,3"],"3,3 t/ha laut Grafik M4.",{num:true,fig:["oel","mask"]});
+mc("cash",2,"Wie viele Tonnen Öl pro Hektar bringt Soja?","0,4 t",["0,7 t","3,3 t","1,4 t"],"Soja ist mit 0,4 t/ha der kleinste Wert in der Grafik.",{fig:["oel",null]});
+ty("cash",1,"Wie groß ist ein Hektar? (Maße oder Fläche)",["100 × 100 m","100x100","100 x 100","100 mal 100","10000 m²","10000 quadratmeter","10000"],"1 ha = 100 m × 100 m = 10 000 m² (etwa ein großes Fußballfeld).");
+tf("cash",2,"Die Ölpalme liefert pro Fläche etwa achtmal so viel Öl wie Soja.",true,"3,3 : 0,4 ≈ 8. Das ist der Grund für ihren Erfolg.");
+mc("cash",2,"Wie viel des weltweiten Ölbedarfs für Nahrung stammt etwa von der Ölpalme?","etwa ein Drittel",["etwa ein Hundertstel","etwa die Hälfte","fast alles"],"So steht es im Text auf S. 100.");
+mc("cash",2,"Wie groß ist die Fläche aller Ölpalmen-Plantagen heute?","über 12 Millionen Hektar – etwa ein Drittel der Fläche Deutschlands",["etwa 12 000 Hektar – so groß wie ein Dorf","über 12 Millionen Hektar – mehr als ganz Deutschland","etwa 1 Million Hektar – ein Zehntel Deutschlands"],"Und Jahr für Jahr wird diese Fläche größer.");
+mt("cash",1,"Ordne die Produkte ihrer Verwendung zu.",[["Margarine, Schokolade, Chips","Lebensmittel"],["Lippenstift, Seife, Hautcreme","Kosmetik"],["Kerzen, Schmiermittel, Lacke","technische Produkte"],["Biokraftstoff","Energieproduktion"]],"Palmöl ist vielseitig verwendbar – deshalb ist die Nachfrage so groß.");
+mc("cash",2,"Woran erkennt man auf Verpackungen, dass Palmöl enthalten sein kann?","an Begriffen wie „pflanzliches Öl“ oder „vegetabiles Fett“",["an einem grünen Siegel","an dem Wort „Palmschokolade“","an der Zahl 24"],"Das Wort Palmöl steht oft gar nicht drauf.");
+tf("cash",1,"Palmöl steckt nur in Lebensmitteln.",false,"Es steckt auch in vielen anderen Produkten.","Palmöl steckt auch in Kosmetik, Seife, Kerzen, Lacken, Schmiermitteln und Biokraftstoff.");
+od("cash",3,"Bringe die Verarbeitung der Ölpalmfrüchte in die richtige Reihenfolge.",["Die ersten Früchte fallen herunter – sie sind reif","Innerhalb von 24 Stunden müssen die Früchte verarbeitet werden","Die Früchte werden gekocht, das Fruchtfleisch wird vom Kern gelöst","Aus dem Fruchtfleisch wird das orangerote Rohpalmöl gepresst","Aus den Samen wird das feste, farblose Kernpalmöl gewonnen"],"Nach dem Text M8 auf S. 101.");
+ty("cash",2,"Innerhalb von wie vielen Stunden müssen Ölpalmfrüchte nach der Ernte verarbeitet werden? (Zahl)",["24"],"Innerhalb von 24 Stunden.",{num:true});
+mc("cash",2,"Was sind Vorteile von Plantagen (Monokultur)?","maschinell gut zu bearbeiten, hohe Erträge, viele Arbeitsplätze",["Schutz der Artenvielfalt und kein Dünger nötig","Erholung des Bodens und kleine Felder","weniger Arbeitsplätze, aber höhere Preise"],"Das ist deine Mitschrift vom 15.10.");
+mc("cash",2,"Welcher Nachteil gehört zu Plantagen?","Verlust großer Regenwaldflächen und der Artenvielfalt",["niedrige Kosten und Preise","Versorgung des Welthandels","maschinell gut zu bearbeiten"],"Die anderen Antworten sind Vorteile.");
+mt("cash",2,"Vorteil oder Nachteil von Plantagen? Ordne zu.",[["maschinell gut zu bearbeiten","Vorteil"],["Verlust der Artenvielfalt","Nachteil"],["viele Arbeitsplätze","Vorteil"],["Belastung von Boden und Gewässern","Nachteil"],["niedrige Kosten und Preise","Vorteil"],["starker Einsatz von Dünger und Pflanzenschutzmitteln","Nachteil"]],"Nach deinem Heft (15.10.): 5 Vorteile und 4 Nachteile – hier die wichtigsten.");
+tf("cash",2,"Auf Palmöl-Plantagen wird der nährstoffarme Boden schnell ausgelaugt und muss mit künstlichem Dünger versorgt werden.",true,"So steht es in M8 (S. 101).");
+mc("cash",2,"Warum werden auf Plantagen viele Pflanzenschutzmittel eingesetzt?","Die dicht beisammenstehenden Pflanzen sind anfällig für Schädlinge und Pilzkrankheiten.",["Damit die Pflanzen schneller blühen.","Damit mehr Regen fällt.","Damit der Boden fruchtbarer wird."],"Monokultur: Ein Schädling kann sich ungestört ausbreiten.");
+mc("cash",2,"Welche Gefahr entsteht durch Dünger und Pflanzenschutzmittel auf Plantagen?","Vergiftung von Grundwasser und Flüssen",["mehr Regen","mehr Artenvielfalt","kältere Nächte"],"Das steht in M8: Es kann zur Vergiftung von Grundwasser und Flüssen kommen.");
+op("cash",3,"Begründe","Begründe, warum ein Großteil des weltweiten Ölbedarfs durch Palmöl gedeckt wird (Buch S. 100, Aufgabe 4 – M4).",[["Die Ölpalme liefert pro Hektar 3,3 t Öl – viel mehr als Soja (0,4 t), Kokos, Sonnenblume oder Raps (je 0,7 t).",["3,3","ertrag","hektar","mehr"]],["Palmöl ist vielseitig verwendbar (Lebensmittel, Kosmetik, Kerzen, Biokraftstoff) und geschmacksneutral.",["vielseitig","verwend","lebensmittel","kosmetik"]],["Die weltweite Nachfrage steigt, und das Öl ist preiswert.",["nachfrage","preis","günstig","guenstig","billig"]]],"Die Ölpalme bringt pro Hektar mit 3,3 Tonnen deutlich mehr Öl als Soja (0,4 t) oder Raps, Kokos und Sonnenblume (je 0,7 t). Deshalb ist Palmöl preiswert. Außerdem lässt es sich sehr vielseitig verwenden, etwa in Lebensmitteln und Kosmetik. Weil die Nachfrage weltweit steigt, wird immer mehr Palmöl angebaut.");
+op("cash",3,"Fasse zusammen","Fasse die Nutzung des Palmöls zusammen (Buch S. 100, Aufgabe 1).",[["Palmöl steckt in vielen Lebensmitteln (z. B. Margarine, Schokolade, Kekse, Chips, Fertiggerichte).",["lebensmittel","margarine","schokolade","kekse","chips"]],["Auch in Kosmetik (Hautcreme, Seife, Lippenstift), Kerzen, Farben, Lacken und Schmiermitteln.",["kosmetik","seife","kerzen","lack"]],["Ein Teil wird als Biokraftstoff in der Energieproduktion eingesetzt.",["biokraftstoff","energie"]],["Es wird meist als Cash Crop exportiert.",["cash","export","weltmarkt"]]],"Palmöl wird in vielen Lebensmitteln wie Margarine, Schokolade, Keksen, Chips und Fertiggerichten verwendet, außerdem in Kosmetik, Seife, Kerzen, Farben, Lacken und Schmiermitteln. Ein Teil dient als Biokraftstoff. Meist wird Palmöl als Cash Crop an Unternehmen im Ausland verkauft.");
+op("cash",3,"Nimm Stellung","„Plantagen töten den Regenwald.“ Nimm Stellung zu dieser Aussage (Buch S. 100, Aufgabe 5).",[["Pro: Für Plantagen werden riesige Regenwaldflächen gerodet – Lebensraum und Artenvielfalt gehen verloren.",["rod","artenvielfalt","lebensraum","flaeche","fläche"]],["Pro: Der Boden wird ausgelaugt, viel Dünger und Pflanzenschutzmittel belasten Boden und Gewässer.",["dünger","duenger","pflanzenschutz","gewässer","gewaesser","boden"]],["Contra / Einschränkung: Plantagen schaffen Arbeitsplätze und liefern günstiges Öl; es kommt darauf an, wo und wie angebaut wird.",["arbeitsplät","arbeitsplaet","weltmarkt","ertrag","andererseits","aber"]],["Ich ziehe ein eigenes, begründetes Fazit.",["fazit","insgesamt","deshalb","daher","meiner meinung","ich finde"]]],"Einerseits stimmt die Aussage: Für Plantagen werden riesige Regenwaldflächen gerodet, dadurch gehen Lebensraum und Artenvielfalt verloren. Außerdem belasten Dünger und Pflanzenschutzmittel Boden und Gewässer. Andererseits schaffen Plantagen Arbeitsplätze und liefern günstiges Öl für den Weltmarkt. Entscheidend ist, wo und wie sie angelegt werden. Insgesamt finde ich: Plantagen zerstören den Regenwald, wenn dafür Urwald gerodet wird; sie sollten nur auf bereits genutzten Flächen entstehen.");
+
+/* ============ PRÜFUNGSAUFGABEN (25) – im Stil einer Klassenarbeit ============ */
+mc("pruef",2,"Das Klimadiagramm zeigt Manaus. Welche Aussage passt dazu?","Es ist das ganze Jahr warm, die Niederschläge schwanken aber stark.",["Es gibt vier Jahreszeiten mit Frost im Winter.","Es regnet nur im Sommer.","Die Temperatur schwankt zwischen 0 °C und 30 °C."],"Temperatur: fast waagerechte Linie. Niederschlag: Balken sehr unterschiedlich.",{fig:["klima",null]});
+mc("pruef",2,"Welche Schicht ist mit B markiert und wie hoch liegt sie?","Baumschicht, 10–40 m",["Strauchschicht, 5–10 m","Urwaldriesen, 40–70 m","Krautschicht, 0–5 m"],"B ist die zweitoberste Schicht.",{fig:["stock","letters"]});
+mc("pruef",2,"Was sorgt dafür, dass Regenwaldpflanzen auf nährstoffarmem Boden wachsen können?","der kurzgeschlossene Nährstoffkreislauf",["Dünger aus Fabriken","eine dicke Humusschicht","Nährstoffe aus tiefem Gestein"],"Zersetzen und sofort wieder aufnehmen.");
+mc("pruef",2,"Was ist der wichtigste Unterschied zwischen Wanderfeldbau und einer Plantage?","Wanderfeldbau dient der Selbstversorgung, Plantagen produzieren für den Weltmarkt.",["Beim Wanderfeldbau wird nur Palmöl angebaut.","Plantagen brauchen keinen Boden.","Wanderfeldbau gibt es nur in Deutschland."],"Food Crops vs. Cash Crops.");
+mc("pruef",2,"Wie viele Tonnen Öl pro Hektar liefert die Ölpalme?","3,3",["0,4","0,7","7,3"],"Ölpalme 3,3 – Soja 0,4 – Kokos/Sonnenblume/Raps je 0,7.",{fig:["oel","mask"]});
+mc("pruef",2,"Welche Aussage über die Tageslänge stimmt?","Im Regenwald sind alle Tage das ganze Jahr gleich lang, bei uns ändern sie sich mit den Jahreszeiten.",["Im Regenwald sind die Sommertage länger als die Wintertage.","In Deutschland sind alle Tage gleich lang.","Im Regenwald gibt es lange Polarnächte."],"Tageszeitenklima vs. Jahreszeitenklima.");
+tf("pruef",2,"Beim Wanderfeldbau wird nach der Rodung zuerst der Boden mit Dünger aus der Fabrik behandelt.",false,"Die Asche der Brandrodung ist der Dünger.","Zuerst wird das Gebiet abgebrannt (Brandrodung); die Asche dient als Dünger.");
+tf("pruef",2,"Ein großer Teil des Regens im Regenwald stammt aus dem Wasserdampf, den die Pflanzen selbst abgeben.",true,"74 % des Niederschlags verdunsten wieder über die Pflanzen – „Der Regenwald macht seinen Regen selbst.“");
+tf("pruef",1,"Cash Crops werden vor allem auf dem lokalen Markt verkauft.",false,"Das wäre bei Food Crops so.","Cash Crops werden auf dem Weltmarkt verkauft.");
+ty("pruef",1,"Wie nennt man die Fläche, die sich beim Wanderfeldbau nach dem Anbau erholt?",["Brache"],"Mindestens sieben Jahre.");
+ty("pruef",1,"Wie heißt die Schicht in 5–10 m Höhe im Regenwald?",["Strauchschicht"],"0–5 Kraut, 5–10 Strauch, 10–40 Baum, 40–70 Urwaldriesen.");
+ty("pruef",2,"Wie nennt man ein Klima, bei dem Temperatur und Niederschlag im Laufe eines Tages schwanken und die Tageslänge immer gleich bleibt?",["Tageszeitenklima"],"Gegenstück: Jahreszeitenklima.");
+ty("pruef",1,"Wie nennt man den Anbau nur einer Pflanzenart auf einer großen Fläche?",["Monokultur"],"Mono = ein/allein.");
+cl("pruef",1,"Der Amazonasregenwald wird auch „Grüne ___“ genannt, weil die Pflanzen ___ in Sauerstoff umwandeln.",["Lunge","Kohlenstoffdioxid"],["Wiese","Stickstoff"],"Grüne Lunge der Erde.",{intro:"Setze die passenden Wörter ein."});
+cl("pruef",2,"Bei der Brandrodung dient die ___ als Dünger. Nach etwa drei Jahren sind die ___ verbraucht.",["Asche","Nährstoffe"],["Kohle","Pflanzen"],"Danach braucht der Boden mindestens 7 Jahre Ruhe.",{intro:"Setze die passenden Wörter ein."});
+od("pruef",1,"Ordne die Stockwerke von oben nach unten.",["Urwaldriesen","Baumschicht","Strauchschicht","Krautschicht","Boden"],"Oben beginnt das Dachgeschoss.");
+od("pruef",2,"Ordne den Kreislauf des Wanderfeldbaus.",["Brandrodung","Anbau (2–3 Jahre)","Brache (mind. 7 Jahre)","Sekundärwald wächst nach, neue Rodung möglich"],"Dann beginnt alles von vorn.");
+mt("pruef",1,"Ordne die Begriffe zu.",[["Brache","Fläche, die sich erholt"],["Humus","nährstoffreiche Bodenschicht"],["Subsistenzbauer","Selbstversorger"],["Cash Crop","Verkauf auf dem Weltmarkt"]],"Vier Fachbegriffe, die in jeder Arbeit vorkommen.");
+mt("pruef",2,"Ordne zu.",[["Lianen","wachsen an Bäumen zum Licht"],["Aufsitzerpflanzen","sitzen auf anderen Pflanzen, ohne Stamm"],["Brettwurzeln","geben großen Bäumen Halt"],["Urwaldriesen","bis zu 70 m hoch"]],"Anpassungen im Stockwerkbau.");
+mt("pruef",2,"Ordne die Zahlen zu.",[["Jahresniederschlag Manaus","1897 mm"],["Jahrestemperatur Manaus","26,9 °C"],["Höhe der Urwaldriesen","bis 70 m"],["Ölertrag der Ölpalme","3,3 t/ha"]],"Wichtige Zahlen aus Kapitel 3.");
+op("pruef",3,"Erkläre","Erkläre, warum im tropischen Regenwald trotz nährstoffarmer Böden so viele Pflanzen wachsen.",[["Humusschicht nur wenige Zentimeter dick, Boden nährstoffarm.",["humus","wenige","naehrstoffarm","nährstoffarm"]],["Bakterien und Pilze zersetzen Abgestorbenes bei Hitze und Feuchtigkeit sehr schnell.",["bakterien","pilz","zersetz"]],["Wurzeln nehmen die Nährstoffe über Pilze sofort wieder auf.",["wurzel","aufgenommen","aufnehm"]],["Die Nährstoffe sind in den Pflanzen gespeichert: kurzgeschlossener Kreislauf.",["kurzgeschlossen","kreislauf"]]],"Der Boden ist nährstoffarm und die Humusschicht nur wenige Zentimeter dick. Bei Hitze und hoher Luftfeuchtigkeit zersetzen Bakterien und Pilze abgestorbene Pflanzenteile sehr schnell. Die Wurzeln nehmen die frei gewordenen Nährstoffe über Pilze sofort wieder auf. Die Nährstoffe sind also in den Pflanzen gespeichert – man spricht von einem kurzgeschlossenen Nährstoffkreislauf.");
+op("pruef",3,"Vergleiche","Vergleiche das Klima des tropischen Regenwaldes mit dem in Deutschland.",[["Regenwald: das ganze Jahr warm und feucht; Deutschland: vier Jahreszeiten.",["warm","feucht","vier jahreszeiten","jahreszeit"]],["Im Regenwald sind die Tage das ganze Jahr gleich lang, bei uns unterscheiden sie sich im Sommer und Winter.",["gleich","sommer","winter"]],["Regenwald: Tageszeitenklima mit täglichem Regen am Nachmittag; Deutschland: Jahreszeitenklima.",["tageszeit","jahreszeitenklima","nachmittag"]],["Temperatur und Niederschlag schwanken bei uns im Jahr, im Regenwald im Tagesverlauf.",["schwank","unterschied"]]],"Im Regenwald ist es das ganze Jahr warm und feucht und die Tage sind immer gleich lang. Es gibt ein Tageszeitenklima: Am Nachmittag regnet es fast täglich. In Deutschland gibt es vier Jahreszeiten, die Tage sind im Sommer länger und im Winter kürzer, und Temperatur und Niederschlag unterscheiden sich im Laufe des Jahres deutlich (Jahreszeitenklima).");
+op("pruef",3,"Beschreibe","Beschreibe den Tagesverlauf des Wetters im tropischen Regenwald.",[["Morgens (6 Uhr): kurze Dämmerung, Sonnenaufgang, Dunst, ca. 20 °C.",["morgen","dunst","20"]],["Vormittags: Sonneneinstrahlung steigt, Wasser verdunstet, Wolken bilden sich.",["vormittag","verdunst","wolken"]],["Mittags: starke Wolkenbildung (ca. 28 °C); nachmittags heftige Gewitter und Regen (ca. 31 °C).",["gewitter","31","28","nachmittag"]],["Abends ca. 26 °C und hohe Luftfeuchtigkeit; nachts über 20 °C (Tropennacht).",["abend","26","nacht","tropennacht"]]],"Morgens um 6 Uhr gibt es eine kurze Dämmerung, Sonnenaufgang und Dunst bei etwa 20 °C. Am Vormittag steigt die Sonneneinstrahlung, Wasser verdunstet und Wolken bilden sich. Mittags gibt es starke Wolkenbildung bei etwa 28 °C, am Nachmittag heftige Gewitter und Regenfälle bei etwa 31 °C. Abends um 18 Uhr geht die Sonne unter, es ist etwa 26 °C und die Luftfeuchtigkeit ist hoch. Nachts bleiben die Temperaturen über 20 °C (Tropennacht).");
+op("pruef",3,"Begründe","Begründe, warum die Agroforstwirtschaft bei wachsender Bevölkerung besser geeignet ist als der Wanderfeldbau.",[["Wanderfeldbau braucht viel Fläche, weil die Felder jahrelang brachliegen – bei mehr Menschen reicht das nicht.",["flaeche","fläche","brache","bevoelkerung","bevölkerung"]],["Agroforstwirtschaft nutzt dieselbe Fläche dauerhaft und bringt langfristig hohe Erträge.",["langfristig","dauerhaft","erträge","ertraege"]],["Bäume liefern langanhaltend Nährstoffe und schützen Boden und Humusschicht vor Erosion.",["nährstoff","naehrstoff","erosion","humus"]]],"Der Wanderfeldbau braucht viel Fläche, weil die Felder mindestens sieben Jahre brachliegen. Bei einer wachsenden Bevölkerung reicht das nicht mehr, und bei zu früher Nutzung droht Erosion. Die Agroforstwirtschaft nutzt dieselbe Fläche dauerhaft: Die Bäume liefern langanhaltend Nährstoffe, schützen vor Erosion und erhalten die Humusschicht. So sind die Erträge langfristig hoch.");
+op("pruef",3,"Nimm Stellung","„Wir sollten kein Palmöl mehr kaufen.“ Nimm Stellung zu dieser Aussage.",[["Pro: Für Plantagen wird Regenwald gerodet, Artenvielfalt und Lebensraum gehen verloren.",["rod","artenvielfalt","lebensraum"]],["Pro: Dünger und Pflanzenschutzmittel belasten Böden und Gewässer.",["dünger","duenger","pflanzenschutz","gewässer","gewaesser"]],["Contra: Die Ölpalme liefert pro Hektar sehr viel Öl (3,3 t) und sichert Arbeitsplätze; andere Ölpflanzen bräuchten mehr Fläche.",["3,3","arbeitsplät","arbeitsplaet","fläche","flaeche","mehr platz"]],["Fazit mit Begründung (z. B. bewusst und nachhaltig einkaufen).",["fazit","insgesamt","deshalb","daher","meiner meinung","ich finde","nachhaltig"]]],"Gegen Palmöl spricht, dass für Plantagen riesige Regenwaldflächen gerodet werden und Artenvielfalt verloren geht, außerdem belasten Dünger und Pflanzenschutzmittel Boden und Gewässer. Für Palmöl spricht, dass die Ölpalme pro Hektar viel mehr Öl liefert als andere Pflanzen und Arbeitsplätze schafft; andere Öle würden mehr Fläche brauchen. Insgesamt finde ich: Man sollte nicht auf Palmöl verzichten, aber darauf achten, dass es nachhaltig angebaut wird und Produkte mit weniger Palmöl bevorzugen.");
+
+/* ============ Paket zusammenbauen ============ */
+const BUILTIN=[{
+  id:"erdkunde",name:"Erdkunde",icon:"🌍",
+  theme:{a:"#7cc576",a2:"#b9e6a0",bg1:"#12382a",bg2:"#07140f"},
+  topics:[{id:"erd-regenwald",name:"Tropischer Regenwald",icon:"🌴",cls:"Klasse 5 · Leben in Extremräumen",
+    sections:ERD_SECTIONS,tasks:TK,facts:ERD_FACTS}]
+}];
+
+
+
+function loadPacks(){try{const v=localStorage.getItem(PKEY);return v?JSON.parse(v):[];}catch(e){return [];}}
+function savePacks(p){try{localStorage.setItem(PKEY,JSON.stringify(p));}catch(e){}}
+let PACKS=loadPacks();
+function allSubjects(){return BUILTIN.concat(PACKS);}
+function findTopic(tid){for(const s of allSubjects())for(const t of s.topics)if(t.id===tid)return {subj:s,topic:t};return null;}
+
+/* ---------- Zustand ---------- */
+function defaultState(){return {v:1,xp:0,days:{},prefs:{conf:true,len:12},topics:{}};}
+function normalizeState(s){
+  const d=defaultState(); if(!s||typeof s!=="object")return d;
+  s.v=1; s.xp=+s.xp||0; s.days=(s.days&&typeof s.days==="object")?s.days:{};
+  s.prefs=Object.assign({},d.prefs,s.prefs||{}); s.prefs.len=[8,12,20].includes(+s.prefs.len)?+s.prefs.len:12; s.prefs.conf=s.prefs.conf!==false;
+  s.topics=(s.topics&&typeof s.topics==="object")?s.topics:{};
+  Object.keys(s.topics).forEach(k=>{const t=s.topics[k]||{};t.ts=t.ts&&typeof t.ts==="object"?t.ts:{};t.weak=t.weak&&typeof t.weak==="object"?t.weak:{};
+    t.facts=t.facts&&typeof t.facts==="object"?t.facts:{};t.sims=Array.isArray(t.sims)?t.sims:[];t.exam=typeof t.exam==="string"?t.exam:"";t.cards=t.cards&&typeof t.cards==="object"?t.cards:{};
+    s.topics[k]=t;});
+  return s;}
+function load(){try{const v=localStorage.getItem(KEY);return normalizeState(v?JSON.parse(v):null);}catch(e){return defaultState();}}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function TS(tid){if(!S.topics[tid])S.topics[tid]={ts:{},weak:{},facts:{},sims:[],exam:"",cards:{}};return S.topics[tid];}
+
+/* ---------- Statistik / Wiederholungslogik ---------- */
+const IV=[0,1,3,7,14,30];
+function examDays(tid){const e=TS(tid).exam;if(!e)return null;const d=Date.parse(e+"T00:00:00Z");if(isNaN(d))return null;return Math.floor(d/864e5)-dayNum();}
+function interval(tid,box){let iv=IV[box];const D=examDays(tid);if(D!==null&&D>=0){iv=Math.min(iv,Math.max(1,Math.floor(D/3)));}return iv;}
+function tstat(tid,id){return TS(tid).ts[id];}
+function isSure(tid,id){const st=tstat(tid,id);return !!st&&st.box>=2;}
+function streak(){let n=0,d=dayNum();if(!S.days[dayStr(d)])d--;while(S.days[dayStr(d)]&&S.days[dayStr(d)].n>0){n++;d--;}return n;}
+function level(){const L=Math.floor(S.xp/250);const names=["Pfadfinder","Fährtensucher","Dschungel-Forscher","Urwald-Profi","Regenwald-Experte","Meister des Dschungels"];return {n:L+1,name:names[Math.min(L,names.length-1)],into:S.xp%250};}
+function record(topic,t,ok,conf,exam){
+  const T0=TS(topic.id), id=t.id, today=dayNum();
+  const st=T0.ts[id]||(T0.ts[id]={n:0,ok:0,box:0,due:0,last:0});
+  st.n++; if(ok)st.ok++; st.last=today;
+  const dk=dayStr(today); const dd=S.days[dk]||(S.days[dk]={n:0,ok:0}); dd.n++; if(ok)dd.ok++;
+  let gain=0;
+  if(ok){
+    if(conf===0){ T0.weak[id]=Math.max(T0.weak[id]||0,1); gain=4; }
+    else{
+      if(st.due<=today){st.box=Math.min(5,st.box+1);st.due=today+interval(topic.id,st.box);}
+      if(T0.weak[id]){T0.weak[id]--;if(T0.weak[id]<=0)delete T0.weak[id];}
+      gain=conf===2?12:10;
+    }
+  } else { st.box=0; st.due=today; T0.weak[id]=2; gain=2; }
+  S.xp+=gain; save(); return gain;
+}
+function secTasks(topic,sid){return topic.tasks.filter(t=>t.sec===sid);}
+function secProgress(topic,sid){const ts=secTasks(topic,sid);let seen=0,sure=0;ts.forEach(t=>{const st=tstat(topic.id,t.id);if(st&&st.n>0)seen++;if(isSure(topic.id,t.id))sure++;});
+  const weak=ts.filter(t=>TS(topic.id).weak[t.id]).length;return {n:ts.length,seen,sure,weak};}
+function stars(topic,sid){const p=secProgress(topic,sid);if(!p.n)return 0;let s=0;if(p.seen/p.n>=.8)s=1;if(p.sure/p.n>=.6)s=2;if(p.sure/p.n>=.85&&p.weak===0)s=3;return s;}
+function fitness(topic){const T0=TS(topic.id);let sum=0;topic.tasks.forEach(t=>{const st=T0.ts[t.id];if(st)sum+=Math.min(1,st.box/3);});return Math.round(100*sum/topic.tasks.length);}
+function gateOK(topic,t){ // Warum-/Operatoraufgaben (lvl 3) erst, wenn die Basics im Abschnitt sitzen
+  if(t.lvl<3)return true; const base=topic.tasks.filter(x=>x.sec===t.sec&&x.lvl<3); if(!base.length)return true;
+  const good=base.filter(x=>{const st=tstat(topic.id,x.id);return st&&st.ok>0;}).length; return good/base.length>=0.7;}
+function dueTasks(topic){const today=dayNum(),T0=TS(topic.id);return topic.tasks.filter(t=>{const st=T0.ts[t.id];return st&&st.box>=1&&st.due<=today;}).sort((a,b)=>T0.ts[a.id].due-T0.ts[b.id].due);}
+function weakTasks(topic){const W=TS(topic.id).weak;return topic.tasks.filter(t=>W[t.id]);}
+function newTasks(topic){const T0=TS(topic.id);return topic.tasks.filter(t=>t.sec!=="pruef"&&!(T0.ts[t.id]&&T0.ts[t.id].n>0)&&gateOK(topic,t));}
+
+/* ---------- Session-Aufbau ---------- */
+let SES=null, CUR=null, FBSHOWN=false, LASTCHECK=0;
+function pickN(arr,n){return arr.slice(0,n);}
+function roundRobin(tasks,key){const g={};tasks.forEach(t=>{(g[t[key]]=g[t[key]]||[]).push(t);});const ks=shuffle(Object.keys(g));const out=[];let more=true;while(more){more=false;ks.forEach(k=>{if(g[k].length){out.push(g[k].shift());more=true;}});}return out;}
+function buildQueue(topic,mode,opt){
+  const N=S.prefs.len, T0=TS(topic.id), W=weakTasks(topic), D=dueTasks(topic), used=new Set(), q=[];
+  const add=(arr,max)=>{let c=0;for(const t of arr){if(q.length>=N&&mode!=="due"&&mode!=="weak"&&mode!=="daily")break;if(used.has(t.id))continue;if(max!==undefined&&c>=max)break;used.add(t.id);q.push(t);c++;}};
+  const byLvl=a=>a.slice().sort((x,y)=>x.lvl-y.lvl);
+  if(mode==="sec"){
+    const pool=secTasks(topic,opt.sec).filter(t=>gateOK(topic,t));
+    add(W.filter(t=>t.sec===opt.sec),3); add(D.filter(t=>t.sec===opt.sec),3);
+    add(byLvl(pool.filter(t=>!(T0.ts[t.id]&&T0.ts[t.id].n>0))),N);
+    add(pool.slice().sort((a,b)=>((T0.ts[a.id]||{box:0}).box)-((T0.ts[b.id]||{box:0}).box)),N);
+    return {tasks:q.slice(0,N),label:"Abschnitt"};}
+  if(mode==="mix"){
+    const pool=topic.tasks.filter(t=>gateOK(topic,t)&&t.sec!=="pruef"||(t.sec==="pruef"&&gateOK(topic,t)));
+    add(W,4); add(D,4);
+    add(roundRobin(shuffle(pool.filter(t=>!(T0.ts[t.id]&&T0.ts[t.id].n>0))),"sec"),N);
+    add(roundRobin(shuffle(pool).sort((a,b)=>((T0.ts[a.id]||{box:0}).box)-((T0.ts[b.id]||{box:0}).box)),"sec"),N);
+    return {tasks:shuffle(q.slice(0,N)),label:"Gemischt"};}
+  if(mode==="due"){add(D,20);return {tasks:q,label:"Wiederholung"};}
+  if(mode==="weak"){add(shuffle(W),20);return {tasks:q,label:"Fehlertraining"};}
+  if(mode==="daily"){
+    add(D,8); add(W,5);
+    // neue Aufgaben aus dem Abschnitt mit dem geringsten Fortschritt (blockiert), danach gemischt
+    const secs=topic.sections.map(s=>({s,p:secProgress(topic,s.id)})).filter(x=>x.p.n>0&&x.p.seen<x.p.n).sort((a,b)=>(a.p.seen/a.p.n)-(b.p.seen/b.p.n));
+    if(secs.length){const sid=secs[0].s.id;add(byLvl(newTasks(topic).filter(t=>t.sec===sid)),7);}
+    add(roundRobin(shuffle(newTasks(topic)),"sec"),4);
+    if(q.length<10)add(roundRobin(shuffle(topic.tasks.filter(t=>gateOK(topic,t))),"sec"),10-q.length);
+    return {tasks:shuffle(q),label:"Tagesrunde"};}
+  if(mode==="exam"){
+    const ex=shuffle(topic.tasks.filter(t=>t.sec==="pruef")), rest=shuffle(topic.tasks.filter(t=>t.sec!=="pruef"));
+    let pick=ex.slice(0,14); const secs=topic.sections.map(s=>s.id).filter(s=>s!=="pruef");
+    const per={};pick.forEach(t=>{per[t.sec]=1;});
+    const rr=roundRobin(rest.filter(t=>t.type!=="op"),"sec"); pick=pick.concat(rr.slice(0,11));
+    const ops=pick.filter(t=>t.type==="op").length; if(ops<2){const o=shuffle(topic.tasks.filter(t=>t.type==="op"&&!pick.includes(t))).slice(0,2-ops);pick=pick.slice(0,25-o.length).concat(o);}
+    // Reihenfolge: nach Abschnitt geordnet wie in einer echten Arbeit (Operatoren zuletzt)
+    const order=topic.sections.map(s=>s.id);
+    pick.sort((a,b)=>(a.type==="op")-(b.type==="op")||order.indexOf(a.sec)-order.indexOf(b.sec));
+    return {tasks:pick,label:"Prüfungssimulation"};}
+  return {tasks:[],label:""};
+}
+function startSession(tid,mode,opt){
+  const f=findTopic(tid); if(!f)return; const topic=f.topic; opt=opt||{};
+  const b=buildQueue(topic,mode,opt);
+  if(!b.tasks.length){const msg={due:"Heute ist keine Wiederholung fällig – gut so! Probiere eine Tagesrunde oder ein Abschnittstraining.",weak:"Keine offenen Fehler – stark! 🎉",sec:"In diesem Abschnitt gibt es gerade nichts zu tun. Probiere ‚Gemischt‘."}[mode]||"Nichts zu tun.";
+    app.innerHTML=head(topic,f.subj)+`<div class="card center"><p>${msg}</p><div class="btnRow center"><button class="btn" data-act="topic" data-arg="${tid}">Zurück</button></div></div>`;return;}
+  SES={tid,topic,subj:f.subj,mode,opt,label:b.label,queue:b.tasks.map(t=>({t,retry:0})),total:b.tasks.length,done:0,log:[],xp0:S.xp,exam:mode==="exam",answered:0,t0:Date.now(),examAns:[]};
+  nextQ();
+}
+function lastItem(){return SES.log[SES.log.length-1];}
+
+/* ---------- Aufgaben-Typen ---------- */
+const TYPE_LABEL={mc:"Multiple Choice",tf:"Wahr oder falsch",ty:"Kurzantwort",cl:"Lückentext",od:"Reihenfolge",mt:"Zuordnen",op:"Operator-Aufgabe"};
+const TYPES={};
+TYPES.mc={
+  init(t){return {opts:shuffle([{x:t.a,ok:true}].concat(t.w.map(x=>({x,ok:false})))),sel:-1};},
+  render(t,v){return `<div class="opts">${v.opts.map((o,i)=>`<button class="opt${v.sel===i?" sel":""}" data-act="mcsel" data-arg="${i}">${H(o.x)}</button>`).join("")}</div>`;},
+  ready(t,v){return v.sel>=0;},
+  grade(t,v){return {ok:v.opts[v.sel].ok};},
+  mark(t,v,res){document.querySelectorAll(".opt").forEach((b,i)=>{b.disabled=true;b.classList.remove("sel");if(v.opts[i].ok)b.classList.add("ok");else if(i===v.sel)b.classList.add("bad");});},
+  mine(t,v){return v.sel>=0?v.opts[v.sel].x:"(keine Antwort)";},
+  right(t){return t.a;}
+};
+TYPES.tf={
+  init(t){return {sel:-1};},
+  render(t,v){return `<div class="tfRow"><button class="opt${v.sel===1?" sel":""}" data-act="tfsel" data-arg="1">✅ Wahr</button><button class="opt${v.sel===0?" sel":""}" data-act="tfsel" data-arg="0">❌ Falsch</button></div>`;},
+  ready(t,v){return v.sel>=0;},
+  grade(t,v){return {ok:(v.sel===1)===!!t.truth};},
+  mark(t,v,res){document.querySelectorAll(".opt").forEach((b,i)=>{b.disabled=true;b.classList.remove("sel");const val=i===0;if(val===!!t.truth)b.classList.add("ok");else if((v.sel===1)===val)b.classList.add("bad");});},
+  mine(t,v){return v.sel===1?"Wahr":v.sel===0?"Falsch":"(keine Antwort)";},
+  right(t){return t.truth?"Die Aussage ist wahr.":"Die Aussage ist falsch. Richtig: "+t.fix;}
+};
+function matchAns(inp,variants,t){
+  if(t.num){const m=String(inp).replace(",",".").match(/-?\d+(\.\d+)?/);if(!m)return {ok:false};const want=parseFloat(String(variants[0]).replace(",","."));return {ok:Math.abs(parseFloat(m[0])-want)<1e-9};}
+  const u=nz(inp);if(!u)return {ok:false};
+  for(const v of variants){if(u===nz(v))return {ok:true};}
+  for(const v of variants){const w=nz(v);if(w.length>=5&&u.length<=w.length+14&&u.includes(w))return {ok:true};}
+  for(const v of variants){const w=nz(v);const tol=w.length>=12?2:(w.length>=6?1:0);if(tol&&lev(u,w)<=tol)return {ok:true,fuzzy:v};}
+  return {ok:false};
+}
+TYPES.ty={
+  init(t){return {val:""};},
+  render(t,v){return `<input class="txt" id="tyin" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Deine Antwort …" value="${esc(v.val)}">`;},
+  ready(t,v){return v.val.trim().length>0;},
+  grade(t,v){const r=matchAns(v.val,t.a,t);return {ok:r.ok,fuzzy:r.fuzzy};},
+  mark(t,v,res){const i=$("#tyin");if(i){i.disabled=true;i.style.borderColor=res.ok?"#5fc25f":"#e0604f";}},
+  mine(t,v){return v.val.trim()||"(keine Antwort)";},
+  right(t){return t.a[0]+(t.a.length>1&&!t.num?"  (auch richtig: "+t.a.slice(1).join(", ")+")":"");}
+};
+TYPES.cl={
+  init(t){return {fill:t.a.map(()=>null),bank:shuffle(t.a.map(a=>Array.isArray(a)?a[0]:a).concat(t.extra||[])).map(x=>({x,used:false}))};},
+  render(t,v){const parts=t.text.split("___");let h="";parts.forEach((p,i)=>{h+=H(p);if(i<parts.length-1)h+=`<span class="gap" data-act="clgap" data-arg="${i}">${v.fill[i]!==null?H(v.bank[v.fill[i]].x):"&nbsp;&nbsp;&nbsp;"}</span>`;});
+    return `<div class="qtext" style="line-height:2">${h}</div><div class="chips">${v.bank.map((b,i)=>`<button class="chip${b.used?" used":""}" data-act="clchip" data-arg="${i}">${H(b.x)}</button>`).join("")}</div>`;},
+  ready(t,v){return v.fill.every(f=>f!==null);},
+  grade(t,v){const per=t.a.map((a,i)=>{const al=Array.isArray(a)?a:[a];return al.some(x=>nz(x)===nz(v.bank[v.fill[i]].x));});return {ok:per.every(Boolean),per};},
+  mark(t,v,res){document.querySelectorAll(".gap").forEach((g,i)=>{g.classList.add(res.per[i]?"ok":"bad");g.removeAttribute("data-act");});document.querySelectorAll(".chip").forEach(c=>c.removeAttribute("data-act"));},
+  mine(t,v){return v.fill.map(f=>f===null?"…":v.bank[f].x).join(" | ");},
+  right(t){return t.a.map(a=>Array.isArray(a)?a[0]:a).join(" | ");},
+  qOverride:true
+};
+TYPES.od={
+  init(t){return {bank:shuffle(t.items.map((x,i)=>({x,i}))),seq:[]};},
+  render(t,v){const hint=t.hint?`<div class="hint-sm">${H(t.hint)}</div>`:"";
+    return hint+`<div class="hint-sm" style="margin-top:6px">Tippe die Schritte in der richtigen Reihenfolge an (zum Entfernen: auf die Nummer in deiner Liste tippen).</div>
+      <ul class="ordList">${v.seq.map((s,k)=>`<li data-act="odrm" data-arg="${k}">${H(s.x)}</li>`).join("")}${v.seq.length<t.items.length?`<li class="empty">…</li>`:""}</ul>
+      <div class="chips">${v.bank.map((b,i)=>`<button class="chip${v.seq.includes(b)?" used":""}" data-act="odadd" data-arg="${i}">${H(b.x)}</button>`).join("")}</div>`;},
+  ready(t,v){return v.seq.length===t.items.length;},
+  grade(t,v){const per=v.seq.map((s,k)=>s.i===k);return {ok:per.every(Boolean),per};},
+  mark(t,v,res){document.querySelectorAll(".ordList li").forEach((li,k)=>{li.removeAttribute("data-act");li.classList.add(res.per[k]?"ok":"bad");});document.querySelectorAll(".chip").forEach(c=>c.removeAttribute("data-act"));},
+  mine(t,v){return v.seq.map(s=>s.x).join(" → ");},
+  right(t){return t.items.map((x,i)=>(i+1)+". "+x).join("  ");}
+};
+TYPES.mt={
+  init(t){return {right:shuffle(t.pairs.map((p,i)=>({x:p[1],i}))),map:t.pairs.map(()=>-1),selL:-1};},
+  render(t,v){const cols=["#f3d27a","#8fd3c8","#f0a5a0","#b9a6f0","#a6dd8e","#f2b36b"];
+    const lcol=i=>v.map[i]>=0?cols[i%cols.length]:null;
+    const rowner=r=>v.map.findIndex(m=>m===r);
+    return `<div class="hint-sm" style="margin-bottom:8px">Tippe links ein Feld an, dann rechts das passende. Nochmal tippen löst die Zuordnung.</div><div class="mt"><div class="mtc">${t.pairs.map((p,i)=>`<button class="mti${v.selL===i?" sel":""}" data-act="mtl" data-arg="${i}">${H(p[0])}${lcol(i)?`<span class="nb" style="background:${lcol(i)}">${i+1}</span>`:""}</button>`).join("")}</div>
+      <div class="mtc">${v.right.map((r,j)=>{const o=rowner(j);return `<button class="mti" data-act="mtr" data-arg="${j}">${H(r.x)}${o>=0?`<span class="nb" style="background:${cols[o%cols.length]}">${o+1}</span>`:""}</button>`;}).join("")}</div></div>`;},
+  ready(t,v){return v.map.every(m=>m>=0);},
+  grade(t,v){const per=v.map.map((m,i)=>v.right[m].i===i);return {ok:per.every(Boolean),per};},
+  mark(t,v,res){document.querySelectorAll(".mtc:first-child .mti").forEach((b,i)=>{b.classList.add(res.per[i]?"ok":"bad");b.removeAttribute("data-act");});document.querySelectorAll(".mtc:last-child .mti").forEach(b=>b.removeAttribute("data-act"));},
+  mine(t,v){return v.map.map((m,i)=>m<0?"?":t.pairs[i][0]+" → "+v.right[m].x).join("; ");},
+  right(t){return t.pairs.map(p=>p[0]+" → "+p[1]).join("; ");}
+};
+TYPES.op={
+  init(t){return {val:"",stage:0,ticks:[]};},
+  render(t,v){return `<div class="hint-sm" style="margin-bottom:6px">Schreibe in ganzen Sätzen. Danach siehst du die Musterlösung und prüfst dich selbst.</div><textarea class="txt" id="opin" placeholder="Deine Antwort …">${esc(v.val)}</textarea>`;},
+  ready(t,v){return v.val.trim().length>=10;},
+  grade(t,v){const need=Math.ceil(t.pts.length*0.6);const n=v.ticks.filter(Boolean).length;return {ok:n>=need,n,need};},
+  mark(){},
+  mine(t,v){return v.val.trim()||"(keine Antwort)";},
+  right(t){return t.muster;}
+};
+function opPreTicks(t,txt){const u=nz(txt);return t.pts.map(p=>(p[1]||[]).some(k=>u.includes(nz(k))));}
+
+/* ---------- Aufgaben-Ansicht ---------- */
+function head(topic,subj,extra){
+  const lv=level();
+  return `<header class="top"><div class="brand"><div class="logo">${topic?topic.icon:"📚"}</div><div><h1>${topic?esc(topic.name):"Fächer"}</h1><span class="sub">${topic?esc(subj.name)+" · "+esc(topic.cls||""):"Lernwelt für alle Fächer"}</span></div></div>
+   <div class="hud"><span class="badge">⭐ ${S.xp} XP</span><span class="badge">🏅 ${esc(lv.name)}</span><span class="badge">🔥 ${streak()} Tag${streak()===1?"":"e"}</span>${extra||""}</div></header>`;
+}
+function figHTML(t){return t.fig?FIG[t.fig[0]](t.fig[1]):"";}
+function nextQ(){
+  if(!SES.queue.length)return finishSession();
+  const it=SES.queue[0], t=it.t; const ty=TYPES[t.type];
+  CUR={it,t,v:ty.init(t),checked:false}; FBSHOWN=false;
+  // Fun-Fakt-Zwischenkarte nach jeder 6. beantworteten Aufgabe (nicht in der Prüfung)
+  if(!SES.exam&&SES.answered>0&&SES.answered%6===0&&SES.factAt!==SES.answered&&SES.topic.facts&&SES.topic.facts.length){SES.factAt=SES.answered;return showFact(true);}
+  drawQ();
+}
+function drawQ(){
+  const {it,t,v}=CUR, ty=TYPES[t.type], S0=SES;
+  const pct=Math.round(100*S0.done/S0.total);
+  const isOp=t.type==="op";
+  let confBtns;
+  if(S0.exam) confBtns=`<button class="btn" id="chkBtn" data-act="check" data-arg="-1" disabled>Weiter ➜</button>`;
+  else if(S.prefs.conf&&!isOp) confBtns=`<div id="confWrap"><div class="hint-sm" style="margin-top:14px">Wie sicher bist du? <b>(Antwort wird damit geprüft)</b></div><div class="conf" id="chkBtn"><button class="btn c0" data-act="check" data-arg="0" disabled>🤔<span>geraten</span></button><button class="btn c1" data-act="check" data-arg="1" disabled>🙂<span>glaube schon</span></button><button class="btn c2" data-act="check" data-arg="2" disabled>💪<span>sicher</span></button></div></div>`;
+  else confBtns=`<button class="btn" id="chkBtn" data-act="check" data-arg="1" disabled style="margin-top:14px">${isOp?"Fertig – Musterlösung zeigen":"Prüfen"}</button>`;
+  app.innerHTML=head(S0.topic,S0.subj)+`<div class="backRow"><button class="btn ghost small" data-act="quit">⬅ Beenden</button><span class="pill">${esc(S0.label)}</span>${it.retry?`<span class="pill warn">🔁 nochmal</span>`:""}${S0.exam?`<span class="pill">📝 ohne Hilfe</span>`:""}</div>
+   <div class="card"><div class="progTop"><i style="width:${pct}%"></i></div>
+   <div class="qhead"><span class="qtype">${TYPE_LABEL[t.type]}${t.sec&&t.sec!=="pruef"?" · "+esc((S0.topic.sections.find(s=>s.id===t.sec)||{}).name||""):" · Prüfungsaufgabe"}</span><span class="muted">${S0.done+1} / ${S0.total}</span></div>
+   ${figHTML(t)}
+   ${t.type==="op"?`<div class="qtext"><span class="pill">${esc(t.verb)}</span> ${H(t.q)}</div>`:(ty.qOverride?`<div class="qtext" style="margin-bottom:0">${t.intro?H(t.intro):"Setze die passenden Wörter ein."}</div>`:`<div class="qtext">${H(t.q)}</div>`)}
+   <div id="qbody">${ty.render(t,v)}</div>${confBtns}<div id="fbArea"></div></div>`;
+  refreshReady();
+  const inp=$("#tyin"); if(inp){inp.addEventListener("input",e=>{v.val=e.target.value;refreshReady();});inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();if(ty.ready(t,v)){const b=$("#chkBtn button.c1")||$("#chkBtn");if(S.prefs.conf&&!SES.exam)doCheck(1);else doCheck(1);}}});setTimeout(()=>{try{inp.focus();}catch(e){}},60);}
+  const op=$("#opin"); if(op){op.addEventListener("input",e=>{v.val=e.target.value;refreshReady();});}
+}
+function refreshReady(){
+  const {t,v}=CUR, ty=TYPES[t.type], ok=ty.ready(t,v);
+  document.querySelectorAll("#chkBtn,#chkBtn button").forEach(b=>{if(b.tagName==="BUTTON")b.disabled=!ok;});
+}
+function rerenderBody(){const {t,v}=CUR;$("#qbody").innerHTML=TYPES[t.type].render(t,v);refreshReady();const inp=$("#tyin");if(inp){inp.addEventListener("input",e=>{v.val=e.target.value;refreshReady();});}}
+function doCheck(conf){
+  if(CUR.checked)return; const {it,t,v}=CUR, ty=TYPES[t.type]; if(!ty.ready(t,v))return;
+  CUR.checked=true; LASTCHECK=Date.now();
+  if(t.type==="op"){return opStage(conf);}
+  const res=ty.grade(t,v); CUR.res=res;
+  if(SES.exam){ SES.examAns.push({t,v:JSON.parse(JSON.stringify(v,(k,x)=>k==="bank"||k==="right"||k==="opts"?undefined:x)),mine:ty.mine(t,v),res,ok:res.ok});
+    SES.queue.shift(); SES.done++; SES.answered++; SES.log.push({id:t.id,ok:res.ok,t});return nextQ(); }
+  finishCheck(res.ok,conf,res);
+}
+function opStage(conf){
+  const {t,v}=CUR; v.stage=1; v.ticks=opPreTicks(t,v.val);
+  if(SES.exam){SES.examAns.push({t,mine:v.val.trim(),res:{ok:null},ok:null,opt:true,v});SES.queue.shift();SES.done++;SES.answered++;SES.log.push({id:t.id,ok:null,t});CUR.checked=false;return nextQ();}
+  $("#qbody").innerHTML=`<div class="muted hint-sm">Deine Antwort:</div><div class="muster" style="border-color:#8fd3c8">${H(v.val.trim()).replace(/\n/g,"<br>")}</div>
+    <div class="hint-sm"><b>Prüfe dich selbst:</b> Hast du diese Punkte genannt? (Häkchen = ja. Ich habe schon vorgeschlagen, was ich in deinem Text gefunden habe.)</div>
+    <ul class="pts">${t.pts.map((p,i)=>`<li><label><input type="checkbox" data-act="optick" data-arg="${i}" ${v.ticks[i]?"checked":""}><span>${H(p[0])}</span></label></li>`).join("")}</ul>
+    <div class="muster"><b>Musterlösung:</b><br>${H(t.muster)}</div>`;
+  $("#chkBtn").outerHTML=`<button class="btn" id="chkBtn" data-act="opdone">Ich habe mich bewertet ➜</button>`;
+}
+function opDone(){
+  const {it,t,v}=CUR, need=Math.ceil(t.pts.length*0.6), n=v.ticks.filter(Boolean).length, ok=n>=need;
+  CUR.res={ok,n,need}; finishCheck(ok,1,CUR.res,true);
+}
+function finishCheck(ok,conf,res,isOp){
+  const {it,t,v}=CUR, ty=TYPES[t.type];
+  const gain=record(SES.topic,t,ok,conf,false);
+  SES.log.push({id:t.id,ok,conf,t,gain}); SES.queue.shift(); SES.done++; SES.answered++;
+  // Wiederholung in dieser Runde einplanen
+  let hyperMsg="";
+  if(!ok){ if(it.retry<2){const pos=Math.min(SES.queue.length,3+Math.floor(Math.random()*2));SES.queue.splice(pos,0,{t,retry:it.retry+1});SES.total++;}
+    if(conf===2)hyperMsg=`<div class="fb hyper"><h4>💡 Aha! Du warst dir sicher – und es war anders.</h4>Genau solche Fehler merkt man sich später besonders gut, wenn man die richtige Antwort jetzt bewusst liest. Lies sie einmal laut und sag sie dir in eigenen Worten.</div>`; }
+  else if(conf===0 && it.retry<1){const pos=Math.min(SES.queue.length,5);SES.queue.splice(pos,0,{t,retry:1});SES.total++;}
+  if(!isOp)ty.mark(t,v,res);
+  const mine=ty.mine(t,v);
+  let fb=`<div class="fb ${ok?"ok":"bad"}"><h4>${ok?(conf===0?"✅ Richtig – aber geraten. Wir üben es nochmal.":"✅ Richtig! +"+gain+" XP"):"❌ Das stimmt noch nicht."}</h4>`;
+  if(res.fuzzy)fb+=`<div>Fast perfekt – achte auf die Schreibweise: <b>${H(res.fuzzy)}</b></div>`;
+  if(!ok&&!isOp){fb+=`<div><b>Deine Antwort:</b> ${H(mine)}</div><div><b>Richtig:</b> ${H(ty.right(t))}</div>`;}
+  if(t.type==="tf"&&!t.truth&&ok)fb+=`<div><b>Richtig wäre:</b> ${H(t.fix)}</div>`;
+  if(isOp)fb+=`<div>${res.n} von ${t.pts.length} Punkten genannt (gebraucht: ${res.need}).</div>`;
+  if(t.why)fb+=`<div style="margin-top:6px">💬 ${H(t.why)}</div>`;
+  fb+=`</div>`+hyperMsg+`<div class="btnRow"><button class="btn" id="nextBtn" data-act="next">Weiter ➜</button></div>`;
+  const area=$("#fbArea"); area.innerHTML=fb; FBSHOWN=true;
+  const cb=$("#chkBtn"); if(cb&&!isOp)cb.style.display="none"; if(isOp&&cb)cb.style.display="none";
+  const cw=$("#confWrap"); if(cw)cw.style.display="none";
+  setTimeout(()=>{const nb=$("#nextBtn");if(nb){try{nb.focus({preventScroll:true});}catch(e){}nb.scrollIntoView({behavior:"smooth",block:"nearest"});}},80);
+}
+function showFact(interlude){
+  const topic=SES.topic, facts=topic.facts||[], seen=TS(topic.id).facts;
+  const un=facts.filter(f=>!seen[f.id]); const f=(un.length?un:facts)[Math.floor(Math.random()*(un.length?un.length:facts.length))];
+  seen[f.id]=1; save(); FBSHOWN=true; LASTCHECK=Date.now();
+  app.innerHTML=head(SES.topic,SES.subj)+`<div class="card fact"><div class="big">${f.e}</div><div class="qtype">Fun-Fakt aus dem Regenwald</div><p>${H(f.t)}</p><div class="btnRow center"><button class="btn" id="nextBtn" data-act="${interlude?"factnext":"home"}">${interlude?"Weiter lernen ➜":"OK"}</button></div></div>`;
+}
+function finishSession(){
+  const S0=SES; const topic=S0.topic;
+  if(S0.exam)return examResult();
+  const ok=S0.log.filter(l=>l.ok).length, n=S0.log.length;
+  S.xp+=20; save();
+  const missed=[]; const seenM=new Set(); S0.log.forEach(l=>{if(!l.ok&&!seenM.has(l.id)){seenM.add(l.id);missed.push(l.t);}});
+  const lastTry={}; S0.log.forEach(l=>{lastTry[l.id]=l.ok;});
+  const stillOpen=missed.filter(t=>!lastTry[t.id]);
+  const facts=topic.facts||[],seen=TS(topic.id).facts; const un=facts.filter(f=>!seen[f.id]); const f=un.length?un[Math.floor(Math.random()*un.length)]:null; if(f){seen[f.id]=1;save();}
+  app.innerHTML=head(topic,S0.subj)+`<div class="card center"><div style="font-size:48px">${ok/n>=.8?"🏆":ok/n>=.5?"🌿":"🌱"}</div><h2 style="font-family:Cinzel,serif;color:var(--acc2);margin:6px 0">Runde geschafft!</h2>
+   <p style="font-size:18px"><b>${ok} von ${n}</b> Aufgaben richtig · <b>+${S.xp-S0.xp0} XP</b></p>
+   ${stillOpen.length?`<p class="hint-sm">Diese Aufgaben kommen in den nächsten Runden wieder, bis sie zweimal in Folge sitzen:</p><ul style="text-align:left;line-height:1.5">${stillOpen.slice(0,6).map(t=>`<li>${H((t.q||t.text||t.intro||"").replace(/\n/g," ").slice(0,110))}</li>`).join("")}</ul>`:`<p class="hint-sm">Alle Fehler dieser Runde hast du im zweiten Versuch richtig gemacht. Sehr gut – morgen schauen wir nochmal drauf (Wiederholung).</p>`}
+   ${f?`<div class="card" style="background:rgba(243,210,122,.12)"><div class="qtype">🌴 Fun-Fakt</div><p>${f.e} ${H(f.t)}</p></div>`:""}
+   <div class="btnRow center"><button class="btn" data-act="again">▶ Noch eine Runde</button><button class="btn ghost" data-act="topic" data-arg="${topic.id}">Zur Übersicht</button></div></div>`;
+  SES=null;
+}
+function grade(p){return p>=92?"1":p>=81?"2":p>=67?"3":p>=50?"4":p>=30?"5":"6";}
+function examResult(){
+  const S0=SES, topic=S0.topic; renderExam();
+}
+function renderExam(){
+  const S0=SES, topic=S0.topic, A=S0.examAns;
+  const auto=A.filter(a=>!a.opt), ops=A.filter(a=>a.opt);
+  const autoOk=auto.filter(a=>a.ok).length;
+  const opsPts=ops.reduce((s,a)=>{const t=a.t;const tk=(a.v.ticks||[]).filter(Boolean).length;return s+tk/t.pts.length;},0);
+  const total=autoOk+opsPts, max=A.length, pct=Math.round(100*total/max);
+  S0.examPct=pct;
+  app.innerHTML=head(topic,S0.subj)+`<div class="card center"><div style="font-size:46px">📝</div><h2 style="font-family:Cinzel,serif;color:var(--acc2);margin:4px 0">Auswertung der Prüfungssimulation</h2>
+    <p style="font-size:20px"><b>${total.toFixed(1).replace(".",",")} von ${max} Punkten</b> · ${pct} %</p>
+    <p class="hint-sm">Grobe Notenschätzung: <b>${grade(pct)}</b> (nur als Orientierung – die Lehrerin bewertet eigenständig).</p>
+    <p class="hint-sm">Gehe jetzt jede Aufgabe durch. Bei den Operator-Aufgaben vergleichst du deinen Text mit der Musterlösung und setzt Häkchen.</p></div>
+    ${A.map((a,i)=>examItem(a,i)).join("")}
+    <div class="btnRow center"><button class="btn" data-act="examsave">✔ Fertig – Ergebnis speichern</button></div>`;
+}
+function examItem(a,i){
+  const t=a.t, ty=TYPES[t.type];
+  if(a.opt){
+    return `<div class="card"><div class="qtype">Aufgabe ${i+1} · Operator-Aufgabe</div><div class="qtext"><span class="pill">${esc(t.verb)}</span> ${H(t.q)}</div>
+      <div class="hint-sm">Deine Antwort:</div><div class="muster" style="border-color:#8fd3c8">${H(a.mine).replace(/\n/g,"<br>")}</div>
+      <ul class="pts">${t.pts.map((p,k)=>`<li><label><input type="checkbox" data-act="examtick" data-arg="${i}:${k}" ${(a.v.ticks||[])[k]?"checked":""}><span>${H(p[0])}</span></label></li>`).join("")}</ul>
+      <div class="muster"><b>Musterlösung:</b><br>${H(t.muster)}</div></div>`;}
+  return `<div class="card" style="border-color:${a.ok?"#5fc25f":"#e0604f"}"><div class="qtype">Aufgabe ${i+1} · ${a.ok?"✅ richtig":"❌ falsch"}</div>${figHTML(t)}<div class="qtext" style="font-size:16.5px">${H(t.q||t.intro||t.text||"")}</div>
+    <div><b>Deine Antwort:</b> ${H(a.mine)}</div>${a.ok?"":`<div><b>Richtig:</b> ${H(ty.right(t))}</div>`}${t.why?`<div class="hint-sm" style="margin-top:6px">💬 ${H(t.why)}</div>`:""}</div>`;
+}
+function examSave(){
+  const S0=SES, topic=S0.topic, A=S0.examAns;
+  A.forEach(a=>{const t=a.t; let ok=a.ok; if(a.opt){const tk=(a.v.ticks||[]).filter(Boolean).length;ok=tk>=Math.ceil(t.pts.length*.6);} record(topic,t,ok,1,true);});
+  const T0=TS(topic.id); T0.sims.push({d:dayStr(dayNum()),p:S0.examPct}); if(T0.sims.length>20)T0.sims.shift(); S.xp+=50; save();
+  SES=null; showTopic(topic.id);
+}
+
+/* ---------- Ansichten ---------- */
+function showHome(){
+  SES=null;
+  const subs=allSubjects();
+  app.innerHTML=head(null)+`<div class="card center" style="margin-top:0"><div class="hint-sm">Hier lernst du alle Fächer an einem Ort – mit derselben Lernmethode: üben statt nur lesen, Fehler sofort erklären, Wiederholung zum richtigen Zeitpunkt.</div></div>
+  <div class="sectionTitle">Sprachen</div><div class="grid">
+    <a class="tile" href="index.html"><div class="ic">🇬🇧</div><h3>Englisch-Abenteuer</h3><div class="hint-sm">Mittelerde-Quests und Karten</div></a>
+    <a class="tile" href="franzoesisch-abenteuer.html"><div class="ic">🇫🇷</div><h3>Paris-Abenteuer</h3><div class="hint-sm">Französisch: Vokabeln und Sätze</div></a>
+    <a class="tile" href="mittelerde-reise.html"><div class="ic">⚔️</div><h3>Mittelerde-Reise</h3><div class="hint-sm">Englisch: die große Reise</div></a></div>
+  <div class="sectionTitle">Sachfächer</div><div class="grid">${subs.map(s=>`<div class="tile"><div class="ic">${s.icon}</div><h3>${esc(s.name)}</h3>${s.topics.map(t=>{const f=fitness(t);return `<button class="btn small" data-act="topic" data-arg="${t.id}">${t.icon} ${esc(t.name)} · ${f} %</button>`;}).join("")}</div>`).join("")}
+    <div class="tile"><div class="ic">➕</div><h3>Neues Fach / Thema</h3><div class="hint-sm">Weitere Themenpakete einfügen</div><button class="btn small ghost" data-act="addpack">Themenpaket importieren</button></div></div>
+  <div class="btnRow" style="margin-top:18px"><button class="btn ghost small" data-act="settings">⚙️ Einstellungen &amp; Sicherung</button></div>`;
+}
+function showTopic(tid){
+  const f=findTopic(tid); if(!f)return showHome(); const topic=f.topic; SES=null; FBSHOWN=false;
+  const T0=TS(tid), D=dueTasks(topic).length, W=weakTasks(topic).length, NEW=newTasks(topic).length, fit=fitness(topic), ed=examDays(tid);
+  const cssTheme=f.topic.theme||f.subj.theme; if(cssTheme)applyTheme(cssTheme);
+  const edTxt=ed===null?"Kein Termin eingetragen":ed>=0?(ed===0?"Die Arbeit ist heute!":"Noch <b>"+ed+" Tag"+(ed===1?"":"e")+"</b> bis zur Klassenarbeit"):"Der Termin ist vorbei";
+  const sims=T0.sims.length?`Letzte Prüfungssimulation: <b>${T0.sims[T0.sims.length-1].p} %</b> (${T0.sims.length}× gemacht)`:"Noch keine Prüfungssimulation gemacht";
+  app.innerHTML=head(topic,f.subj)+`<div class="backRow"><button class="btn ghost small" data-act="home">⬅ Alle Fächer</button><button class="btn ghost small" data-act="settings">⚙️ Einstellungen</button></div>
+  <div class="card"><div class="stat"><span>🎯 Klassenarbeit-Fitness</span><b>${fit} %</b></div><div class="bar"><i style="width:${fit}%"></i></div>
+   <div class="stat" style="margin-top:10px"><span>📅 ${edTxt}</span><span><input type="date" id="examDate" value="${esc(T0.exam)}" data-act="examdate"></span></div>
+   <div class="hint-sm" style="margin-top:6px">${sims}</div></div>
+  <div class="card center"><div class="sectionTitle" style="margin-top:0">☀️ Heute empfohlen</div>
+   <div class="hint-sm"><b>${D}</b> fällige Wiederholung${D===1?"":"en"} · <b>${W}</b> Fehler zum Auffrischen · <b>${NEW}</b> neue Aufgaben</div>
+   <div class="btnRow center"><button class="btn gold" data-act="start" data-arg="${tid}|daily">▶ Tagesrunde starten</button></div></div>
+  <div class="sectionTitle">Abschnitte (erst einzeln üben, dann mischen)</div>
+  <div class="grid">${topic.sections.filter(s=>s.id!=="pruef").map(s=>{const p=secProgress(topic,s.id),st=stars(topic,s.id);
+    return `<div class="tile"><div style="display:flex;justify-content:space-between;align-items:center"><span class="ic">${s.icon}</span><span class="stars">${"⭐".repeat(st)}${"☆".repeat(3-st)}</span></div><h3>${esc(s.name)}</h3>
+     <div class="bar thin"><i style="width:${p.n?Math.round(100*p.sure/p.n):0}%"></i></div><div class="hint-sm">${p.n} Aufgaben · gesehen ${p.seen} · sicher ${p.sure}${p.weak?` · <span class="pill warn">${p.weak} üben</span>`:""}</div>
+     <div class="btnRow" style="margin:4px 0 0"><button class="btn small ghost" data-act="card" data-arg="${tid}|${s.id}">📖 Lernkarte</button><button class="btn small" data-act="start" data-arg="${tid}|sec|${s.id}">▶ Üben</button></div></div>`;}).join("")}</div>
+  <div class="sectionTitle">Training für die Arbeit</div>
+  <div class="grid">
+   <div class="tile"><div class="ic">🔀</div><h3>Gemischt</h3><div class="hint-sm">Alle Abschnitte durcheinander – das übt, das Richtige aus dem Kopf zu holen. Am besten, wenn du die Abschnitte schon einmal geübt hast.</div><button class="btn small" data-act="start" data-arg="${tid}|mix">Starten</button></div>
+   <div class="tile"><div class="ic">🔁</div><h3>Wiederholung (${D})</h3><div class="hint-sm">Aufgaben, die laut Plan jetzt dran sind (nach 1, 3, 7, 14 Tagen).</div><button class="btn small" data-act="start" data-arg="${tid}|due">Starten</button></div>
+   <div class="tile"><div class="ic">🎯</div><h3>Fehlertraining (${W})</h3><div class="hint-sm">Nur Aufgaben, die noch zweimal richtig sein müssen.</div><button class="btn small" data-act="start" data-arg="${tid}|weak">Starten</button></div>
+   <div class="tile"><div class="ic">📝</div><h3>Prüfungssimulation</h3><div class="hint-sm">25 Aufgaben wie in der Klassenarbeit: ohne Hilfe, ohne Sofort-Feedback, mit Auswertung.</div><button class="btn small gold" data-act="start" data-arg="${tid}|exam">Starten</button></div>
+   <div class="tile"><div class="ic">🧭</div><h3>Operatoren-Hilfe</h3><div class="hint-sm">Was heißt „beschreibe“, „erkläre“, „begründe“?</div><button class="btn small ghost" data-act="ops" data-arg="${tid}">Ansehen</button></div>
+   <div class="tile"><div class="ic">🌴</div><h3>Fun-Fakten (${Object.keys(T0.facts).length}/${(topic.facts||[]).length})</h3><div class="hint-sm">Verrückte Dinge über den Regenwald – zur Belohnung zwischendurch.</div><button class="btn small ghost" data-act="facts" data-arg="${tid}">Lesen</button></div>
+  </div>
+  <div class="sectionTitle">Auswertung</div>${evalHTML(topic)}`;
+}
+function evalHTML(topic){
+  const T0=TS(topic.id), rows=topic.sections.map(s=>{const ts=topic.tasks.filter(t=>t.sec===s.id);let n=0,ok=0;ts.forEach(t=>{const st=T0.ts[t.id];if(st){n+=st.n;ok+=st.ok;}});return {s,n,ok};}).filter(r=>r.n>0);
+  const weakTop=topic.tasks.filter(t=>T0.ts[t.id]&&T0.ts[t.id].n-T0.ts[t.id].ok>=2).sort((a,b)=>(T0.ts[b.id].n-T0.ts[b.id].ok)-(T0.ts[a.id].n-T0.ts[a.id].ok)).slice(0,5);
+  if(!rows.length)return `<div class="card hint-sm">Sobald du ein paar Aufgaben gemacht hast, siehst du hier, wo du stark bist und wo noch geübt werden muss.</div>`;
+  return `<div class="card"><table class="tb"><tr><th>Abschnitt</th><th>Antworten</th><th>Richtig</th></tr>${rows.map(r=>`<tr><td>${r.s.icon} ${esc(r.s.name)}</td><td>${r.n}</td><td>${Math.round(100*r.ok/r.n)} %</td></tr>`).join("")}</table>
+   ${weakTop.length?`<div class="sectionTitle" style="font-size:16px">Häufigste Stolpersteine</div><ul style="line-height:1.5;margin:4px 0 0 18px;padding:0">${weakTop.map(t=>`<li>${H((t.q||t.intro||t.text||"").replace(/\n/g," ").slice(0,100))}</li>`).join("")}</ul>`:""}</div>`;
+}
+function showCard(tid,sid){
+  const f=findTopic(tid); const topic=f.topic, sec=topic.sections.find(s=>s.id===sid);
+  const T0=TS(tid); T0.cards[sid]=1; save();
+  app.innerHTML=head(topic,f.subj)+`<div class="backRow"><button class="btn ghost small" data-act="topic" data-arg="${tid}">⬅ Übersicht</button></div>
+   <div class="card cardTxt"><div class="sectionTitle" style="margin-top:0">${sec.icon} ${esc(sec.name)} – Lernkarte</div>
+   <div class="noteBox">Tipp: Lies die Karte einmal in Ruhe. Dann <b>Buch zu</b> und im Kopf wiederholen: Was weiß ich noch? Erst danach die Aufgaben.</div>
+   ${(sec.fig||[]).map(fg=>FIG[fg[0]](fg[1])).join("")}${sec.card}
+   <div class="btnRow center"><button class="btn" data-act="start" data-arg="${tid}|sec|${sid}">▶ Jetzt üben</button></div></div>`;
+}
+function showOps(tid){
+  const f=findTopic(tid);
+  app.innerHTML=head(f.topic,f.subj)+`<div class="backRow"><button class="btn ghost small" data-act="topic" data-arg="${tid}">⬅ Übersicht</button></div>
+   <div class="card"><div class="sectionTitle" style="margin-top:0">🧭 Operatoren – was wird verlangt?</div><div class="hint-sm">In der Klassenarbeit steht vorn ein Verb. Es sagt dir, <b>wie</b> du antworten sollst.</div>
+   <table class="tb">${OPERATORS.map(o=>`<tr><td><b>${o[0]}</b></td><td>${o[1]}<div class="hint-sm"><i>Satzanfang: ${o[2]}</i></div></td></tr>`).join("")}</table>
+   <div class="merk">Faustregel: Kurze Sätze. Fachwörter benutzen. Bei „Erkläre/Begründe“ immer ein „weil“ oder „deshalb“ einbauen. Bei „Bewerte“: Pro, Contra und ein Fazit.</div></div>`;
+}
+function showFacts(tid){
+  const f=findTopic(tid), seen=TS(tid).facts;
+  app.innerHTML=head(f.topic,f.subj)+`<div class="backRow"><button class="btn ghost small" data-act="topic" data-arg="${tid}">⬅ Übersicht</button></div>
+   <div class="card"><div class="sectionTitle" style="margin-top:0">🌴 Fun-Fakten</div><div class="hint-sm">Du hast schon ${Object.keys(seen).length} von ${f.topic.facts.length} Fakten zwischen den Aufgaben gesehen. Hier sind alle zum Nachlesen.</div></div>
+   ${f.topic.facts.map(x=>`<div class="card" style="display:flex;gap:12px;align-items:flex-start"><div style="font-size:30px">${x.e}</div><div style="line-height:1.5">${H(x.t)}${seen[x.id]?"":` <span class="pill">neu</span>`}</div></div>`).join("")}`;
+}
+function applyTheme(th){const r=document.documentElement.style;if(th.a)r.setProperty("--acc",th.a);if(th.a2)r.setProperty("--acc2",th.a2);if(th.bg1)r.setProperty("--bg1",th.bg1);if(th.bg2)r.setProperty("--bg2",th.bg2);}
+function showSettings(from){
+  app.innerHTML=head(null)+`<div class="backRow"><button class="btn ghost small" data-act="home">⬅ Zurück</button></div>
+  <div class="card"><div class="sectionTitle" style="margin-top:0">⚙️ Einstellungen</div>
+   <label class="row">Aufgaben pro Runde: <span class="seg">${[8,12,20].map(n=>`<button class="${S.prefs.len===n?"on":""}" data-act="len" data-arg="${n}">${n}</button>`).join("")}</span></label>
+   <label class="row"><input type="checkbox" id="confChk" data-act="confchk" ${S.prefs.conf?"checked":""} style="width:22px;height:22px"> <span>Nach jeder Antwort fragen: „Wie sicher bist du?“<br><span class="hint-sm">Hilft dem Gehirn, Fehler bei „sicheren“ Antworten besonders gut zu korrigieren.</span></span></label></div>
+  <div class="card"><div class="sectionTitle" style="margin-top:0">💾 Sicherung</div><div class="hint-sm">Der Lernstand liegt nur in diesem Browser auf diesem Gerät. Zum Umziehen (z. B. auf ein anderes Gerät): Text kopieren und dort einfügen.</div>
+   <div class="btnRow"><button class="btn small" data-act="export">Lernstand exportieren</button><button class="btn small ghost" data-act="import">Lernstand importieren</button></div>
+   <textarea class="big" id="io" placeholder="Hier erscheint der Export oder füge hier den Import ein …"></textarea><div id="ioMsg" class="hint-sm"></div></div>
+  <div class="card"><div class="sectionTitle" style="margin-top:0">🗑 Zurücksetzen</div>
+   ${allSubjects().flatMap(s=>s.topics).map(t=>`<div class="btnRow"><button class="btn small ghost" data-act="reset" data-arg="${t.id}">${t.icon} ${esc(t.name)} zurücksetzen</button></div>`).join("")}</div>`;
+}
+function showAddPack(){
+  const tpl=JSON.stringify({id:"fach-id",name:"Biologie",icon:"🧬",topics:[{id:"fach-thema",name:"Zelle",icon:"🔬",cls:"Klasse 6",sections:[{id:"s1",name:"Grundlagen",icon:"📘",card:"<ul><li>Merksatz</li></ul>"}],tasks:[{id:"s1-1",sec:"s1",lvl:1,type:"mc",q:"Frage?",a:"Richtig",w:["Falsch 1","Falsch 2","Falsch 3"],why:"Erklärung"}],facts:[{id:"f1",e:"🔬",t:"Fun-Fakt"}]}]},null,1);
+  app.innerHTML=head(null)+`<div class="backRow"><button class="btn ghost small" data-act="home">⬅ Zurück</button></div>
+  <div class="card"><div class="sectionTitle" style="margin-top:0">➕ Themenpaket importieren</div>
+   <div class="hint-sm">Neue Fächer entstehen als „Themenpaket“ (Textdatei im JSON-Format). Wenn du mir Seiten aus dem Heft oder Buch gibst, baue ich dir daraus ein Paket und du fügst es hier ein – ganz ohne Datei-Austausch auf GitHub. Aufgabentypen: <code>mc, tf, ty, cl, od, mt, op</code>.</div>
+   <textarea class="big" id="packIn" placeholder="Paket-JSON hier einfügen …"></textarea><div class="btnRow"><button class="btn small" data-act="packgo">Importieren</button><button class="btn small ghost" data-act="packtpl">Vorlage anzeigen</button></div><div id="packMsg" class="hint-sm"></div>
+   ${PACKS.length?`<div class="sectionTitle" style="font-size:16px">Importierte Pakete</div>${PACKS.map((p,i)=>`<div class="btnRow"><span>${p.icon} ${esc(p.name)}</span><button class="btn small ghost" data-act="packdel" data-arg="${i}">entfernen</button></div>`).join("")}`:""}</div>
+   <div style="display:none" id="tplHold">${esc(tpl)}</div>`;
+}
+function validatePack(p){
+  if(!p||typeof p!=="object"||!p.id||!p.name||!Array.isArray(p.topics))return "Es fehlen id, name oder topics.";
+  for(const t of p.topics){ if(!t.id||!t.name||!Array.isArray(t.sections)||!Array.isArray(t.tasks))return "Thema ohne id, name, sections oder tasks.";
+    const sec=new Set(t.sections.map(s=>s.id)); const ids=new Set();
+    for(const k of t.tasks){ if(!k.id||ids.has(k.id))return "Aufgabe ohne oder mit doppelter id: "+k.id; ids.add(k.id); if(!sec.has(k.sec))return "Aufgabe "+k.id+" hat unbekannten Abschnitt.";
+      if(!TYPES[k.type])return "Unbekannter Typ bei "+k.id;
+      if(k.type==="mc"&&(!k.a||!Array.isArray(k.w)||k.w.length<1))return "mc "+k.id+": a und w fehlen.";
+      if(k.type==="tf"&&typeof k.truth!=="boolean")return "tf "+k.id+": truth fehlt.";
+      if(k.type==="ty"&&!Array.isArray(k.a))return "ty "+k.id+": a muss eine Liste sein.";
+      if(k.type==="cl"&&(!k.text||!Array.isArray(k.a)))return "cl "+k.id+": text/a fehlt.";
+      if(k.type==="od"&&!Array.isArray(k.items))return "od "+k.id+": items fehlt.";
+      if(k.type==="mt"&&!Array.isArray(k.pairs))return "mt "+k.id+": pairs fehlt.";
+      if(k.type==="op"&&(!Array.isArray(k.pts)||!k.muster))return "op "+k.id+": pts/muster fehlt.";
+      if(!k.lvl)k.lvl=1; }
+    t.facts=t.facts||[]; }
+  return "";
+}
+
+/* ---------- Ereignisse ---------- */
+document.addEventListener("click",ev=>{
+  const el=ev.target.closest("[data-act]"); if(!el)return; const act=el.dataset.act, arg=el.dataset.arg;
+  if(el.tagName==="INPUT"&&el.type==="date")return;
+  const v=CUR&&CUR.v, t=CUR&&CUR.t;
+  switch(act){
+    case "home": showHome(); break;
+    case "topic": showTopic(arg); break;
+    case "settings": showSettings(); break;
+    case "addpack": showAddPack(); break;
+    case "start":{const a=arg.split("|");startSession(a[0],a[1],{sec:a[2]});break;}
+    case "again": if(SES){startSession(SES.tid,SES.mode,SES.opt);}else showHome(); break;
+    case "card":{const a=arg.split("|");showCard(a[0],a[1]);break;}
+    case "ops": showOps(arg); break;
+    case "facts": showFacts(arg); break;
+    case "quit": if(confirm("Runde wirklich beenden? Bereits beantwortete Aufgaben bleiben gespeichert.")){const id=SES.tid;SES=null;showTopic(id);} break;
+    case "mcsel": v.sel=+arg; rerenderBody(); break;
+    case "tfsel": v.sel=+arg; rerenderBody(); break;
+    case "clchip":{const i=+arg;if(v.bank[i].used)break;const g=v.fill.findIndex(f=>f===null);if(g<0)break;v.fill[g]=i;v.bank[i].used=true;rerenderBody();break;}
+    case "clgap":{const g=+arg;if(v.fill[g]===null)break;v.bank[v.fill[g]].used=false;v.fill[g]=null;rerenderBody();break;}
+    case "odadd":{const b=v.bank[+arg];if(v.seq.includes(b))break;v.seq.push(b);rerenderBody();break;}
+    case "odrm":{v.seq.splice(+arg,1);rerenderBody();break;}
+    case "mtl":{const i=+arg;if(v.map[i]>=0){v.map[i]=-1;v.selL=-1;}else v.selL=(v.selL===i?-1:i);rerenderBody();break;}
+    case "mtr":{const j=+arg;const owner=v.map.findIndex(m=>m===j);if(owner>=0){v.map[owner]=-1;rerenderBody();break;}if(v.selL>=0){v.map[v.selL]=j;v.selL=-1;rerenderBody();}break;}
+    case "check": doCheck(+arg); break;
+    case "optick": if(CUR){CUR.v.ticks[+arg]=el.checked;} break;
+    case "opdone": opDone(); break;
+    case "examtick":{const a=arg.split(":").map(Number);const x=SES.examAns[a[0]];x.v.ticks[a[1]]=el.checked;renderExamKeep();break;}
+    case "examsave": examSave(); break;
+    case "next": nextQ(); break;
+    case "factnext": drawQ(); break;
+    case "len": S.prefs.len=+arg; save(); showSettings(); break;
+    case "confchk": S.prefs.conf=el.checked; save(); break;
+    case "export": $("#io").value=JSON.stringify(S); $("#io").select(); $("#ioMsg").textContent="Export erstellt – Text kopieren (markieren, kopieren)."; break;
+    case "import":{try{const o=JSON.parse($("#io").value);S=normalizeState(o);save();$("#ioMsg").textContent="✅ Lernstand importiert.";}catch(e){$("#ioMsg").textContent="❌ Das war kein gültiger Export.";}break;}
+    case "reset": if(confirm("Lernstand für dieses Thema wirklich löschen?")){delete S.topics[arg];save();showHome();} break;
+    case "packgo":{try{const p=JSON.parse($("#packIn").value);const err=validatePack(p);if(err){$("#packMsg").textContent="❌ "+err;break;}PACKS=PACKS.filter(x=>x.id!==p.id);PACKS.push(p);savePacks(PACKS);$("#packMsg").textContent="✅ Paket „"+p.name+"“ importiert.";setTimeout(showHome,700);}catch(e){$("#packMsg").textContent="❌ Kein gültiges JSON.";}break;}
+    case "packtpl": $("#packIn").value=$("#tplHold").textContent; break;
+    case "packdel": PACKS.splice(+arg,1); savePacks(PACKS); showAddPack(); break;
+  }
+});
+function renderExamKeep(){const y=window.scrollY;renderExam();window.scrollTo(0,y);}
+document.addEventListener("change",ev=>{const el=ev.target;
+  if(el.dataset&&el.dataset.act==="examdate"){const f=SES?null:null;const tid=(location.hash||"").slice(1);
+    const cur=window.__topic; if(cur){TS(cur).exam=el.value;save();showTopic(cur);} }
+});
+document.addEventListener("keydown",ev=>{
+  if(ev.key==="Enter"&&FBSHOWN&&ev.target.tagName!=="TEXTAREA"&&Date.now()-LASTCHECK>350){ev.preventDefault();const nb=$("#nextBtn");if(nb)nb.click();}
+});
+const _showTopic=showTopic; showTopic=function(tid){window.__topic=tid;_showTopic(tid);};
+showHome();
+</script>
+</body>
+</html>
