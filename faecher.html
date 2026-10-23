@@ -164,17 +164,16 @@ const FIG=(function(){
     s+=`<text x="${x0+12}" y="${y(24)}" font-size="20">🐒</text><text x="${x0+70}" y="${y(3.5)}" font-size="15">🐜</text><text x="${x0+12}" y="${y(3.5)}" font-size="15">🐗</text>`;
     return wrap("0 0 360 290",s,m==="full"?"Stockwerkbau des tropischen Regenwaldes (schematisch, Höhen nicht maßstabsgetreu, nach Schulbuch S. 95)":"Stockwerkbau (schematisch)");},
   klima(hl){
-    const P=[255,250,260,255,190,100,60,40,55,125,150,215], M="JFMAMJJASOND", x0=48,w=24, base=200, k=0.62;
+    const P=[260,245,265,262,192,98,62,38,58,124,152,217], M="JFMAMJJASOND", x0=48,w=24, base=200, k=0.62;
     let s=`<rect width="360" height="245" fill="#f4efe0"/>`;
     for(let v=0;v<=260;v+=40){const y=base-v*k;s+=`<line x1="${x0}" y1="${y}" x2="${x0+12*w}" y2="${y}" stroke="#d8d0b8"/>`+T(x0+12*w+4,y+4,v,{s:10});}
     P.forEach((v,i)=>{const h=v*k;s+=`<rect x="${x0+i*w+3}" y="${base-h}" width="${w-6}" height="${h}" fill="${hl===i?'#c4453a':'#7fb2d9'}"/>`+T(x0+i*w+w/2,base+13,M[i],{a:"middle",w:800,s:11});});
-    const yT=base-54*k;
-    s+=`<line x1="${x0}" y1="${yT}" x2="${x0+12*w}" y2="${yT}" stroke="#a3243c" stroke-width="2.5"/>`;
-    s+=T(x0+4,yT-5,"Temperatur: ca. 27 °C (fast gleich)",{c:"#a3243c",w:800,s:10.5,h:1});
+    const TT=[26,26,26,26.2,26.6,27,27.4,27.8,27.9,27.9,27.6,27];
+    s+=`<polyline points="${TT.map((v,i)=>`${x0+i*w+w/2},${base-v*2*k}`).join(" ")}" fill="none" stroke="#a3243c" stroke-width="2.5"/>`;
     [0,10,20,30].forEach(t=>{s+=T(x0-6,base-t*2*k+4,t,{a:"end",s:10,c:"#a3243c"});});
     s+=T(4,base-62*k-12,"°C",{s:10,c:"#a3243c",w:800})+T(x0+12*w+4,base-270*k,"mm",{s:10,w:800});
     s+=T(x0,16,"Manaus (Brasilien) · T = 26,9 °C · N = 1897 mm",{w:800,s:11.5});
-    s+=T(x0,232,"Balken: Niederschlag (mm) · rote Linie: Temperatur (°C)",{s:10,c:"#555"});
+    s+=T(x0,232,"Balken: Niederschlag (mm) · rote Linie: Temperatur (ca. 26–28 °C)",{s:10,c:"#555"});
     return wrap("0 0 360 245",s,"Klimadiagramm Manaus (nachgezeichnet, Werte ungefähr)");},
   tag(m){
     const T0=[[4,20],[6,20],[8,22],[10,25],[12,28],[14,30],[15,31],[16,30],[18,26],[20,23]];
@@ -245,14 +244,15 @@ const FIG=(function(){
     D.forEach((d,i)=>{const h=d[1]*50,x=26+i*66;s+=`<rect x="${x}" y="${200-h}" width="46" height="${h}" fill="${i===4?'#c4733a':'#9bb36a'}"/>`+T(x+23,194-h,(m==="mask"&&i===4)?"?":String(d[1]).replace(".",",")+" t",{a:"middle",w:800,s:12})+T(x+23,216,d[0],{a:"middle",s:11,w:700});});
     s+=`<line x1="14" y1="200" x2="350" y2="200" stroke="#333" stroke-width="2"/>`+T(14,18,"Ölerträge in Tonnen pro Hektar (t/ha)",{w:800,s:12});
     return wrap("0 0 360 230",s,"Ölerträge im Vergleich (Quelle im Schulbuch: WWF 2016), 1 ha = 100 m × 100 m");},
-  ertrag(){ const B=[100,78,47,17], A=[70,80,92,120], k=1.3;
+  ertrag(){ const B=[100,75,48,19], A=[100,79,89,123], k=1.3;
     let s=`<rect width="360" height="240" fill="#f4efe0"/>`;
-    for(let i=0;i<4;i++){const x=48+i*76;
+    for(let v=0;v<=120;v+=20){const y=200-v*k;s+=`<line x1="40" y1="${y}" x2="350" y2="${y}" stroke="#ddd5bd"/>`+T(36,y+4,v,{a:"end",s:10});}
+    for(let i=0;i<4;i++){const x=52+i*74;
       s+=`<rect x="${x}" y="${200-B[i]*k}" width="26" height="${B[i]*k}" fill="#d9a83c"/><rect x="${x+28}" y="${200-A[i]*k}" width="26" height="${A[i]*k}" fill="#4f9a3e"/>`+T(x+27,216,(i+1)+". Jahr",{a:"middle",s:11,w:800});}
-    s+=`<line x1="36" y1="200" x2="350" y2="200" stroke="#333" stroke-width="2"/><line x1="36" y1="40" x2="36" y2="200" stroke="#333" stroke-width="2"/>`;
-    s+=T(40,18,"Erträge im Verlauf der Jahre (Tendenz, nicht genau)",{w:800,s:11.5});
-    s+=`<rect x="48" y="26" width="12" height="12" fill="#d9a83c"/>`+T(64,36,"Brandrodung",{s:11})+`<rect x="150" y="26" width="12" height="12" fill="#4f9a3e"/>`+T(166,36,"Agroforstwirtschaft",{s:11});
-    return wrap("0 0 360 230",s,"Erträge: Brandrodung sinkt schnell, Agroforstwirtschaft bleibt langfristig hoch (Tendenz nach Schulbuch S. 99)");}
+    s+=`<line x1="40" y1="200" x2="350" y2="200" stroke="#333" stroke-width="2"/><line x1="40" y1="40" x2="40" y2="200" stroke="#333" stroke-width="2"/>`;
+    s+=T(40,18,"Erträge im Verlauf der Jahre (in %)",{w:800,s:11.5});
+    s+=`<rect x="52" y="26" width="12" height="12" fill="#d9a83c"/>`+T(68,36,"bei Brandrodung",{s:10.5})+`<rect x="165" y="26" width="12" height="12" fill="#4f9a3e"/>`+T(181,36,"bei Agroforstwirtschaft",{s:10.5});
+    return wrap("0 0 360 230",s,"Erträge in % (Werte ungefähr abgelesen, nach Schulbuch S. 99, M5)");}
   };})();
 
 /* ---------- Operatoren-Hilfe ---------- */
@@ -584,6 +584,9 @@ cl("nutz",2,"Bei der Agroforstwirtschaft werden Nutzpflanzen zwischen ___ angeba
 op("nutz",3,"Erläutere","Erläutere den Ablauf des Wanderfeldbaus. Gehe auf Vorbereitung, Bepflanzung und sonstige Nutzung der Felder ein (Buch S. 98, Aufgabe 2).",[["Vorbereitung: Unterholz abschlagen, Fläche anzünden (Brandrodung), Asche düngt, einige große Bäume bleiben als Schattenspender.",["rodung","brand","asche","machete"]],["Bepflanzung: Bearbeitung mit der Hacke, Anbau von Maniok, Batate und Yams.",["hacke","maniok","batate","yams"]],["Nach 2–3 Jahren sind die Nährstoffe verbraucht.",["jahre","verbraucht"]],["Die Felder ruhen mindestens 7 Jahre (Brache, Sekundärwald); die Bauern ziehen zu neuen Flächen um.",["7","sieben","brache","umzieh","zieht um"]]],"Zuerst schlagen die Bauern mit der Machete Unterholz und Büsche ab und zünden das Gebiet an (Brandrodung). Die Asche dient als Dünger und zerstört Schädlinge, einige große Bäume bleiben als Schattenspender stehen. Dann werden die Felder mit der Hacke bearbeitet und mit Maniok, Batate und Yams bepflanzt. Zwei bis drei Jahre liefern die Felder Nahrung, dann sind die Nährstoffe verbraucht. Die Felder müssen sich mindestens sieben Jahre erholen (Brache, Sekundärwald), während die Bauern neue Flächen roden und das Haus nach einigen Jahren umziehen.");
 op("nutz",3,"Vergleiche","Vergleiche Wanderfeldbau mit Agroforstwirtschaft (Buch S. 99, Aufgabe 4).",[["Wanderfeldbau: roden und abbrennen, einige Jahre Anbau, dann Brache. Agroforst: Nutzpflanzen zwischen Bäumen (mehrstöckig).",["roden","brand","zwischen","baeumen","bäumen","mehrstoeck","mehrstöck"]],["Wanderfeldbau: kurzfristig hohe Erträge, danach Boden erschöpft. Agroforst: langfristig hohe Erträge.",["kurzfristig","langfristig"]],["Wanderfeldbau: Erosionsgefahr und hoher Flächenverbrauch. Agroforst: Schutz vor Erosion, Erhalt der Humusschicht.",["erosion","humus","flaeche","fläche"]],["Agroforst braucht mehr Aufwand, Pflege und langfristige Planung.",["aufwand","pflege","planung"]]],"Beim Wanderfeldbau werden Waldstücke gerodet und abgebrannt, einige Jahre bepflanzt und dann als Brache liegen gelassen. Bei der Agroforstwirtschaft werden Nutzpflanzen in einem mehrstöckigen System zwischen Bäumen angebaut. Der Wanderfeldbau bringt kurzfristig hohe Erträge, aber der Boden ist bald erschöpft, es droht Erosion und der Flächenverbrauch ist hoch. Die Agroforstwirtschaft versorgt die Pflanzen langanhaltend mit Nährstoffen, schützt vor Erosion und erhält die Humusschicht, braucht aber mehr Aufwand, Pflege und langfristige Planung.");
 op("nutz",3,"Bewerte","Bewerte die Nachhaltigkeit von Wanderfeldbau und Agroforstwirtschaft (Buch S. 99, Aufgabe 5).",[["Wanderfeldbau ist nur nachhaltig, wenn die Brache lang genug ist; bei wachsender Bevölkerung reicht das nicht (Flächenverbrauch, Erosion).",["brache","bevoelkerung","bevölkerung","flaeche","fläche","erosion"]],["Agroforstwirtschaft ist nachhaltiger: Nährstoffe bleiben im Kreislauf, Humus und Boden sind geschützt, langfristig hohe Erträge.",["nährstoff","naehrstoff","humus","langfristig"]],["Aber: hoher Aufwand, Pflege und langfristige Planung sind nötig.",["aufwand","pflege","planung"]],["Ich ziehe ein eigenes, begründetes Fazit.",["fazit","insgesamt","deshalb","daher","meiner meinung","ich finde"]]],"Der Wanderfeldbau ist nur nachhaltig, solange die Brache lang genug ist. Weil die Bevölkerung wächst, reicht die Fläche aber nicht mehr, es droht Erosion. Die Agroforstwirtschaft ist nachhaltiger, weil sie den Regenwald nachahmt: Die Nährstoffe bleiben im Kreislauf, die Humusschicht und der Boden sind geschützt und die Erträge bleiben langfristig hoch. Allerdings sind Aufwand, Pflege und Planung höher. Insgesamt finde ich die Agroforstwirtschaft besser, weil sie Mensch und Natur langfristig nützt.");
+mc("nutz",2,"Wie hoch sind die Erträge bei Brandrodung im 4. Jahr ungefähr (1. Jahr = 100 %)?","etwa 20 %",["etwa 50 %","etwa 80 %","etwa 120 %"],"Bei Brandrodung fallen die Erträge von 100 % im 1. Jahr auf etwa 20 % im 4. Jahr. Die Nährstoffe sind verbraucht.",{fig:["ertrag"]});
+mc("nutz",2,"Wie hoch sind die Erträge bei Agroforstwirtschaft im 4. Jahr ungefähr?","über 100 % (etwa 120 %)",["etwa 20 %","etwa 50 %","genau 100 %"],"Bei Agroforstwirtschaft steigen die Erträge bis zum 4. Jahr auf etwa 120 % – der Boden wird geschützt und der Nährstoffkreislauf bleibt erhalten.",{fig:["ertrag"]});
+ty("nutz",2,"Um wie viel Prozent liegen die Erträge bei Brandrodung im 3. Jahr etwa? (Zahl in %, 1. Jahr = 100 %)",["50"],"Im 3. Jahr sind es nur noch etwa 50 % (bei Agroforstwirtschaft dagegen fast 90 %).",{num:true,tol:8,fig:["ertrag"]});
 
 /* ============ CASH CROPS & ÖLPALME (36) ============ */
 mc("cash",1,"Was sind Cash Crops?","landwirtschaftliche Produkte, die nicht auf lokalen Märkten, sondern auf dem Weltmarkt verkauft werden",["Pflanzen, die nur für die Selbstversorgung angebaut werden","Pflanzen, die nur als Viehfutter dienen","Pflanzen, die ohne Dünger wachsen"],"Cash = Bargeld. Cash Crops sind Pflanzen, die man verkauft, um Geld zu verdienen.");
