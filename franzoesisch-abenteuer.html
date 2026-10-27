@@ -1356,7 +1356,7 @@ function showSettings(){
       <div class="seg">${Object.keys(SCOPES).map(k=>`<button class="${S.scope===k?"on":""}" onclick="setScope('${k}')">${esc(SCOPES[k].label)}</button>`).join("")}</div>
       ${S.scope==="pages" ? pagesPanel() : ""}
       <div class="hint-sm" style="margin-top:8px">Im aktuellen Bereich: <b>${ns} Sätze</b> und <b>${nv} Vokabeln</b>.${(ns+nv)===0 ? ' <b style="color:#f09a5c">Keine Aufgaben in dieser Auswahl – bitte ändern.</b>' : ''}</div>
-      ${S.scope==="pages" ? `<div class="btnRow" style="margin-top:10px"><button class="btn" onclick="showMap()">▶ Mit dieser Auswahl üben (zur Karte)</button></div>` : ""}
+      ${S.scope==="pages" ? `<div class="btnRow" style="margin-top:10px"><button class="btn" onclick="enterNode(Math.min(S.node,NODES.length-1))">▶ Jetzt mit dieser Auswahl üben</button></div>` : ""}
       ${(LOCKED.length||LOCKED_IDS.length) ? `<div class="hint-sm" style="margin-top:6px">🔒 Schon im Katalog, aber noch nicht dran (${esc(LOCKED_LABEL)}): ${ls} Sätze und ${lv} Vokabeln – sie werden erst abgefragt, wenn sie im Unterricht behandelt wurden.</div>` : ""}
     </div>
     <div class="card">
