@@ -152,16 +152,20 @@ const TAGS = {cp:"C'est parti!", u1:"Unité 1 – Thema Stadt", v1:"Unité 1 –
 const SCOPES = {
   all:{label:"Alles", tags:["cp","u1","v1","v2","v3","m1"]},
   cp:{label:"C'est parti!", tags:["cp"]},
-  u1:{label:"Unité 1", tags:["u1","v1","v2","v3"]}
+  u1:{label:"Unité 1", tags:["u1","v1","v2","v3"]},
+  pages:{label:"📖 Seiten-Auswahl", tags:[], custom:true}
 };
 
 /* ---------- SPERRE: schon katalogisiert, aber noch nicht abgefragt ----------
-   Volet 3 und Module 1 (S. 182 ab "Qu'est-ce qu'il y a …?" bis S. 183) sind im Unterricht noch nicht dran.
+   Freigegeben ist alles bis einschließlich "entre" (S. 183, erste Zeile). Noch nicht dran: der Paris-Kasten auf S. 183
+   (Notre-Dame … Coulée verte) und Module 1.
    Sie stehen komplett in der Datenbank, kommen aber nirgends als Aufgabe oder Ablenker vor.
-   FREIGABE später: den jeweiligen Tag hier aus der Liste LOCKED entfernen (z. B. "v3") – sonst ist nichts zu ändern.
+   FREIGABE später: den Tag aus LOCKED entfernen (z. B. "m1") bzw. die IDs aus LOCKED_IDS streichen und LOCKED_LABEL anpassen – sonst ist nichts zu ändern.
    Einträge mit dem Zusatz "info" (7. Feld) sind reine Grammatik-Hinweise und werden nie einzeln als Vokabel abgefragt. */
-const LOCKED = ["v3","m1"];
-const isLocked = x => LOCKED.includes(x.tag);
+const LOCKED = ["m1"];
+const LOCKED_IDS = ["v322","v323","v324","v325","v326","v327","v328","v329"];   /* S. 183: Notre-Dame … Coulée verte (Info-Kasten) */
+const LOCKED_LABEL = "Module 1 und der Paris-Kasten auf S. 183 (ab „Notre-Dame de Paris“)";
+const isLocked = x => LOCKED.includes(x.tag) || LOCKED_IDS.includes(x.id);
 
 /* ---------- Vokabeldatenbank ----------
    [ID, Französisch (Varianten mit ;), Deutsch (Varianten mit ;), Teil, Beispielsatz FR, Beispielsatz DE]
@@ -551,13 +555,65 @@ const VOCAB = VOCAB_RAW.map(r=>({id:r[0], fr:r[1], de:r[2], tag:r[3], exFr:r[4]|
 const SENTS = SENT_RAW.map(r=>({id:r[0], frAlts:r[1].split("|"), deAlts:r[2].split("|"), tag:r[3], note:r[4]||"", deHint:r[5]||"", kind:"s"}));
 const ITEM = {}; VOCAB.forEach(v=>ITEM[v.id]=v); SENTS.forEach(s=>ITEM[s.id]=s);
 /* abfragbar = nicht gesperrt (und keine reine Grammatik-Info) – nur daraus kommen Aufgaben UND Ablenker */
+/* ---------- Buchseiten (À plus! Neubearbeitung, Vokabelverzeichnis S. 176–183) ----------
+   Vokabeln: Bereiche in Buchreihenfolge (erste ID – letzte ID einer Seite). Sätze: Seite nach der Stelle im Buch. */
+const PAGES = [176,177,178,179,180,181,182,183];
+const VPAGE_RANGES = [[176,"cp01","cp08"],[177,"cp09","cp50"],[178,"cp60","cp87"],[179,"u101","u116"],[180,"u117","v119"],
+                      [181,"v120","v230"],[182,"v231","v320"],[183,"v321","m1999"]];
+const VIDX = {}; VOCAB.forEach((v,i)=>{ if(VIDX[v.id]===undefined) VIDX[v.id]=i; });
+const PAGE = {};
+(function(){
+  const idx = id => { if(VIDX[id]!==undefined) return VIDX[id]; return id==="m1999" ? VOCAB.length-1 : -1; };
+  VPAGE_RANGES.forEach(r=>{ const a=idx(r[1]), b=idx(r[2]); VOCAB.forEach((v,i)=>{ if(i>=a && i<=b) PAGE[v.id]=r[0]; }); });
+  const sp = (pg, ids) => ids.forEach(id=>{ PAGE[id]=pg; });
+  const rng = (pre,a,b) => { const o=[]; for(let i=a;i<=b;i++) o.push(pre+String(i).padStart(3,"0")); return o; };
+  sp(176, rng("s",1,8));   sp(177, rng("s",9,19));  sp(178, rng("s",20,29));
+  sp(179, ["s101","s102","s103","s104","s105","s109","s110"]);
+  sp(180, ["s106","s107","s108"].concat(rng("s",201,217)));
+  sp(181, rng("s",218,220).concat(rng("s",301,320)));
+  sp(182, rng("s",321,328).concat(rng("s",401,412)));
+  sp(183, ["s413"].concat(rng("s",501,514)));
+})();
+/* Stelle eines Satzes in der Vokabelreihenfolge: Vokabeln, deren Beispielsatz der Satz ist (kleinste/größte Position) */
+const SANCHOR = {s019:["cp16"], s109:["u103"], s110:["u109"], s201:["u117"], s307:["v215"], s319:["v210"], s320:["v206"],
+                 s321:["v232"], s322:["v232"], s323:["v232"], s324:["v233"], s325:["v233"], s326:["v233"], s327:["v233"], s514:["v405"]};
+const SPOS = {};
+(function(){
+  const exMap = {};
+  VOCAB.forEach((v,i)=>{ if(v.exFr){ const k=normFr(v.exFr); (exMap[k]=exMap[k]||[]).push(i); } });
+  SENTS.forEach(sn=>{
+    let hit = [];
+    sn.frAlts.forEach(f=>{ const k=normFr(f); if(exMap[k]) hit = hit.concat(exMap[k]); });
+    if(!hit.length && SANCHOR[sn.id]) hit = SANCHOR[sn.id].map(id=>VIDX[id]).filter(i=>i!==undefined);
+    if(hit.length) SPOS[sn.id] = {lo:Math.min.apply(null,hit), hi:Math.max.apply(null,hit)};
+  });
+})();
+function inPages(it){
+  const P = S.pages, pg = PAGE[it.id];
+  if(!pg || pg<P.from || pg>P.to) return false;
+  const pos = it.kind==="v" ? (VIDX[it.id]!==undefined ? {lo:VIDX[it.id],hi:VIDX[it.id]} : null) : (SPOS[it.id]||null);
+  if(pg===P.from && P.fromWord){ if(!pos || pos.lo < VIDX[P.fromWord]) return false; }
+  if(pg===P.to && P.toWord){ if(!pos || pos.hi > VIDX[P.toWord]) return false; }
+  return true;
+}
+function inScope(k,it){ return k==="pages" ? inPages(it) : SCOPES[k].tags.includes(it.tag); }
+function scopeLabel(){
+  if(S.scope!=="pages") return SCOPES[S.scope].label;
+  const P=S.pages, w=id=>{ const v=VOCAB[VIDX[id]]; return v ? "„"+first(v.fr)+"“" : ""; };
+  let t = P.from===P.to ? "S. "+P.from : "S. "+P.from+"–"+P.to;
+  if(P.fromWord) t += " ab "+w(P.fromWord);
+  if(P.toWord) t += " bis "+w(P.toWord);
+  return t + (P.kinds==="v" ? " · nur Vokabeln" : P.kinds==="s" ? " · nur Sätze" : "");
+}
+
 const QV = () => VOCAB.filter(v=>!isLocked(v) && !v.info);
 const QS = () => SENTS.filter(s=>!isLocked(s));
 
 /* ---------- Spielstand ---------- */
 function defaultState(){
   return {started:false, scope:"all", mode:"normal", node:0, xp:0, maxStreak:0, answered:0,
-          stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}, rd:{}, rounds:{}, miss:{}, discOrder:"book"};
+          stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}, rd:{}, rounds:{}, miss:{}, discOrder:"book",
+          pages:{from:182, to:183, fromWord:"", toWord:"", kinds:"both"}};
 }
 let S = defaultState();
 function normalizeState(){
@@ -567,6 +623,13 @@ function normalizeState(){
     if(!ok) S[k]=d[k];
   });
   if(!SCOPES[S.scope]) S.scope="all";
+  { const P = S.pages, d0 = d.pages;
+    P.from = PAGES.includes(+P.from) ? +P.from : d0.from; P.to = PAGES.includes(+P.to) ? +P.to : d0.to;
+    if(P.from > P.to){ const t=P.from; P.from=P.to; P.to=t; }
+    ["fromWord","toWord"].forEach(k=>{ const pgx = k==="fromWord" ? P.from : P.to;
+      const v = VOCAB[VIDX[P[k]]]; if(typeof P[k]!=="string" || !v || v.info || isLocked(v) || PAGE[v.id]!==pgx) P[k]=""; });
+    if(P.from===P.to && P.fromWord && P.toWord && VIDX[P.fromWord] > VIDX[P.toWord]) P.fromWord="";
+    if(!["both","v","s"].includes(P.kinds)) P.kinds="both"; }
   if(!["normal","exam","discover"].includes(S.mode)) S.mode="normal";
   S.node = Math.max(0, Math.min(NODES.length-1, parseInt(S.node)||0));
   S.xp = Number(S.xp)||0; S.maxStreak = Number(S.maxStreak)||0; S.answered = Number(S.answered)||0;
@@ -584,7 +647,7 @@ function normalizeState(){
     if(!(S.rounds[k]>=1)) S.rounds[k]=1;
     if(typeof S.rd[k]!=="object" || !S.rd[k] || Array.isArray(S.rd[k])){
       S.rd[k]={};
-      if(S.rounds[k]===1) Object.keys(S.seen).forEach(id=>{ if(ITEM[id] && SCOPES[k].tags.includes(ITEM[id].tag)) S.rd[k][id]=1; });
+      if(S.rounds[k]===1) Object.keys(S.seen).forEach(id=>{ if(ITEM[id] && k!=="pages" && inScope(k,ITEM[id])) S.rd[k][id]=1; });
     }
     Object.keys(S.rd[k]).forEach(id=>{ if(!ITEM[id]) delete S.rd[k][id]; });
   });
@@ -632,8 +695,8 @@ function stripAcc(s){ return String(s).normalize("NFD").replace(/[\u0300-\u036f]
 /* ---------- Auswahl der nächsten Aufgabe ---------- */
 let bag = {v:[], s:[]}, recent = [];
 function resetBags(){ bag = {v:[], s:[]}; recent = []; }
-function poolV(){ const t=SCOPES[S.scope].tags; return QV().filter(v=>t.includes(v.tag)); }
-function poolS(){ const t=SCOPES[S.scope].tags; return QS().filter(s=>t.includes(s.tag)); }
+function poolV(){ if(S.scope==="pages") return S.pages.kinds==="s" ? [] : QV().filter(inPages); const t=SCOPES[S.scope].tags; return QV().filter(v=>t.includes(v.tag)); }
+function poolS(){ if(S.scope==="pages") return S.pages.kinds==="v" ? [] : QS().filter(inPages); const t=SCOPES[S.scope].tags; return QS().filter(s=>t.includes(s.tag)); }
 /* ---------- Modus "Neu entdecken" ----------
    Fragt zuerst nur Aufgaben, die in der aktuellen Runde noch nicht beantwortet wurden (Runde 1 = noch nie gesehen).
    Vokabeln und Sätze werden im Verhältnis ihrer Restmenge gemischt, damit beide gleichzeitig fertig werden.
@@ -670,8 +733,9 @@ function discoverPick(){
   return list.find(x=>!recent.includes(x.id)) || list[0];
 }
 function nextItem(){
-  const pv = poolV(), ps = poolS();
-  const allowed = new Set([...(S.mode==="exam" ? [] : pv), ...ps].map(x=>x.id));
+  let pv = poolV(), ps = poolS();
+  if(!pv.length && !ps.length){ pv = QV(); ps = QS(); }   /* leere Auswahl: nie ohne Aufgabe dastehen */
+  const allowed = new Set([...(S.mode==="exam" && ps.length ? [] : pv), ...ps].map(x=>x.id));
   /* Falsch beantwortete Aufgaben kommen bevorzugt wieder dran, bis sie 2× in Folge richtig waren */
   const due = Object.keys(S.weak).filter(id=>allowed.has(id) && !recent.includes(id));
   let item = null;
@@ -680,7 +744,7 @@ function nextItem(){
   } else if(S.mode==="discover"){
     item = discoverPick();
   } else {
-    const kind = (S.mode==="exam" || !pv.length) ? "s" : (Math.random() < 0.65 ? "s" : "v");
+    const kind = !ps.length ? "v" : (S.mode==="exam" || !pv.length) ? "s" : (Math.random() < 0.65 ? "s" : "v");
     const pool = kind==="s" ? ps : pv;
     if(!bag[kind].length) bag[kind] = shuffle(pool.map(x=>x.id));
     let id = bag[kind].pop(), guard = 0;
@@ -871,7 +935,7 @@ function showMap(){
   const allDone = S.defeated.length===NODES.length;
   app.innerHTML = header() + nav() + `
     <div class="sectionTitle">🗺️ Deine Reise durch Paris</div>
-    <div class="hint-sm">Bereich: <b>${SCOPES[S.scope].label}</b> · Modus: <b>${modeName()}</b> – ändern unter Einstellungen.
+    <div class="hint-sm">Bereich: <b>${esc(scopeLabel())}</b> · Modus: <b>${modeName()}</b> – ändern unter Einstellungen.
     Tippe auf eine freigeschaltete Station.</div>
     <div class="mapWrap">${mapSVG()}${pins}</div>
     <div class="card center">
@@ -1042,7 +1106,7 @@ function resolve(ok, given, r){
   bump(S.stats, it.tag, ok); bump(S.tstats, tkey, ok);
   S.answered++;
   S.seen[it.id] = (S.seen[it.id]||0) + 1;
-  Object.keys(SCOPES).forEach(k=>{ if(SCOPES[k].tags.includes(it.tag)) S.rd[k][it.id] = S.rounds[k]; });
+  Object.keys(SCOPES).forEach(k=>{ if(inScope(k,it)) S.rd[k][it.id] = S.rounds[k]; });
   if(!ok) S.miss[it.id] = (S.miss[it.id]||0) + 1;
   const notes = [];
   /* Wiederholungs-Logik: falsche Aufgaben merken, bis sie 2× in Folge richtig waren */
@@ -1220,11 +1284,11 @@ function showEval(){
       <div class="hint-sm">Grün ab 85 % · Gelb 60–84 % · Rot unter 60 % · grau = weniger als 3 Antworten</div>
       <div class="sectionTitle" style="font-size:16px">Nach Buchteil</div>
       ${Object.keys(TAGS).filter(t=>!LOCKED.includes(t)).map(t=>bar(TAGS[t], S.stats[t])).join("")}
-      ${LOCKED.length ? `<div class="hint-sm" style="margin-top:6px">🔒 Noch nicht dran: ${LOCKED.map(t=>esc(TAGS[t])).join(", ")}</div>` : ""}
+      <div class="hint-sm" style="margin-top:6px">🔒 Noch nicht dran: ${esc(LOCKED_LABEL)}</div>
       <div class="sectionTitle" style="font-size:16px">👀 Schon gesehen – nach Buchteil</div>
       <div class="hint-sm">Zeigt, wie viel vom Stoff Lukas schon mindestens einmal beantwortet hat. Die Zählung beginnt mit dieser Version; frühere Antworten sind nur bei den aktuellen Wackelkandidaten bekannt.</div>
       ${seenHTML}
-      <div class="hint-sm" style="margin-top:10px">🔍 Entdecker-Runde im Bereich <b>${esc(SCOPES[S.scope].label)}</b>: Runde <b>${discoverStats().round}</b> – <b>${discoverStats().done}</b> von ${discoverStats().total} Aufgaben dran.</div>
+      <div class="hint-sm" style="margin-top:10px">🔍 Entdecker-Runde im Bereich <b>${esc(scopeLabel())}</b>: Runde <b>${discoverStats().round}</b> – <b>${discoverStats().done}</b> von ${discoverStats().total} Aufgaben dran.</div>
       <div class="sectionTitle" style="font-size:16px">Nach Aufgabenart</div>
       ${bar("Sätze Französisch → Deutsch", S.tstats.sFD)}
       ${bar("Sätze Deutsch → Französisch", S.tstats.sDF)}
@@ -1246,6 +1310,37 @@ function msg(text, ok){
   b.style.display = "block"; b.style.borderColor = ok ? "rgba(90,154,90,.7)" : "rgba(192,69,58,.7)"; b.innerHTML = text;
 }
 function modeName(){ return S.mode==='exam' ? 'Klassenarbeit (nur Sätze)' : S.mode==='discover' ? '🔍 Neu entdecken' : 'Normal (Sätze + Vokabeln)'; }
+function setPages(ch){
+  const P = S.pages; Object.assign(P, ch);
+  if("from" in ch){ P.from=+P.from; if(P.to<P.from) P.to=P.from; P.fromWord=""; }
+  if("to" in ch){ P.to=+P.to; if(P.from>P.to) P.from=P.to; P.toWord=""; }
+  normalizeState();
+  S.rounds.pages = 1; S.rd.pages = {};            /* neue Auswahl = neue Entdecker-Runde */
+  resetBags(); saveState(); showSettings();
+}
+function pagesPanel(){
+  const P = S.pages;
+  const wordsOn = pg => VOCAB.filter(v=>!isLocked(v) && !v.info && PAGE[v.id]===pg);
+  const wOpt = (pg, sel, empty) => `<option value="">${empty}</option>` + wordsOn(pg).map(v=>`<option value="${v.id}"${sel===v.id?" selected":""}>${esc(first(v.fr))} – ${esc(first(v.de))}</option>`).join("");
+  const pOpt = sel => PAGES.map(p=>`<option value="${p}"${p===sel?" selected":""}>Seite ${p}</option>`).join("");
+  const sty = 'style="font-family:inherit;font-weight:700;font-size:15px;padding:9px 10px;border-radius:10px;border:1px solid rgba(217,168,60,.5);background:rgba(0,0,0,.4);color:var(--ink);max-width:100%"';
+  return `<div style="margin-top:12px;padding:12px;border:1px solid rgba(217,168,60,.35);border-radius:12px;background:rgba(0,0,0,.2)">
+    <b>Welche Buchseiten?</b>
+    <div class="hint-sm" style="margin:4px 0 8px">Zum Beispiel für einen kleinen Test: Start-Wort auf der einen Seite, End-Wort auf einer späteren Seite – ein anderes Mal wieder „Alles“. Gesperrter Stoff erscheint hier nicht.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <label>Von <select ${sty} onchange="setPages({from:this.value})">${pOpt(P.from)}</select></label>
+      <label>bis <select ${sty} onchange="setPages({to:this.value})">${pOpt(P.to)}</select></label></div>
+    <div style="display:grid;gap:8px;margin-top:10px">
+      <label class="hint-sm"><b>▶ Start</b> auf Seite ${P.from} – erstes Wort:<br><select ${sty} onchange="setPages({fromWord:this.value})">${wOpt(P.from,P.fromWord,"– ganze Seite von Anfang an –")}</select></label>
+      <label class="hint-sm"><b>⏹ Ende</b> auf Seite ${P.to} – letztes Wort:<br><select ${sty} onchange="setPages({toWord:this.value})">${wOpt(P.to,P.toWord,"– ganze Seite bis zum Ende –")}</select></label></div>
+    <div style="margin-top:10px"><span class="hint-sm">Abfragen:</span>
+      <div class="seg" style="margin-top:6px">
+        <button class="${P.kinds==="both"?"on":""}" onclick="setPages({kinds:'both'})">Vokabeln + Sätze</button>
+        <button class="${P.kinds==="v"?"on":""}" onclick="setPages({kinds:'v'})">nur Vokabeln</button>
+        <button class="${P.kinds==="s"?"on":""}" onclick="setPages({kinds:'s'})">nur Sätze</button></div></div>
+    <div class="hint-sm" style="margin-top:8px">Auswahl: <b>${esc(scopeLabel())}</b></div>
+  </div>`;
+}
 function setScope(s){ if(!SCOPES[s]) return; S.scope = s; resetBags(); saveState(); showSettings(); }
 function setOrder(o){ S.discOrder = o; resetBags(); saveState(); showSettings(); }
 function setMode(m){ S.mode = m; resetBags(); saveState(); showSettings(); }
@@ -1259,8 +1354,10 @@ function showSettings(){
       <b>Wortschatz-Bereich</b>
       <div class="hint-sm" style="margin:4px 0 8px">Für gezieltes Üben vor einer Klassenarbeit kannst du den Bereich einschränken.</div>
       <div class="seg">${Object.keys(SCOPES).map(k=>`<button class="${S.scope===k?"on":""}" onclick="setScope('${k}')">${esc(SCOPES[k].label)}</button>`).join("")}</div>
-      <div class="hint-sm" style="margin-top:8px">Im aktuellen Bereich: <b>${ns} Sätze</b> und <b>${nv} Vokabeln</b>.</div>
-      ${LOCKED.length ? `<div class="hint-sm" style="margin-top:6px">🔒 Schon im Katalog, aber noch nicht dran (${LOCKED.map(t=>esc(TAGS[t])).join(", ")}): ${ls} Sätze und ${lv} Vokabeln – sie werden erst abgefragt, wenn sie im Unterricht behandelt wurden.</div>` : ""}
+      ${S.scope==="pages" ? pagesPanel() : ""}
+      <div class="hint-sm" style="margin-top:8px">Im aktuellen Bereich: <b>${ns} Sätze</b> und <b>${nv} Vokabeln</b>.${(ns+nv)===0 ? ' <b style="color:#f09a5c">Keine Aufgaben in dieser Auswahl – bitte ändern.</b>' : ''}</div>
+      ${S.scope==="pages" ? `<div class="btnRow" style="margin-top:10px"><button class="btn" onclick="showMap()">▶ Mit dieser Auswahl üben (zur Karte)</button></div>` : ""}
+      ${(LOCKED.length||LOCKED_IDS.length) ? `<div class="hint-sm" style="margin-top:6px">🔒 Schon im Katalog, aber noch nicht dran (${esc(LOCKED_LABEL)}): ${ls} Sätze und ${lv} Vokabeln – sie werden erst abgefragt, wenn sie im Unterricht behandelt wurden.</div>` : ""}
     </div>
     <div class="card">
       <b>Modus</b>
