@@ -61,6 +61,12 @@
   .pinLabel{font-family:'Cinzel',serif;font-size:10.5px;font-weight:700;color:var(--parch-ink);margin-top:4px;line-height:1.15;
     background:rgba(240,225,190,.88);padding:1.5px 6px;border-radius:6px;border:1px solid rgba(74,52,35,.3)}
   .mapPin.locked .pinLabel{opacity:.7}
+  .trophyPlaque{aspect-ratio:5/7;display:flex;align-items:center;justify-content:center;font-size:42px;border-radius:10px;
+    border:2px solid var(--gold2);background:radial-gradient(circle at 35% 30%,#4a3a1c,#1f1810);box-shadow:inset 0 0 18px rgba(217,168,60,.25)}
+  .trophyPlaque.big{width:120px;height:120px;aspect-ratio:auto;font-size:60px;margin:10px auto}
+  .mapPin.gated .pinBadge{filter:grayscale(.85) brightness(.85)}
+  .mapPin.gated .pinSub{background:rgba(120,40,30,.85);color:#fff}
+  .mapNote{margin:8px 0;padding:12px 14px;border:1px solid #c0583f;border-radius:12px;background:rgba(120,40,30,.25);font-size:14px;line-height:1.5}
   .pinSub{font-size:9px;opacity:.9;margin-top:2px;color:#3a2a1a;background:rgba(240,225,190,.75);padding:1px 5px;border-radius:5px}
   @keyframes pinpulse{0%,100%{box-shadow:0 0 0 0 rgba(138,44,31,.55)}50%{box-shadow:0 0 0 9px rgba(138,44,31,0)}}
   /* ---- Battle ---- */
@@ -203,14 +209,37 @@ const NODES = [
  {name:"Mordor-Grenze",       icon:"🔥", foe:"Saruman",                 hp:425, card:"saruman"},
  {name:"Schwarztor-Vorland",  icon:"👹", foe:"Balrog",                  hp:460, card:"balrog"},
 ];
-const BOSS_NODE = {name:"Erebor – Der Einsame Berg", icon:"🐉", foe:"Smaug", hp:900, isBoss:true, card:"smaug"};
+const BOSS_NODE = {name:"Erebor – Der Einsame Berg", icon:"🐉", foe:"Smaug", hp:900, isBoss:true, card:"smaug", img:"cards/gluragsmaug.jpg"};
+
+/* ---------- Zweite Karte: „Die Verlorenen Lande" (eigene, neue Gegner; keine Gegnerkarten) ---------- */
+const NODES2 = [
+ {name:"Graue Anfurt",        icon:"🦀", foe:"Klippenkrabbe Scherenfurcht",  hp:120, card:null},
+ {name:"Möwenfels",           icon:"🦅", foe:"Sturmschwinge",                hp:150, card:null},
+ {name:"Salzküste",           icon:"🐺", foe:"Salzwarg",                     hp:180, card:null},
+ {name:"Kiefernhügel",        icon:"🐗", foe:"Keilerfürst Borstzorn",        hp:210, card:null},
+ {name:"Donnerfall",          icon:"🌊", foe:"Wasserwächter",                hp:240, card:null},
+ {name:"Flussbiegung",        icon:"🐍", foe:"Nebelnatter",                  hp:270, card:null},
+ {name:"Tiefenwald",          icon:"🦇", foe:"Nachtschwinge",                hp:300, card:null},
+ {name:"Steinerne Brücke",    icon:"🧌", foe:"Brückentroll Grobschlund",     hp:330, card:null},
+ {name:"Rotgrat-Pass",        icon:"🗿", foe:"Geröllgolem",                  hp:360, card:null},
+ {name:"Schluchtberg",        icon:"🦁", foe:"Felsgreif",                    hp:390, card:null},
+ {name:"Karawanenpfad",       icon:"🏴‍☠️", foe:"Räuberhauptmann Rabenzahn", hp:420, card:null},
+ {name:"Das rote X",          icon:"💀", foe:"Schatzhüter Knochenkrone",     hp:455, card:null},
+ {name:"Ostgrat",             icon:"🧊", foe:"Frostriese Eisbart",           hp:490, card:null},
+ {name:"Spiegelsee",          icon:"🐙", foe:"Seeschlange Tiefenschrei",     hp:525, card:null},
+ {name:"Quellhain",           icon:"🕯️", foe:"Irrlichtmeister Morlith",      hp:560, card:null},
+];
+const BOSS_NODE2 = {name:"Hochburg Dunkelhorst", icon:"👑", foe:"Morgrim, der Aschekönig", hp:1200, isBoss:true, card:null};
+/* Trophäen ohne Kartenbild (bis es Karten für diese Gegner gibt): eigene, stabile IDs */
+NODES2.forEach((n,i)=>{ n.trophy = "m2_"+i; });
+BOSS_NODE2.trophy = "m2_boss";
 
 /* =========================================================
    Speicher: eigener Fortschritt + Lesezugriff auf Haupt-App
    ========================================================= */
 const OWN_KEY = "mittelerde-reise-v1";
 const MAIN_KEY = "englisch-abenteuer-v4";
-let S = {scope:"all", starter:null, unlockedInApp:[], node:0, nodeHP:null,
+let S = {scope:"all", map:1, m2:{node:0,nodeHP:null,defeated:[]}, starter:null, unlockedInApp:[], node:0, nodeHP:null,
          xp:0, maxStreak:0, stats:{}, defeated:[], trophies:[], weak:{}};
 let storageOK = true;
 
@@ -229,6 +258,13 @@ function normalizeReise(){
   S.weak  = (S.weak  && typeof S.weak==="object"  && !Array.isArray(S.weak)) ? S.weak : {};
   S.xp = Number(S.xp)||0; S.maxStreak = Number(S.maxStreak)||0;
   S.node = Math.min(Math.max(0, Number(S.node)||0), NODES.length);
+  /* Zweite Karte: eigener Fortschritt in S.m2 */
+  const m = (S.m2 && typeof S.m2==="object" && !Array.isArray(S.m2)) ? S.m2 : {};
+  m.node = Math.min(Math.max(0, Number(m.node)||0), NODES2.length);
+  m.nodeHP = (m.nodeHP==null || isNaN(Number(m.nodeHP))) ? null : Number(m.nodeHP);
+  m.defeated = Array.isArray(m.defeated) ? m.defeated : [];
+  S.m2 = m;
+  S.map = (S.map===2 && map2Unlocked()) ? 2 : 1;
   if(!["all","grade5","grade6","pages"].includes(S.scope)) S.scope="all";
   normalizePages();
 }
@@ -576,7 +612,7 @@ function showStart(){
      <h1 class="cin" style="color:var(--gold2);font-size:26px;margin-bottom:6px">Die Mittelerde-Reise</h1>
      <p style="opacity:.85;line-height:1.6">Ziehe von Wegpunkt zu Wegpunkt durch Mittelerde. An jedem Ort wartet ein Gegner –
      du besiegst ihn nur mit deinem Vokabelwissen! Baue eine Serie richtiger Antworten auf: ab 5 greift ein schwacher
-     Gefährte an, ab 10 ein mittlerer, ab 15 ein starker. Nach 15 Wegpunkten wartet der Drache <b>Gluragsmaug</b> in Erebor.</p>
+     Gefährte an, ab 10 ein mittlerer, ab 15 ein starker. Nach 15 Wegpunkten wartet der Drache <b>Gluragsmaug</b> in Erebor – danach öffnet sich eine zweite Karte mit neuen Monstern. Je stärker der Gegner, desto mehr Vokabeln müssen im gewählten Bereich liegen.</p>
      ${hasProgress?`<div class="btnRow" style="justify-content:center"><button class="btn" onclick="showMap()">Weiterziehen →</button></div>`
       :`<div class="btnRow" style="justify-content:center"><button class="btn" onclick="showStarterPick()">Reise beginnen →</button></div>`}
    </div>`;
@@ -614,11 +650,55 @@ const NODE_XY = [
  {x:54, y:53}, {x:63, y:56}, {x:52, y:65}, {x:44, y:75}, {x:32, y:82},
 ];
 const BOSS_XY = {x:17, y:89};
-function nodeXY(i){ return NODE_XY[i]; }
+/* Karte 2 (Bild 1536×1024): Positionen in Pixeln → Prozent */
+const px2 = (x,y)=>({x:+(x/1536*100).toFixed(1), y:+(y/1024*100).toFixed(1)});
+const NODE_XY2 = [px2(175,860),px2(490,880),px2(250,690),px2(150,560),px2(225,395),
+                  px2(440,490),px2(640,540),px2(705,650),px2(885,625),px2(895,830),
+                  px2(1130,800),px2(1265,690),px2(1345,510),px2(1010,455),px2(1030,250)];
+const BOSS_XY2 = px2(1235,195);
+
+/* ---------- Wortschatz-Schwelle ----------
+   Je stärker der Gegner, desto mehr Vokabeln müssen im gewählten Bereich liegen, damit man ihn
+   herausfordern kann. So lassen sich die starken Gegner und Endgegner nicht mit ein paar
+   wenigen Wörtern „durchrauschen". Werte hier leicht änderbar. */
+const NEED1 = [0,0,0,0,15,20,25,30,35,40,50,60,70,80,90], BOSS_NEED1 = 100;
+const NEED2 = [40,40,50,50,60,60,70,70,80,80,90,90,100,100,100], BOSS_NEED2 = 120;
+
+const MAPS = [
+ {id:1, title:"Der Weg durch Mittelerde", short:"Karte 1 – Mittelerde", img:MAP_IMG, aspect:MAP_ASPECT, nodes:NODES, boss:BOSS_NODE,
+  xy:NODE_XY, bossXY:BOSS_XY, need:NEED1, bossNeed:BOSS_NEED1, curve:false, alt:"Karte von Mittelerde",
+  winTitle:"🏆 Gluragsmaug ist besiegt!", winText:"Du hast die Mittelerde-Reise gemeistert! Alle 15 Wegpunkte und der Drache selbst liegen hinter dir. 🎉"},
+ {id:2, title:"Die Verlorenen Lande", short:"Karte 2 – Die Verlorenen Lande", img:"assets/map-bg-2.jpg", aspect:"1536/1024", nodes:NODES2, boss:BOSS_NODE2,
+  xy:NODE_XY2, bossXY:BOSS_XY2, need:NEED2, bossNeed:BOSS_NEED2, curve:true, alt:"Karte der Verlorenen Lande",
+  winTitle:"🏆 Morgrim ist besiegt!", winText:"Du hast auch die Verlorenen Lande bezwungen – alle 15 Wegpunkte und der Aschekönig liegen hinter dir. 🎉"},
+];
+function CM(){ return S.map===2 ? MAPS[1] : MAPS[0]; }
+function PR(){ return S.map===2 ? S.m2 : S; }          /* Fortschritt der aktuellen Karte */
+function map2Unlocked(){ return S.defeated.includes(999) || (S.m2 && S.m2.defeated.length>0); }
+function nodeXY(i){ return CM().xy[i]; }
+function poolSize(){ return poolForScope().length; }
+function foeNeed(i){ return i<0 ? CM().bossNeed : CM().need[i]; }
+function gateMsg(foe, need){
+  return `🔒 <b>${esc(foe)}</b> ist zu stark für so wenig Wortschatz: Für diesen Gegner brauchst du mindestens <b>${need} Vokabeln</b> im gewählten Bereich (aktuell: ${poolSize()}). Wähle in den ⚙️ Einstellungen einen größeren Bereich.`;
+}
+let mapNote = "";
+function switchMap(n){
+  if(n===2 && !map2Unlocked()){ mapNote = "🔒 Die zweite Karte wird frei, sobald du auf der ersten Karte den Endgegner besiegt hast."; showMap(); return; }
+  S.map = n===2 ? 2 : 1; saveState(); showMap();
+}
 
 function buildMapOverlay(){
-  const pts = NODE_XY.concat([BOSS_XY]);
-  const path = "M " + pts.map(p=>`${p.x},${p.y}`).join(" L ");
+  const cm = CM();
+  const pts = cm.xy.concat([cm.bossXY]);
+  let path;
+  if(cm.curve){   /* weiche Kurve (Catmull-Rom → Bézier) */
+    path = `M ${pts[0].x},${pts[0].y}`;
+    for(let i=0;i<pts.length-1;i++){
+      const p0=pts[Math.max(0,i-1)], p1=pts[i], p2=pts[i+1], p3=pts[Math.min(pts.length-1,i+2)];
+      const c1={x:p1.x+(p2.x-p0.x)/6, y:p1.y+(p2.y-p0.y)/6}, c2={x:p2.x-(p3.x-p1.x)/6, y:p2.y-(p3.y-p1.y)/6};
+      path += ` C ${c1.x.toFixed(2)},${c1.y.toFixed(2)} ${c2.x.toFixed(2)},${c2.y.toFixed(2)} ${p2.x},${p2.y}`;
+    }
+  } else path = "M " + pts.map(p=>`${p.x},${p.y}`).join(" L ");
   return `<svg class="overlay" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
     <path d="${path}" fill="none" stroke="#7a1810" stroke-width=".55" stroke-dasharray=".3 1.6" stroke-linecap="round" opacity=".8" vector-effect="non-scaling-stroke"/>
   </svg>`;
@@ -626,43 +706,58 @@ function buildMapOverlay(){
 
 /* ---------- Wegpunkt-Karte ---------- */
 function showMap(){
+  const cm = CM(), pr = PR(), nodes = cm.nodes, boss = cm.boss, n0 = poolSize();
   const pins=[];
-  for(let i=0;i<NODES.length;i++){
-    const n = NODES[i];
+  for(let i=0;i<nodes.length;i++){
+    const n = nodes[i];
     const {x,y} = nodeXY(i);
-    const done = S.defeated.includes(i);
-    const isCurrent = i===S.node && !done;
-    const locked = i>S.node;
-    const cls = done?"done":isCurrent?"current":locked?"locked":"";
+    const done = pr.defeated.includes(i);
+    const isCurrent = i===pr.node && !done;
+    const locked = i>pr.node;
+    const need = foeNeed(i), gated = !locked && n0<need;
+    const cls = (done?"done":isCurrent?"current":locked?"locked":"") + (gated?" gated":"");
     pins.push(`<div class="mapPin ${cls}" style="left:${x}%;top:${y}%"
         ${locked?"":`onclick="enterNode(${i})"`}>
       <div class="pinBadge">${n.icon}<span class="pinNum">${i+1}</span>
-        ${done?'<span class="pinCheck">✅</span>':locked?'<span class="pinLock">🔒</span>':''}</div>
+        ${gated?'<span class="pinLock">🔒</span>':done?'<span class="pinCheck">✅</span>':locked?'<span class="pinLock">🔒</span>':''}</div>
       ${!locked?`<div class="pinLabel">${n.name}</div>`:``}
-      ${(!locked)?`<div class="pinSub">${done?"Besiegt":"Gegner"}: ${n.foe}</div>`:``}
+      ${(!locked)?`<div class="pinSub">${gated?`braucht ${need} Vokabeln`:`${done?"Besiegt":"Gegner"}: ${n.foe}`}</div>`:``}
     </div>`);
   }
-  const bossReady = S.defeated.length>=NODES.length;
-  const bossDone = S.defeated.includes(999);
-  pins.push(`<div class="mapPin boss ${bossDone?"done":bossReady?"current":"locked"}"
-      style="left:${BOSS_XY.x}%;top:${BOSS_XY.y}%"
-      ${bossReady&&!bossDone?`onclick="enterBoss()"`:""}>
-    <div class="pinBadge">${BOSS_NODE.icon}<span class="pinNum">👑</span>
-      ${bossDone?'<span class="pinCheck">🏆</span>':!bossReady?'<span class="pinLock">🔒</span>':''}</div>
-    ${bossReady?`<div class="pinLabel">${BOSS_NODE.name}</div>`:``}
-    ${bossReady?`<div class="pinSub">${bossDone?"Besiegt":"Endgegner"}: ${BOSS_NODE.foe}</div>`:``}
+  const bossReady = nodes.every((_,i)=>pr.defeated.includes(i));
+  const bossDone = pr.defeated.includes(999);
+  const bossGated = bossReady && n0<cm.bossNeed;
+  pins.push(`<div class="mapPin boss ${bossDone?"done":bossReady?"current":"locked"}${bossGated?" gated":""}"
+      style="left:${cm.bossXY.x}%;top:${cm.bossXY.y}%"
+      ${bossReady?`onclick="enterBoss()"`:""}>
+    <div class="pinBadge">${boss.icon}<span class="pinNum">👑</span>
+      ${bossGated?'<span class="pinLock">🔒</span>':bossDone?'<span class="pinCheck">🏆</span>':!bossReady?'<span class="pinLock">🔒</span>':''}</div>
+    ${bossReady?`<div class="pinLabel">${boss.name}</div>`:``}
+    ${bossReady?`<div class="pinSub">${bossGated?`braucht ${cm.bossNeed} Vokabeln`:`${bossDone?"Besiegt":"Endgegner"}: ${boss.foe}`}</div>`:``}
   </div>`);
+
+  const next = nodes.findIndex((_,i)=>n0<foeNeed(i) && i>=0);
+  const limitInfo = `Dein Bereich hat <b>${n0} Vokabeln</b>. Stärkere Gegner brauchen mehr Wortschatz – der Endgegner dieser Karte ab <b>${cm.bossNeed}</b> Vokabeln.`
+     + (next>=0 ? ` Ab Wegpunkt <b>${next+1}</b> (${esc(nodes[next].foe)}) fehlen dir Vokabeln.` : "");
+  const note = mapNote ? `<div class="mapNote">${mapNote}</div>` : ""; mapNote = "";
+  const switcher = `<div class="segRow" style="margin:6px 0 4px">
+      <div class="seg ${S.map!==2?'active':''}" onclick="switchMap(1)">🗺️ ${MAPS[0].short}</div>
+      <div class="seg ${S.map===2?'active':''}" onclick="switchMap(2)">${map2Unlocked()?"🗺️":"🔒"} ${MAPS[1].short}</div>
+    </div>`;
 
   app.innerHTML = headerHTML() + `
    <div class="btnRow"><button class="btn ghost" onclick="showRoster()">🧝 Mein Team</button>
      <button class="btn ghost" onclick="showSettings()">⚙️ Einstellungen</button>
      <button class="btn ghost" onclick="showEval()">📊 Auswertung</button>
+     <button class="btn ghost" onclick="showTrophies()">🏆 Trophäen</button>
      <a class="btn ghost" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center">📚 Zum Englisch-Abenteuer</a>
      <a class="btn ghost" href="faecher.html" style="text-decoration:none;display:inline-flex;align-items:center">🌍 Fächer</a></div>
-   <div class="sectionTitle">Der Weg durch Mittelerde</div>
-   <div class="hint-sm">Aktueller Wortschatz-Bereich: <b>${scopeLabel()}</b>. Tippe auf einen freien Wegpunkt, um die Schlacht zu beginnen.</div>
-   <div class="mapWrap" style="aspect-ratio:${MAP_ASPECT}">
-     <img class="bg" src="${MAP_IMG}" alt="Karte von Mittelerde">
+   ${switcher}
+   <div class="sectionTitle">${cm.title}</div>
+   <div class="hint-sm">Aktueller Wortschatz-Bereich: <b>${scopeLabel()}</b>. Tippe auf einen freien Wegpunkt, um die Schlacht zu beginnen.<br>${limitInfo}</div>
+   ${note}
+   <div class="mapWrap" style="aspect-ratio:${cm.aspect}">
+     <img class="bg" src="${cm.img}" alt="${cm.alt}">
      ${buildMapOverlay()}
      ${pins.join("")}
    </div>`;
@@ -683,18 +778,22 @@ function scopeLabel(){
    ========================================================= */
 let battle = null; // {nodeIndex, isBoss, foeHP, foeMaxHP, streak, answered, current}
 function enterNode(i){
-  if(i>S.node) return;
-  const node = NODES[i];
-  battle = {nodeIndex:i, isBoss:false, foeHP: S.node===i && S.nodeHP!=null ? S.nodeHP : node.hp,
+  const pr = PR(), cm = CM();
+  if(i>pr.node) return;
+  const node = cm.nodes[i];
+  if(poolSize() < foeNeed(i)){ mapNote = gateMsg(node.foe, foeNeed(i)); showMap(); return; }
+  battle = {nodeIndex:i, isBoss:false, foeHP: pr.node===i && pr.nodeHP!=null ? pr.nodeHP : node.hp,
             foeMaxHP: node.hp, streak:0, answered:false};
   nextBattleQuestion();
 }
 function enterBoss(){
-  battle = {nodeIndex:-1, isBoss:true, foeHP: S.nodeHP!=null && S.node>=NODES.length ? S.nodeHP : BOSS_NODE.hp,
-            foeMaxHP: BOSS_NODE.hp, streak:0, answered:false};
+  const pr = PR(), cm = CM();
+  if(poolSize() < cm.bossNeed){ mapNote = gateMsg(cm.boss.foe, cm.bossNeed); showMap(); return; }
+  battle = {nodeIndex:-1, isBoss:true, foeHP: pr.nodeHP!=null && pr.node>=cm.nodes.length ? pr.nodeHP : cm.boss.hp,
+            foeMaxHP: cm.boss.hp, streak:0, answered:false};
   nextBattleQuestion();
 }
-function foeMeta(){ return battle.isBoss ? BOSS_NODE : NODES[battle.nodeIndex]; }
+function foeMeta(){ return battle.isBoss ? CM().boss : CM().nodes[battle.nodeIndex]; }
 
 function nextBattleQuestion(){
   battle.answered = false;
@@ -746,7 +845,7 @@ function renderBattle(){
   app.innerHTML = headerHTML() + `
    <div class="battleTop">
      <div class="foe">
-       ${foe.isBoss?`<img src="cards/gluragsmaug.jpg" alt="Gluragsmaug">`:`<div class="art">${foe.icon}</div>`}
+       ${foe.img?`<img src="${foe.img}" alt="${foe.foe}">`:`<div class="art">${foe.icon}</div>`}
        <div class="fname">${foe.foe}</div>
        <div class="hpWrap"><div class="hpBar" style="width:${foePct}%"></div></div>
        <div class="hpText">${Math.max(0,Math.round(battle.foeHP))} / ${battle.foeMaxHP} KP</div>
@@ -828,7 +927,7 @@ function doAttack(tier){
             : tier===2 ? (35+Math.floor(Math.random()*21))
             : (70+Math.floor(Math.random()*31));
   battle.foeHP = Math.max(0, battle.foeHP - dmg);
-  if(!battle.isBoss){ S.node = Math.max(S.node, battle.nodeIndex); S.nodeHP = battle.foeHP; }
+  if(!battle.isBoss){ const pr=PR(); pr.node = Math.max(pr.node, battle.nodeIndex); pr.nodeHP = battle.foeHP; }
   const label = tier===1?"Schwacher Angriff":tier===2?"Mittlerer Angriff":"Starker Angriff";
   return `⚔️ ${ally?ally.name:"Dein Team"} greift an! ${label}: −${dmg} KP`;
 }
@@ -878,14 +977,16 @@ function fleeBattle(){ battle=null; showMap(); }
 function winBattle(){
   let newAlly = null;
   const foeCard = foeMeta().card;
-  const gotTrophy = foeCard && !S.trophies.includes(foeCard);
-  if(gotTrophy) S.trophies.push(foeCard);
+  const trophyId = foeCard || foeMeta().trophy;
+  const gotTrophy = trophyId && !S.trophies.includes(trophyId);
+  if(gotTrophy) S.trophies.push(trophyId);
+  const pr = PR(), cm = CM();
   if(battle.isBoss){
-    S.defeated.push(999);
+    if(!pr.defeated.includes(999)) pr.defeated.push(999);
   } else {
-    if(!S.defeated.includes(battle.nodeIndex)) S.defeated.push(battle.nodeIndex);
-    S.node = Math.max(S.node, battle.nodeIndex+1);
-    S.nodeHP = null;
+    if(!pr.defeated.includes(battle.nodeIndex)) pr.defeated.push(battle.nodeIndex);
+    pr.node = Math.max(pr.node, battle.nodeIndex+1);
+    pr.nodeHP = null;
     S.xp += 20;
     const cand = nextUnlockable();
     if(cand){ S.unlockedInApp.push(cand.id); newAlly = cand; }
@@ -894,22 +995,51 @@ function winBattle(){
   const foe = foeMeta();
   app.innerHTML = headerHTML() + `
    <div class="result">
-     <h2>${battle.isBoss?"🏆 Gluragsmaug ist besiegt!":"⚔️ Sieg!"}</h2>
+     <h2>${battle.isBoss?cm.winTitle:"⚔️ Sieg!"}</h2>
      <p style="opacity:.85">${foe.foe} wurde bezwungen.</p>
-     ${battle.isBoss?`<p style="margin-top:14px;font-size:16px">Du hast die Mittelerde-Reise gemeistert! Alle 15 Wegpunkte und der Drache selbst liegen hinter dir. 🎉</p>`:""}
-     ${gotTrophy?`<div class="rewardCard"><img src="cards/${foeCard}.jpg" alt="${foe.foe}"></div>
+     ${battle.isBoss?`<p style="margin-top:14px;font-size:16px">${cm.winText}</p>`:""}
+     ${battle.isBoss && cm.id===1?`<p style="margin-top:6px;font-size:15px;color:var(--gold2)">🗺️ Eine neue Karte ist freigeschaltet: <b>Die Verlorenen Lande</b> mit neuen Monstern!</p>`:""}
+     ${gotTrophy && foeCard?`<div class="rewardCard"><img src="cards/${foeCard}.jpg" alt="${foe.foe}"></div>
         <p style="font-family:'Cinzel',serif;color:var(--gold2)">👹 Gegnerkarte erbeutet: ${foe.foe}</p>
         <p class="hint-sm">Im Englisch-Abenteuer landet sie in deinem Album.</p>`:""}
+     ${gotTrophy && !foeCard?`<div class="trophyPlaque big">${foe.icon}</div>
+        <p style="font-family:'Cinzel',serif;color:var(--gold2)">🏆 Trophäe erbeutet: ${foe.foe}</p>
+        <p class="hint-sm">Du findest sie unter „🏆 Trophäen". Ein Kartenbild für diesen Gegner folgt später.</p>`:""}
      ${newAlly?`<div class="rewardCard"><img src="cards/${newAlly.id}.jpg" alt="${newAlly.name}"></div>
         <p style="font-family:'Cinzel',serif;color:var(--gold2)">Neuer Gefährte: ${newAlly.name}</p>
         <p class="hint-sm">Steht dir ab jetzt als Angreifer zur Verfügung.</p>`
       :battle.isBoss?"":`<p class="hint-sm">Alle Gefährten sind bereits in deinem Team.</p>`}
      <div class="btnRow" style="justify-content:center">
-       <button class="btn green" onclick="showMap()">Weiterziehen →</button>
+       ${battle.isBoss && cm.id===1?`<button class="btn green" onclick="switchMap(2)">🗺️ Zur zweiten Karte →</button>`:""}
+       <button class="btn ${battle.isBoss && cm.id===1?"ghost":"green"}" onclick="showMap()">Weiterziehen →</button>
        <button class="btn ghost" onclick="showRoster()">🧝 Mein Team</button>
      </div>
    </div>`;
   battle=null;
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   Trophäen-Galerie
+   ========================================================= */
+function showTrophies(){
+  const have = new Set(S.trophies);
+  const cell = (foe, mapNo)=>{
+    const id = foe.card || foe.trophy, owned = have.has(id);
+    const art = owned ? (foe.card ? `<img src="cards/${foe.card}.jpg" alt="${esc(foe.foe)}">` : `<div class="trophyPlaque">${foe.icon}</div>`)
+                      : `<div class="mystery"><span>?</span></div>`;
+    return `<div class="rslot ${owned?"":"locked"}">${art}
+      <div class="rn">${owned?esc(foe.foe):"???"}</div>
+      <div class="rtier">${owned?(foe.card?"Gegnerkarte":"Trophäe"):"🔒"}</div></div>`;
+  };
+  const all = m => m.nodes.concat([m.boss]);
+  const count = m => all(m).filter(f=>have.has(f.card||f.trophy)).length;
+  app.innerHTML = headerHTML() + `
+   <div class="btnRow"><button class="btn ghost" onclick="showMap()">← Zur Karte</button></div>
+   <div class="sectionTitle">🏆 Trophäen</div>
+   <div class="hint-sm">Für jeden besiegten Gegner gibt es eine Trophäe. Auf Karte 1 sind das Gegnerkarten (sie landen auch im Album des Englisch-Abenteuers), auf Karte 2 zunächst Trophäen-Tafeln – Kartenbilder folgen später.</div>
+   ${MAPS.map(m=>`<div class="cin" style="color:var(--gold2);margin:14px 0 6px">${m.short} · ${count(m)} / ${all(m).length}</div>
+     <div class="rosterGrid">${all(m).map(f=>cell(f,m.id)).join("")}</div>`).join("")}`;
   window.scrollTo(0,0);
 }
 
@@ -1010,7 +1140,7 @@ function resetJourney(){
     setTimeout(()=>{rstArmed=false; const x=document.getElementById("rstBtn"); if(x) x.textContent="🗑 Reise zurücksetzen";},3000);
     return;
   }
-  S = {scope:S.scope, starter:null, unlockedInApp:[], node:0, nodeHP:null, xp:0, maxStreak:0, stats:{}, defeated:[]};
+  S = {scope:S.scope, map:1, m2:{node:0,nodeHP:null,defeated:[]}, starter:null, unlockedInApp:[], node:0, nodeHP:null, xp:0, maxStreak:0, stats:{}, defeated:[]};
   saveState(); showStart();
 }
 
