@@ -39,7 +39,7 @@
   .storyBox{text-align:center;padding:20px 10px}
   .storyBox img{width:min(220px,60vw);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
   /* ---- Landkarte (Pergament) ---- */
-  .mapWrap{position:relative;width:100%;border-radius:10px;overflow:hidden;
+  .mapWrap{position:relative;background:#1b1426;width:100%;border-radius:10px;overflow:hidden;
     border:10px solid #2b1d12;outline:2px solid #7a5a35;outline-offset:-13px;
     box-shadow:0 10px 34px rgba(0,0,0,.55);margin:10px 0}
   .mapWrap img.bg{display:block;width:100%;height:auto}
@@ -66,6 +66,7 @@
   .trophyPlaque.big{width:120px;height:120px;aspect-ratio:auto;font-size:60px;margin:10px auto}
   .mapPin.gated .pinBadge{filter:grayscale(.85) brightness(.85)}
   .mapPin.gated .pinSub{background:rgba(120,40,30,.85);color:#fff}
+  .mapMissing{position:absolute;left:0;right:0;top:0;z-index:5;padding:10px 14px;text-align:center;font-size:13.5px;line-height:1.5;background:rgba(27,20,38,.96);color:#f3e9cf;border-bottom:1px solid #c0583f}
   .mapNote{margin:8px 0;padding:12px 14px;border:1px solid #c0583f;border-radius:12px;background:rgba(120,40,30,.25);font-size:14px;line-height:1.5}
   .pinSub{font-size:9px;opacity:.9;margin-top:2px;color:#3a2a1a;background:rgba(240,225,190,.75);padding:1px 5px;border-radius:5px}
   @keyframes pinpulse{0%,100%{box-shadow:0 0 0 0 rgba(138,44,31,.55)}50%{box-shadow:0 0 0 9px rgba(138,44,31,0)}}
@@ -687,6 +688,19 @@ function switchMap(n){
   S.map = n===2 ? 2 : 1; saveState(); showMap();
 }
 
+/* Falls die Kartengrafik nicht am erwarteten Ort liegt: erst im Hauptordner suchen, sonst Hinweis anzeigen */
+function mapImgFallback(img){
+  const cm = CM(), name = cm.img.split("/").pop();
+  const tries = [cm.img, name, "assets/"+name, "./"+name];
+  let k = Number(img.dataset.try||0)+1;
+  if(k < tries.length){ img.dataset.try = k; img.src = tries[k]; return; }
+  img.onerror = null;
+  img.style.display = "none";
+  const w = img.parentElement;
+  if(w && !w.querySelector(".mapMissing")){
+    w.insertAdjacentHTML("afterbegin", `<div class="mapMissing">🗺️ Die Kartengrafik <b>${esc(cm.img)}</b> wurde nicht gefunden.<br>Bitte die Datei <b>${esc(name)}</b> im GitHub-Ordner <b>assets</b> ablegen.</div>`);
+  }
+}
 function buildMapOverlay(){
   const cm = CM();
   const pts = cm.xy.concat([cm.bossXY]);
@@ -757,7 +771,7 @@ function showMap(){
    <div class="hint-sm">Aktueller Wortschatz-Bereich: <b>${scopeLabel()}</b>. Tippe auf einen freien Wegpunkt, um die Schlacht zu beginnen.<br>${limitInfo}</div>
    ${note}
    <div class="mapWrap" style="aspect-ratio:${cm.aspect}">
-     <img class="bg" src="${cm.img}" alt="${cm.alt}">
+     <img class="bg" src="${cm.img}" alt="${cm.alt}" data-try="0" onerror="mapImgFallback(this)">
      ${buildMapOverlay()}
      ${pins.join("")}
    </div>`;
