@@ -139,7 +139,7 @@
 <main id="app"></main>
 <script>
 /* =========================================================
-   PARIS-ABENTEUER – Französisch (À plus! Neubearbeitung, S. 176–183)
+   PARIS-ABENTEUER – Französisch (À plus! Neubearbeitung, S. 176–185)
    Eigenständige App, eigener Spielstand, nicht mit Englisch gemischt.
    Lernprinzipien: aktives Abrufen, gemischte Formate, Schwerpunkt ganze Sätze
    (beide Richtungen), Gerüst "erst Bausteine, dann tippen", sofortiges
@@ -148,23 +148,26 @@
 const KEY = "paris-abenteuer-v1";
 
 const TAGS = {cp:"C'est parti!", u1:"Unité 1 – Thema Stadt", v1:"Unité 1 – Volet 1", v2:"Unité 1 – Volet 2",
-              v3:"Unité 1 – Volet 3", m1:"Module 1"};
+              v3:"Unité 1 – Volet 3", m1:"Module 1",
+              u2:"Unité 2 – Thema Familie", w1:"Unité 2 – Volet 1", w2:"Unité 2 – Volet 2"};
 const SCOPES = {
-  all:{label:"Alles", tags:["cp","u1","v1","v2","v3","m1"]},
+  all:{label:"Alles", tags:["cp","u1","v1","v2","v3","m1","u2","w1","w2"]},
   cp:{label:"C'est parti!", tags:["cp"]},
   u1:{label:"Unité 1", tags:["u1","v1","v2","v3"]},
+  m1:{label:"Module 1", tags:["m1"]},
+  u2:{label:"Unité 2", tags:["u2","w1","w2"]},
   pages:{label:"📖 Seiten-Auswahl", tags:[], custom:true}
 };
 
 /* ---------- SPERRE: schon katalogisiert, aber noch nicht abgefragt ----------
-   Freigegeben ist alles bis einschließlich "entre" (S. 183, erste Zeile). Noch nicht dran: der Paris-Kasten auf S. 183
-   (Notre-Dame … Coulée verte) und Module 1.
+   Stand November 2026: ALLES ist freigegeben (auch der Paris-Kasten auf S. 183 und Module 1) – die Listen sind leer.
+   Für künftige Sperren: Tag in LOCKED eintragen bzw. IDs in LOCKED_IDS und LOCKED_LABEL anpassen.
    Sie stehen komplett in der Datenbank, kommen aber nirgends als Aufgabe oder Ablenker vor.
    FREIGABE später: den Tag aus LOCKED entfernen (z. B. "m1") bzw. die IDs aus LOCKED_IDS streichen und LOCKED_LABEL anpassen – sonst ist nichts zu ändern.
    Einträge mit dem Zusatz "info" (7. Feld) sind reine Grammatik-Hinweise und werden nie einzeln als Vokabel abgefragt. */
-const LOCKED = ["m1"];
-const LOCKED_IDS = ["v322","v323","v324","v325","v326","v327","v328","v329"];   /* S. 183: Notre-Dame … Coulée verte (Info-Kasten) */
-const LOCKED_LABEL = "Module 1 und der Paris-Kasten auf S. 183 (ab „Notre-Dame de Paris“)";
+const LOCKED = [];
+const LOCKED_IDS = [];
+const LOCKED_LABEL = "";
 const isLocked = x => LOCKED.includes(x.tag) || LOCKED_IDS.includes(x.id);
 
 /* ---------- Vokabeldatenbank ----------
@@ -365,6 +368,63 @@ const VOCAB_RAW = [
  ["v413","le cahier","das Heft","m1","Ce sont les cahiers de Jeanne.","Das sind Jeannes Hefte."],
  ["v414","le stylo","der Stift; der Kugelschreiber","m1","C'est un stylo ?","Ist das ein Stift?"],
  ["v415","la feuille","das Blatt","m1","Dans un cahier, il y a des feuilles.","In einem Heft gibt es Blätter."],
+ ["t201","mon; ma; mes","mein; meine","u2","C'est mon quartier.","Das ist mein Viertel."],
+ ["t202","la famille","die Familie","u2","Voilà la famille de Noé.","Da ist Noés Familie."],
+ ["t203","les parents","die Eltern","u2",null,null],
+ ["t204","le père","der Vater","u2","Voilà mon père.","Da ist mein Vater."],
+ ["t205","la mère","die Mutter","u2","Ma mère est sympa.","Meine Mutter ist nett."],
+ ["t206","les grands-parents","die Großeltern","u2","J'aime mes grands-parents.","Ich mag meine Großeltern."],
+ ["t207","le grand-père","der Großvater","u2","Mon grand-père est le père de ma mère.","Mein Großvater ist der Vater meiner Mutter."],
+ ["t208","la grand-mère","die Großmutter","u2","Ma grand-mère est la mère de ma mère.","Meine Großmutter ist die Mutter meiner Mutter."],
+ ["t209","les frères et sœurs","die Geschwister","u2","Ce sont mes frères et sœurs.","Das sind meine Geschwister."],
+ ["t210","le frère","der Bruder","u2","Voilà mon frère.","Da ist mein Bruder."],
+ ["t211","la sœur","die Schwester","u2","Voilà ma sœur.","Da ist meine Schwester."],
+ ["t212","le demi-frère","der Halbbruder","u2","C'est mon demi-frère.","Das ist mein Halbbruder."],
+ ["t213","la demi-sœur","die Halbschwester","u2","Ce sont mes demi-sœurs.","Das sind meine Halbschwestern."],
+ ["t214","un oncle","ein Onkel","u2","Voilà mon oncle.","Da ist mein Onkel."],
+ ["t215","la tante","die Tante","u2","J'aime ma tante.","Ich mag meine Tante."],
+ ["t216","le cousin; la cousine","der Cousin; die Cousine","u2","Ce sont mes cousins !","Das sind meine Cousins!"],
+ ["t217","un enfant; une enfant","ein Kind","u2","Nous sommes trois enfants.","Wir sind drei Kinder."],
+ ["t218","le fils","der Sohn","u2","Je suis le fils de mes parents.","Ich bin der Sohn meiner Eltern."],
+ ["t219","la fille","hier: die Tochter","u2","Ma sœur est la fille de mes parents.","Meine Schwester ist die Tochter meiner Eltern."],
+ ["t220","le copain; la copine","der Freund; die Freundin; der Kumpel","u2",null,null],
+ ["t221","un animal; les animaux","ein (Haus-)Tier; die Tiere","u2",null,null],
+ ["t222","le lapin","das Kaninchen","u2",null,null],
+ ["x101","avoir","haben","w1","J'ai un frère.","Ich habe einen Bruder."],
+ ["x102","j'ai","ich habe","w1",null,null],
+ ["x103","tu as","du hast","w1",null,null],
+ ["x104","il a","er hat","w1",null,null],
+ ["x105","elle a","sie hat","w1",null,null],
+ ["x106","on a","man hat; wir haben","w1",null,null],
+ ["x107","nous avons","wir haben","w1",null,null],
+ ["x108","vous avez","ihr habt; Sie haben","w1",null,null],
+ ["x109","ils ont","sie haben (Jungen/gemischt)","w1",null,null],
+ ["x110","elles ont","sie haben (nur Mädchen)","w1",null,null],
+ ["x111","avoir … ans","… Jahre alt sein","w1","J'ai 15 ans, et toi ?","Ich bin 15 Jahre alt, und du?"],
+ ["x112","je n'ai pas de frères et sœurs","ich habe keine Geschwister","w1",null,null],
+ ["x113","la moto","das Motorrad","w1","Ma sœur a une moto.","Meine Schwester hat ein Motorrad."],
+ ["x114","être fan de qn/qc","Fan von jdm/etw. sein","w1","Elles sont fans de basket.","Sie sind Basketballfans."],
+ ["x115","comme moi","wie ich","w1","Tu es comme moi !","Du bist wie ich!"],
+ ["x116","à la maison","zu Hause; daheim","w1","Il est à la maison.","Er ist zu Hause."],
+ ["x117","ils s'appellent; elles s'appellent","sie heißen","w1","Ils s'appellent Gabin et Jeanne.","Sie heißen Gabin und Jeanne."],
+ ["x118","c'est vrai","das stimmt; das ist wahr","w1","– C'est vrai ? – Oui !","– Stimmt das? – Ja!"],
+ ["x119","c'est drôle","das ist lustig","w1",null,null],
+ ["x120","chez","bei","w1","Je suis chez mon père.","Ich bin bei meinem Vater."],
+ ["x121","moi aussi","ich auch","w1","– J'ai 15 ans. – Moi aussi.","– Ich bin 15. – Ich auch."],
+ ["x122","je voudrais","ich möchte","w1","Je voudrais une tortue !","Ich möchte eine Schildkröte!"],
+ ["x123","le beau-père","der Stiefvater","w1","J'habite avec mon beau-père.","Ich wohne mit meinem Stiefvater."],
+ ["x124","la belle-mère","die Stiefmutter","w1","Tu as une belle-mère ?","Hast du eine Stiefmutter?"],
+ ["x125","être contre (qn/qc)","dagegen sein; gegen jdn/etw. sein","w1","Ma mère est contre.","Meine Mutter ist dagegen."],
+ ["x126","une allergie","eine Allergie","w1","Tu as une allergie ?","Hast du eine Allergie?"],
+ ["x127","c'est nul","das ist doof","w1","– C'est drôle ? – Non, c'est nul !","– Ist das lustig? – Nein, das ist doof!"],
+ ["x128","oui et non","ja und nein; teils, teils","w1","– Tu aimes les tortues ? – Oui et non.","– Magst du Schildkröten? – Ja und nein."],
+ ["x129","je n'ai pas d'animal","ich habe kein Haustier","w1",null,null],
+ ["x130","chou","süß","w1","Bandit est chou.","Bandit ist süß."],
+ ["x131","encore","noch; wieder","w1","Bandit est encore à Blois.","Bandit ist noch in Blois."],
+ ["x132","c'est dommage","das ist schade","w1",null,null],
+ ["x201","qui","wer (Fragewort)","w2","Qui est là ?","Wer ist da?"],
+ ["x202","ton; ta; tes","dein; deine","w2","Ce sont tes frères ?","Sind das deine Brüder?"],
+ ["x203","son; sa; ses","sein; seine; ihr; ihre","w2","Voilà Idriss avec sa mère.","Da ist Idriss mit seiner Mutter."],
 ];
 
 /* ---------- Satzdatenbank (Sätze aus dem Buch) ----------
@@ -489,6 +549,49 @@ const SENT_RAW = [
  ["s512","C'est un stylo ?","Ist das ein Stift?|Ist das ein Kugelschreiber?|Ist es ein Stift?","m1","le stylo = der Stift, der Kugelschreiber."],
  ["s513","Dans un cahier, il y a des feuilles.","In einem Heft gibt es Blätter.|In einem Heft sind Blätter.","m1","la feuille = das Blatt · des feuilles = Blätter."],
  ["s514","C'est terminé !","Das war's!|Es ist beendet!|Das ist beendet!","m1","c'est terminé = hier: Das war's! (wörtlich: Es ist beendet!)"],
+ ["s601","C'est mon quartier.","Das ist mein Viertel.","u2","mon/ma/mes = mein/meine: mon vor männlichen Wörtern (mon quartier), ma vor weiblichen (ma mère), mes im Plural (mes parents)."],
+ ["s602","Voilà la famille de Noé.","Da ist Noés Familie.|Hier ist Noés Familie.|Da ist die Familie von Noé.|Hier ist die Familie von Noé.","u2","la famille de Noé = Noés Familie (Besitz mit de)."],
+ ["s603","Voilà mon père.","Da ist mein Vater.|Hier ist mein Vater.","u2","le père = der Vater · mon père (männlich)."],
+ ["s604","Ma mère est sympa.","Meine Mutter ist nett.|Meine Mutter ist sympathisch.","u2","la mère = die Mutter · ma mère (weiblich)."],
+ ["s605","J'aime mes grands-parents.","Ich mag meine Großeltern.|Ich liebe meine Großeltern.","u2","les grands-parents = Großeltern (Plural) → mes grands-parents."],
+ ["s606","Mon grand-père est le père de ma mère.","Mein Großvater ist der Vater meiner Mutter.|Mein Großvater ist der Vater von meiner Mutter.","u2","le père de ma mère = der Vater meiner Mutter (de + Person)."],
+ ["s607","Ma grand-mère est la mère de ma mère.","Meine Großmutter ist die Mutter meiner Mutter.|Meine Großmutter ist die Mutter von meiner Mutter.","u2","la mère de ma mère = die Mutter meiner Mutter."],
+ ["s608","Ce sont mes frères et sœurs.","Das sind meine Geschwister.","u2","les frères et sœurs = Geschwister (wörtlich: Brüder und Schwestern) · ce sont = das sind."],
+ ["s609","Voilà mon frère.","Da ist mein Bruder.|Hier ist mein Bruder.","u2","le frère = der Bruder."],
+ ["s610","Voilà ma sœur.","Da ist meine Schwester.|Hier ist meine Schwester.","u2","la sœur = die Schwester · ma sœur (weiblich)."],
+ ["s611","C'est mon demi-frère.","Das ist mein Halbbruder.","u2","le demi-frère = der Halbbruder · demi- = halb."],
+ ["s612","Ce sont mes demi-sœurs.","Das sind meine Halbschwestern.","u2","la demi-sœur = die Halbschwester · mes demi-sœurs = Plural."],
+ ["s613","Voilà mon oncle.","Da ist mein Onkel.|Hier ist mein Onkel.","u2","un oncle = ein Onkel · mon oncle (vor Vokal steht mon)."],
+ ["s614","J'aime ma tante.","Ich mag meine Tante.|Ich liebe meine Tante.","u2","la tante = die Tante · ma tante."],
+ ["s615","Ce sont mes cousins !","Das sind meine Cousins!|Das sind meine Cousins und Cousinen!","u2","le cousin / la cousine · mes cousins kann auch Cousins und Cousinen meinen."],
+ ["s616","Nous sommes trois enfants.","Wir sind drei Kinder.","u2","un/une enfant: männlich und weiblich gleich · nous sommes = wir sind."],
+ ["s617","Je suis le fils de mes parents.","Ich bin der Sohn meiner Eltern.|Ich bin der Sohn von meinen Eltern.","u2","le fils = der Sohn · mes parents = meine Eltern."],
+ ["s618","Ma sœur est la fille de mes parents.","Meine Schwester ist die Tochter meiner Eltern.|Meine Schwester ist die Tochter von meinen Eltern.","u2","la fille = hier: die Tochter (sonst: das Mädchen)."],
+ ["s701","J'ai un frère.","Ich habe einen Bruder.","w1","avoir = haben: j'ai, tu as, il/elle/on a, nous avons, vous avez, ils/elles ont."],
+ ["s702","J'ai 15 ans, et toi ?","Ich bin 15 Jahre alt, und du?|Ich bin 15, und du?","w1","Das Alter sagt man mit avoir: j'ai 15 ans (wörtlich: ich habe 15 Jahre) – nicht mit être!"],
+ ["s703","Je n'ai pas de frères et sœurs.","Ich habe keine Geschwister.","w1","Verneinung: je n'ai pas de … – nach pas steht de/d' statt un/une/des."],
+ ["s704","Ma sœur a une moto.","Meine Schwester hat ein Motorrad.","w1","la moto = das Motorrad · elle a / ma sœur a = sie hat."],
+ ["s705","Elles sont fans de basket.","Sie sind Basketballfans.|Sie sind Fans von Basketball.","w1","être fan de qc = Fan von etw. sein · fans mit -s im Plural."],
+ ["s706","Tu es comme moi !","Du bist wie ich!","w1","comme moi = wie ich (nach comme steht moi)."],
+ ["s707","Il est à la maison.","Er ist zu Hause.|Er ist daheim.","w1","à la maison = zu Hause."],
+ ["s708","Ils s'appellent Gabin et Jeanne.","Sie heißen Gabin und Jeanne.","w1","ils s'appellent = sie heißen (Plural) · il s'appelle = er heißt."],
+ ["s709","C'est vrai ?","Stimmt das?|Ist das wahr?|Echt?","w1","c'est vrai = das stimmt / das ist wahr."],
+ ["s710","Je suis chez mon père.","Ich bin bei meinem Vater.","w1","chez = bei (bei einer Person) · chez mon père = bei meinem Vater."],
+ ["s711","Moi aussi.","Ich auch.","w1","moi aussi = ich auch (moi ist die betonte Form von „ich“)."],
+ ["s712","Je voudrais une tortue !","Ich möchte eine Schildkröte!|Ich hätte gern eine Schildkröte!","w1","je voudrais = ich möchte (höfliche Form von vouloir)."],
+ ["s713","J'habite avec mon beau-père.","Ich wohne mit meinem Stiefvater.|Ich wohne mit meinem Stiefvater zusammen.|Ich wohne bei meinem Stiefvater.","w1","habiter = wohnen · le beau-père = der Stiefvater."],
+ ["s714","Tu as une belle-mère ?","Hast du eine Stiefmutter?","w1","la belle-mère = die Stiefmutter · tu as = du hast."],
+ ["s715","Ma mère est contre.","Meine Mutter ist dagegen.","w1","être contre = dagegen sein (Gegenteil: être pour)."],
+ ["s716","Tu as une allergie ?","Hast du eine Allergie?","w1","une allergie = eine Allergie."],
+ ["s717","C'est drôle ?","Ist das lustig?|Ist es lustig?","w1","c'est drôle = das ist lustig."],
+ ["s718","Non, c'est nul !","Nein, das ist doof!|Nein, das ist blöd!|Nein, das ist schlecht!","w1","c'est nul = das ist doof (umgangssprachlich)."],
+ ["s719","Tu aimes les tortues ?","Magst du Schildkröten?|Magst du die Schildkröten?","w1","aimer = mögen · les tortues = Schildkröten (mit Artikel, wenn man etwas allgemein mag)."],
+ ["s720","Oui et non.","Ja und nein.","w1","oui et non = ja und nein (teils, teils)."],
+ ["s721","Bandit est chou.","Bandit ist süß.","w1","chou (süß) ist unveränderlich: Bandit est chou, elles sont chou."],
+ ["s722","Bandit est encore à Blois.","Bandit ist noch in Blois.|Bandit ist immer noch in Blois.|Bandit ist wieder in Blois.","w1","encore = noch, wieder · à Blois = in Blois (à + Stadt)."],
+ ["s801","Qui est là ?","Wer ist da?","w2","qui = wer (Fragewort) · là = da."],
+ ["s802","Ce sont tes frères ?","Sind das deine Brüder?|Sind das deine Geschwister?","w2","ton/ta/tes = dein/deine: ton (männlich), ta (weiblich), tes (Plural)."],
+ ["s803","Voilà Idriss avec sa mère.","Da ist Idriss mit seiner Mutter.|Hier ist Idriss mit seiner Mutter.|Da ist Idriss mit ihrer Mutter.","w2","son/sa/ses = sein/seine oder ihr/ihre – es richtet sich nach dem Wort dahinter: sa mère (weiblich) = seine/ihre Mutter."],
 ];
 
 /* ---------- Stationen in Paris (Karte 100 × 130) ---------- */
@@ -509,7 +612,7 @@ const NODES = [
 ];
 
 /* ---------- Fun Facts über Frankreich ---------- */
-const FACTS = [
+const FACTS1 = [
  "Der Eiffelturm wurde für die Weltausstellung 1889 gebaut. Eigentlich sollte er nach 20 Jahren wieder abgebaut werden – zum Glück blieb er stehen!",
  "Im Sommer ist der Eiffelturm ein paar Zentimeter höher als im Winter: Das Eisen dehnt sich bei Hitze aus.",
  "Der Eiffelturm wird ungefähr alle sieben Jahre neu gestrichen – dafür braucht man rund 60 Tonnen Farbe.",
@@ -549,17 +652,63 @@ const FACTS = [
  "Die Tour Montparnasse ist mit 210 Metern ein Hochhaus mitten in Paris. Von oben kann man bis zum Eiffelturm schauen.",
  "Frankreich hat eine eigene Gebärdensprache, die „langue des signes française“. Mit dem Fingeralphabet kann man seinen Namen buchstabieren.",
 ];
+/* Fakten für Karte 2 (Reise durch Frankreich) – kommen nur auf Karte 2 vor */
+const FACTS2 = [
+ "Das Schloss Versailles hat einen berühmten Spiegelsaal mit 357 Spiegeln. König Ludwig XIV., der „Sonnenkönig“, baute das Schloss zum Machtzentrum Frankreichs aus.",
+ "In Giverny malte der Maler Claude Monet seine berühmten Seerosen. Seinen Garten mit dem Seerosenteich kann man heute noch besuchen.",
+ "Die weißen Kreidefelsen von Étretat in der Normandie haben natürliche Felsbögen, die wie riesige Tore im Meer stehen.",
+ "Der Mont-Saint-Michel ist eine Klosterinsel. Die Gezeiten in der Bucht gehören zu den stärksten Europas – bei Flut ist der Berg von Wasser umgeben.",
+ "Die Kathedrale von Chartres ist für ihre blauen Glasfenster berühmt. Viele davon sind rund 800 Jahre alt.",
+ "Rund um Blois stehen viele Schlösser an der Loire. Das Loiretal heißt deshalb auch „Tal der Schlösser“ und gehört zum UNESCO-Welterbe.",
+ "Das Schloss Chambord hat über 400 Zimmer. Der Legende nach hat es eine Doppelwendeltreppe, auf der zwei Menschen hinauf- und hinuntergehen können, ohne sich zu begegnen.",
+ "Die Altstadt von Carcassonne ist eine riesige mittelalterliche Festung mit einer doppelten Stadtmauer und mehr als 50 Türmen.",
+ "Marseille ist die älteste Stadt Frankreichs: Griechen gründeten sie vor rund 2600 Jahren. Die berühmte Fischsuppe „Bouillabaisse“ kommt von dort.",
+ "Die Strandpromenade von Nizza heißt „Promenade des Anglais“ – die Promenade der Engländer –, weil im 19. Jahrhundert englische Gäste beim Bau halfen.",
+ "Die Handpuppe „Guignol“ kommt aus Lyon. Die Stadt gilt außerdem als Hauptstadt der französischen Küche.",
+ "In Straßburg (Strasbourg) tagt das Europäische Parlament. Im Elsass klingen viele Ortsnamen deutsch, weil die Region früher zeitweise zu Deutschland gehörte.",
+ "Der Mont Blanc ist mit rund 4800 Metern der höchste Berg der Alpen. Er liegt an der Grenze zwischen Frankreich und Italien.",
+ "Frankreich hat ungefähr die Form eines Sechsecks. Deshalb nennen die Franzosen ihr Land auch „l'Hexagone“.",
+ "Die Tour de France, das berühmteste Radrennen der Welt, findet jedes Jahr im Juli statt und endet meistens in Paris auf den Champs-Élysées.",
+];
+const FACTS = FACTS1.concat(FACTS2);
+
+/* ---------- Karte 2: Reise durch Frankreich (Karte 100 × 130) ---------- */
+const NODES2 = [
+ {name:"Château de Versailles", short:"Versailles", icon:"🏰", foe:"Le Roi Soleil Boudeur", foeDe:"der schmollende Sonnenkönig", foeIcon:"👑", hp:120, x:60, y:44},
+ {name:"Giverny", icon:"🪷", foe:"Le Crapaud Impressionniste", foeDe:"die impressionistische Kröte", foeIcon:"🐸", hp:130, x:52, y:28},
+ {name:"Étretat", icon:"🌊", foe:"La Mouette Voleuse", foeDe:"die diebische Möwe", foeIcon:"🦅", hp:140, x:34, y:18},
+ {name:"Mont-Saint-Michel", short:"Mont-St-Michel", icon:"⛪", foe:"La Marée Sournoise", foeDe:"die heimtückische Flut", foeIcon:"🌀", hp:150, x:17, y:34},
+ {name:"Chartres", icon:"🪟", foe:"Le Vitrail Capricieux", foeDe:"das launische Glasfenster", foeIcon:"🔷", hp:160, x:40, y:49},
+ {name:"Blois", icon:"🏯", foe:"Le Raton Bandit", foeDe:"der Waschbär-Gauner", foeIcon:"🦝", hp:170, x:33, y:65},
+ {name:"Chambord", icon:"🦌", foe:"Le Cerf Royal", foeDe:"der königliche Hirsch", foeIcon:"🦌", hp:180, x:56, y:67},
+ {name:"Carcassonne", icon:"🛡️", foe:"Le Chevalier Rouillé", foeDe:"der rostige Ritter", foeIcon:"🤺", hp:190, x:31, y:98},
+ {name:"Marseille", icon:"⚓", foe:"Le Mistral Furieux", foeDe:"der wütende Mistral-Wind", foeIcon:"💨", hp:200, x:62, y:106},
+ {name:"Nice", icon:"🏖️", foe:"Le Crabe Hargneux", foeDe:"die bissige Krabbe", foeIcon:"🦀", hp:210, x:84, y:100},
+ {name:"Lyon", icon:"🎭", foe:"La Marionnette Têtue", foeDe:"die sture Marionette", foeIcon:"🪆", hp:220, x:66, y:83},
+ {name:"Strasbourg", icon:"🥨", foe:"Le Bretzel Rebelle", foeDe:"die rebellische Brezel", foeIcon:"🥨", hp:230, x:85, y:47},
+ {name:"Le Mont Blanc", icon:"🏔️", foe:"Le Yéti du Mont Blanc", foeDe:"der Yeti vom Mont Blanc", foeIcon:"❄️", hp:400, x:90, y:74, boss:true},
+];
+const MAPS = [
+ {id:0, nodes:NODES,  name:"Paris", icon:"🗼", title:"Deine Reise durch Paris", doneText:"🏆 Du hast ganz Paris erobert!", practice:"Am Eiffelturm üben", winBoss:"🗼 Paris ist erobert !"},
+ {id:1, nodes:NODES2, name:"Frankreich", icon:"🇫🇷", title:"Deine Reise durch Frankreich", doneText:"🏆 Du hast ganz Frankreich bereist!", practice:"Am Mont Blanc üben", winBoss:"🏔️ Frankreich ist erobert !"},
+];
+const FACTS1_N = FACTS1.length;
+const map2Unlocked = () => S.defeated.length >= NODES.length;
+const CM = () => MAPS[S.map===1 ? 1 : 0].nodes;
+const PR = () => S.map===1 ? S.m2 : S;
+const totalStamps = () => S.defeated.length + S.m2.defeated.length;
+
 
 /* ---------- Aufbereitung ---------- */
 const VOCAB = VOCAB_RAW.map(r=>({id:r[0], fr:r[1], de:r[2], tag:r[3], exFr:r[4]||null, exDe:r[5]||null, info:r[6]==="info", kind:"v"}));
 const SENTS = SENT_RAW.map(r=>({id:r[0], frAlts:r[1].split("|"), deAlts:r[2].split("|"), tag:r[3], note:r[4]||"", deHint:r[5]||"", kind:"s"}));
 const ITEM = {}; VOCAB.forEach(v=>ITEM[v.id]=v); SENTS.forEach(s=>ITEM[s.id]=s);
 /* abfragbar = nicht gesperrt (und keine reine Grammatik-Info) – nur daraus kommen Aufgaben UND Ablenker */
-/* ---------- Buchseiten (À plus! Neubearbeitung, Vokabelverzeichnis S. 176–183) ----------
+/* ---------- Buchseiten (À plus! Neubearbeitung, Vokabelverzeichnis S. 176–185) ----------
    Vokabeln: Bereiche in Buchreihenfolge (erste ID – letzte ID einer Seite). Sätze: Seite nach der Stelle im Buch. */
-const PAGES = [176,177,178,179,180,181,182,183];
+const PAGES = [176,177,178,179,180,181,182,183,184,185];
 const VPAGE_RANGES = [[176,"cp01","cp08"],[177,"cp09","cp50"],[178,"cp60","cp87"],[179,"u101","u116"],[180,"u117","v119"],
-                      [181,"v120","v230"],[182,"v231","v320"],[183,"v321","m1999"]];
+                      [181,"v120","v230"],[182,"v231","v320"],[183,"v321","v415"],[184,"t201","x110"],[185,"x111","x203"]];
 const VIDX = {}; VOCAB.forEach((v,i)=>{ if(VIDX[v.id]===undefined) VIDX[v.id]=i; });
 const PAGE = {};
 (function(){
@@ -573,10 +722,12 @@ const PAGE = {};
   sp(181, rng("s",218,220).concat(rng("s",301,320)));
   sp(182, rng("s",321,328).concat(rng("s",401,412)));
   sp(183, ["s413"].concat(rng("s",501,514)));
+  sp(184, ["s601", "s602", "s603", "s604", "s605", "s606", "s607", "s608", "s609", "s610", "s611", "s612", "s613", "s614", "s615", "s616", "s617", "s618", "s701"]);
+  sp(185, ["s702", "s703", "s704", "s705", "s706", "s707", "s708", "s709", "s710", "s711", "s712", "s713", "s714", "s715", "s716", "s717", "s718", "s719", "s720", "s721", "s722", "s801", "s802", "s803"]);
 })();
 /* Stelle eines Satzes in der Vokabelreihenfolge: Vokabeln, deren Beispielsatz der Satz ist (kleinste/größte Position) */
 const SANCHOR = {s019:["cp16"], s109:["u103"], s110:["u109"], s201:["u117"], s307:["v215"], s319:["v210"], s320:["v206"],
-                 s321:["v232"], s322:["v232"], s323:["v232"], s324:["v233"], s325:["v233"], s326:["v233"], s327:["v233"], s514:["v405"]};
+                 s321:["v232"], s322:["v232"], s323:["v232"], s324:["v233"], s325:["v233"], s326:["v233"], s327:["v233"], s514:["v405"], s703:["x112"], s709:["x118"], s711:["x121"], s717:["x119"], s718:["x127"], s719:["x128"], s720:["x128"]};
 const SPOS = {};
 (function(){
   const exMap = {};
@@ -613,7 +764,8 @@ const QS = () => SENTS.filter(s=>!isLocked(s));
 function defaultState(){
   return {started:false, scope:"all", mode:"normal", node:0, xp:0, maxStreak:0, answered:0,
           stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}, rd:{}, rounds:{}, miss:{}, discOrder:"book",
-          pages:{from:182, to:183, fromWord:"", toWord:"", kinds:"both"}};
+          pages:{from:184, to:185, fromWord:"", toWord:"", kinds:"both"},
+          map:0, m2:{node:0, defeated:[]}};
 }
 let S = defaultState();
 function normalizeState(){
@@ -634,7 +786,13 @@ function normalizeState(){
   S.node = Math.max(0, Math.min(NODES.length-1, parseInt(S.node)||0));
   S.xp = Number(S.xp)||0; S.maxStreak = Number(S.maxStreak)||0; S.answered = Number(S.answered)||0;
   S.defeated = S.defeated.filter(i=>Number.isInteger(i) && i>=0 && i<NODES.length);
+  if(typeof S.m2!=="object" || !S.m2 || Array.isArray(S.m2)) S.m2 = {node:0, defeated:[]};
+  if(!Array.isArray(S.m2.defeated)) S.m2.defeated = [];
+  S.m2.defeated = S.m2.defeated.filter(i=>Number.isInteger(i) && i>=0 && i<NODES2.length);
+  S.m2.node = Math.max(0, Math.min(NODES2.length-1, parseInt(S.m2.node)||0));
+  S.map = (S.map===1 && map2Unlocked()) ? 1 : 0;
   S.facts = S.facts.filter(i=>Number.isInteger(i) && i>=0 && i<FACTS.length);
+  if(!map2Unlocked() && !S.m2.defeated.length) S.facts = S.facts.filter(i=>i<FACTS1_N);
   Object.keys(S.weak).forEach(id=>{ if(!ITEM[id] || !Number.isFinite(S.weak[id])) delete S.weak[id]; });
   /* "gesehen"-Zähler: nur gültige IDs; was schon als Wackelkandidat vorkommt, wurde garantiert schon gefragt */
   Object.keys(S.seen).forEach(id=>{ if(!ITEM[id] || !(S.seen[id]>0)) delete S.seen[id]; });
@@ -859,8 +1017,8 @@ function header(){
       <div><h1>Paris-Abenteuer</h1><span class="sub">L'aventure parisienne · Französisch</span></div></div>
     <div class="hud">
       <span class="badge">⭐ ${S.xp} XP</span>
-      <span class="badge">🗼 ${S.defeated.length}/${NODES.length} Stempel</span>
-      <span class="badge">📜 ${S.facts.length}/${FACTS.length} Fakten</span>
+      <span class="badge">🗼 ${map2Unlocked() ? totalStamps()+"/"+(NODES.length+NODES2.length) : S.defeated.length+"/"+NODES.length} Stempel</span>
+      <span class="badge">📜 ${S.facts.length}/${map2Unlocked() ? FACTS.length : FACTS1_N} Fakten</span>
       ${weak ? `<span class="badge warnb" title="Aufgaben, die noch zweimal in Folge richtig sein müssen">🔁 ${weak} üben</span>` : ""}
     </div></header>`;
 }
@@ -888,15 +1046,52 @@ function showStart(){
 }
 
 function mapSVG(){
-  const pts = NODES.map(n=>`${n.x},${n.y}`).join(" ");
-  const reach = Math.min(S.node, NODES.length-1);
-  const donePts = NODES.slice(0, reach+1).map(n=>`${n.x},${n.y}`).join(" ");
-  const seine = "M100,98 C90,94 80,86 72,78 C67,73 64,71 58,68 C52,66 44,66 36,64 C30,63 26,68 24,74 C22,82 14,90 0,98";
-  return `<svg class="mapSvg" viewBox="0 0 100 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
+  const nodes = CM(), P = PR();
+  const pts = nodes.map(n=>`${n.x},${n.y}`).join(" ");
+  const reach = Math.min(P.node, nodes.length-1);
+  const donePts = nodes.slice(0, reach+1).map(n=>`${n.x},${n.y}`).join(" ");
+  const route = `<polyline points="${pts}" fill="none" stroke="#a33" stroke-width=".55" stroke-dasharray="1.3 1.2" opacity=".5"/>
+    <polyline points="${donePts}" fill="none" stroke="#c4453a" stroke-width=".9" stroke-linejoin="round" opacity=".9"/>`;
+  const defs = `<defs>
       <pattern id="grid" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M6 0H0V6" fill="none" stroke="#cdb88e" stroke-width=".15"/></pattern>
       <radialGradient id="vig" cx="50%" cy="50%" r="72%"><stop offset="62%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#3b2a12" stop-opacity=".38"/></radialGradient>
-    </defs>
+    </defs>`;
+  const compass = (cx,cy)=>`<g transform="translate(${cx} ${cy})" fill="#5a4320" font-size="2.6" text-anchor="middle">
+      <circle r="5" fill="none" stroke="#7a5a35" stroke-width=".35"/>
+      <path d="M0,-4.6 L1.1,0 L0,4.6 L-1.1,0 Z" fill="#c4453a"/><path d="M-4.6,0 L0,1.1 L4.6,0 L0,-1.1 Z" fill="#7a5a35"/>
+      <text y="-6">N</text></g>`;
+  const banner = (w,txt)=>`<rect x="3" y="2.5" width="${w}" height="7.5" rx="1.2" fill="#f7eed6" stroke="#a88b5c" stroke-width=".35"/>
+    <rect x="3" y="2.5" width="2" height="7.5" fill="#2b5ca8"/><rect x="${w+1}" y="2.5" width="2" height="7.5" fill="#d13b3b"/>
+    <text x="${3+w/2}" y="7.6" font-size="3.6" font-family="Cinzel, serif" fill="#5a4320" text-anchor="middle">${txt}</text>`;
+  if(S.map===1){
+    const france = "M48,10 L58,10 L68,12 L76,22 L90,34 L92,46 L88,58 L92,70 L90,84 L96,96 L88,106 L70,112 L52,114 L36,110 L30,116 L16,108 L12,96 L10,80 L8,64 L6,52 L8,44 L12,40 L12,28 L20,26 L28,20 L36,12 Z";
+    const loire = "M62,88 C60,76 58,70 52,67 C46,64 40,64 34,64 C26,63 18,62 8,64";
+    const seine = "M66,40 C58,36 54,30 50,28 C44,24 40,20 36,14";
+    const rhone = "M72,64 C70,74 66,80 66,88 C66,96 68,102 66,108";
+    const peaks = (x,y,n)=>Array.from({length:n},(_,k)=>`<path d="M${x+k*3.4},${y} l1.7,-3.4 l1.7,3.4 Z" fill="#9a8f7a" stroke="#6f6553" stroke-width=".2"/>`).join("");
+    return `<svg class="mapSvg" viewBox="0 0 100 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">${defs}
+    <rect width="100" height="130" fill="#cfe2ee"/>
+    <rect width="100" height="130" fill="url(#grid)" opacity=".5"/>
+    <path d="${france}" fill="#f4ecd2" stroke="#a88b5c" stroke-width=".6" stroke-linejoin="round"/>
+    <ellipse cx="94" cy="118" rx="2.6" ry="5" fill="#f4ecd2" stroke="#a88b5c" stroke-width=".4"/>
+    <path d="M60,18 C70,24 76,34 78,44 C80,52 78,60 76,64 C70,70 62,76 56,82 C50,92 42,96 36,100" fill="none" stroke="#b3cb94" stroke-width="9" stroke-linecap="round" opacity=".28"/>
+    <path d="${seine}" fill="none" stroke="#7fa9cf" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="${loire}" fill="none" stroke="#7fa9cf" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="${rhone}" fill="none" stroke="#7fa9cf" stroke-width="1.5" stroke-linecap="round"/>
+    ${peaks(84,82,3)}${peaks(20,113,3)}${peaks(54,112,0)}
+    <text x="55.5" y="36.5" font-size="2.2" fill="#8a2a22" text-anchor="middle">★ Paris</text>
+    <text x="22" y="7" font-size="2.3" fill="#4f7ea8" font-style="italic" text-anchor="middle" transform="translate(38 0)">La Manche</text>
+    <text x="1" y="74" font-size="2.3" fill="#4f7ea8" font-style="italic" transform="rotate(-90 4 74)">Océan Atlantique</text>
+    <text x="50" y="125" font-size="2.3" fill="#4f7ea8" font-style="italic" text-anchor="middle">La Méditerranée</text>
+    <text x="93" y="127" font-size="2" fill="#5a4320" text-anchor="middle">la Corse</text>
+    ${route}
+    ${compass(9,121)}
+    ${banner(38,"Voyage en France")}
+    <rect width="100" height="130" fill="url(#vig)"/>
+  </svg>`;
+  }
+  const seine = "M100,98 C90,94 80,86 72,78 C67,73 64,71 58,68 C52,66 44,66 36,64 C30,63 26,68 24,74 C22,82 14,90 0,98";
+  return `<svg class="mapSvg" viewBox="0 0 100 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">${defs}
     <rect width="100" height="130" fill="#efe2c4"/>
     <rect width="100" height="130" fill="url(#grid)"/>
     <path d="M50,8 C78,8 96,30 96,62 C96,96 78,122 50,122 C22,122 4,98 4,64 C4,32 22,8 50,8 Z" fill="#f7eed6" stroke="#a88b5c" stroke-width=".55" stroke-dasharray="1.6 1"/>
@@ -908,40 +1103,49 @@ function mapSVG(){
     <path d="${seine}" fill="none" stroke="#a9c9e6" stroke-width="1.1" stroke-linecap="round"/>
     <ellipse cx="62" cy="69.8" rx="3.2" ry="1.1" fill="#efe2c4" stroke="#7fa9cf" stroke-width=".3" transform="rotate(-22 62 69.8)"/>
     <text x="76" y="90" font-size="3" fill="#4f7ea8" font-style="italic" transform="rotate(-38 76 90)">La Seine</text>
-    <polyline points="${pts}" fill="none" stroke="#a33" stroke-width=".55" stroke-dasharray="1.3 1.2" opacity=".5"/>
-    <polyline points="${donePts}" fill="none" stroke="#c4453a" stroke-width=".9" stroke-linejoin="round" opacity=".9"/>
-    <g transform="translate(89 117)" fill="#5a4320" font-size="2.6" text-anchor="middle">
-      <circle r="5" fill="none" stroke="#7a5a35" stroke-width=".35"/>
-      <path d="M0,-4.6 L1.1,0 L0,4.6 L-1.1,0 Z" fill="#c4453a"/><path d="M-4.6,0 L0,1.1 L4.6,0 L0,-1.1 Z" fill="#7a5a35"/>
-      <text y="-6">N</text></g>
-    <rect x="3" y="2.5" width="30" height="7.5" rx="1.2" fill="#f7eed6" stroke="#a88b5c" stroke-width=".35"/>
-    <rect x="3" y="2.5" width="2" height="7.5" fill="#2b5ca8"/><rect x="31" y="2.5" width="2" height="7.5" fill="#d13b3b"/>
-    <text x="18" y="7.6" font-size="3.6" font-family="Cinzel, serif" fill="#5a4320" text-anchor="middle">Plan de Paris</text>
+    ${route}
+    ${compass(89,117)}
+    ${banner(30,"Plan de Paris")}
     <rect width="100" height="130" fill="url(#vig)"/>
   </svg>`;
 }
 
+let mapNote = "";
+function switchMap(i){
+  if(i===1 && !map2Unlocked()){ mapNote = "🔒 Die Reise durch Frankreich wird freigeschaltet, sobald du alle 13 Stationen in Paris geschafft hast – noch "+(NODES.length-S.defeated.length)+" Sieg"+(NODES.length-S.defeated.length===1?"":"e")+"."; showMap(); return; }
+  S.map = i===1 ? 1 : 0; mapNote = ""; saveState(); showMap();
+}
 function showMap(){
   battle = null;
   if(!S.started){ showStart(); return; }
-  const pins = NODES.map((n,i)=>{
-    const done = S.defeated.includes(i), locked = i > S.node, cur = !done && i===S.node;
+  const nodes = CM(), P = PR(), M = MAPS[S.map===1?1:0];
+  const pins = nodes.map((n,i)=>{
+    const done = P.defeated.includes(i), locked = i > P.node, cur = !done && i===P.node;
     return `<div class="pin ${done?"done":""} ${locked?"locked":""} ${cur?"cur":""} ${n.boss?"boss":""}"
       style="left:${n.x}%;top:${(n.y/130*100).toFixed(2)}%" ${locked?"":`onclick="enterNode(${i})"`}>
       <div class="pinB">${locked?"🔒":n.icon}${done?'<span class="chk">✓</span>':""}</div>
       ${locked?"":`<div class="pinL">${esc(n.short||n.name)}</div>`}</div>`;
   }).join("");
-  const nx = Math.min(S.node, NODES.length-1), n = NODES[nx];
-  const allDone = S.defeated.length===NODES.length;
-  app.innerHTML = header() + nav() + `
-    <div class="sectionTitle">🗺️ Deine Reise durch Paris</div>
+  const nx = Math.min(P.node, nodes.length-1), n = nodes[nx];
+  const allDone = P.defeated.length===nodes.length;
+  const tabs = `<div class="btnRow center" style="margin:6px 0">
+      <button class="btn ${S.map===1?"ghost":""}" onclick="switchMap(0)">🗼 Paris${S.defeated.length===NODES.length?" ✓":""}</button>
+      <button class="btn ${S.map===1?"":"ghost"}" onclick="switchMap(1)">${map2Unlocked()?"🇫🇷 Reise durch Frankreich"+(S.m2.defeated.length===NODES2.length?" ✓":""):"🔒 Frankreich"}</button></div>`;
+  const newMapHint = (S.map===0 && map2Unlocked() && !S.m2.defeated.length)
+    ? `<div class="card center"><b>🇫🇷 Neue Karte freigeschaltet: Reise durch Frankreich!</b><br><span class="hint-sm">Neue Stationen, neue Gegner, neue Fakten – von Versailles bis zum Mont Blanc.</span>
+       <div class="btnRow center"><button class="btn" onclick="switchMap(1)">🇫🇷 Zur neuen Karte</button></div></div>` : "";
+  const note = mapNote ? `<div class="card center hint-sm">${esc(mapNote)}</div>` : "";
+  mapNote = "";
+  app.innerHTML = header() + nav() + tabs + note + `
+    <div class="sectionTitle">🗺️ ${M.title}</div>
     <div class="hint-sm">Bereich: <b>${esc(scopeLabel())}</b> · Modus: <b>${modeName()}</b> – ändern unter Einstellungen.
     Tippe auf eine freigeschaltete Station.</div>
     <div class="mapWrap">${mapSVG()}${pins}</div>
+    ${newMapHint}
     <div class="card center">
-      ${allDone ? `<b>🏆 Du hast ganz Paris erobert!</b><br><span class="hint-sm">Du kannst jede Station weiter zum Üben besuchen.</span>`
+      ${allDone ? `<b>${M.doneText}</b><br><span class="hint-sm">Du kannst jede Station weiter zum Üben besuchen.</span>`
         : `Nächstes Ziel: <b>${n.icon} ${esc(n.name)}</b> – dort wartet <b>${n.foeIcon} ${esc(n.foe)}</b> <span class="muted">(${esc(n.foeDe)})</span>`}
-      <div class="btnRow center"><button class="btn" onclick="enterNode(${allDone?NODES.length-1:nx})">⚔️ ${allDone?"Am Eiffelturm üben":"Los geht's"}</button></div>
+      <div class="btnRow center"><button class="btn" onclick="enterNode(${allDone?nodes.length-1:nx})">⚔️ ${allDone?M.practice:"Los geht's"}</button></div>
     </div>`;
   window.scrollTo(0,0);
 }
@@ -952,9 +1156,9 @@ const ATTACKS = {vFD:"🥖 Baguette-Stups", vDF_mc:"🥖 Baguette-Stups", vDF_ty
 const ACCENTS = ["é","è","ê","à","â","ç","ô","î","ù","û","ë","ï","'"];
 
 function enterNode(i){
-  if(i > S.node) return;
-  const n = NODES[i];
-  battle = {node:i, foeHP:n.hp, foeMax:n.hp, streak:0};
+  if(i > PR().node) return;
+  const n = CM()[i];
+  battle = {map:S.map===1?1:0, node:i, foeHP:n.hp, foeMax:n.hp, streak:0};
   newQuestion();
 }
 function newQuestion(){
@@ -979,7 +1183,7 @@ function newQuestion(){
 function isNoun(v){ return /^(le|la|les) |^l'/i.test(first(v.fr)); }
 
 function renderBattle(){
-  const n = NODES[battle.node], it = battle.item;
+  const n = MAPS[battle.map].nodes[battle.node], it = battle.item;
   let q = "";
   const accBar = `<div class="accBar">${ACCENTS.map((c,i)=>`<button class="acc" type="button" onclick="insertChar(${i})">${esc(c)}</button>`).join("")}</div>`;
   const enter = `onkeydown="if(event.key==='Enter'){event.preventDefault();checkType();}"`;
@@ -1202,30 +1406,33 @@ function continueBattle(){
 }
 function flee(){ battle = null; showMap(); }
 
-function unlockFacts(n){
-  const pool = FACTS.map((_,i)=>i).filter(i=>!S.facts.includes(i));
+function unlockFacts(n, mapIdx){
+  const pool = FACTS.map((_,i)=>i).filter(i=>!S.facts.includes(i) && (mapIdx===1 ? i>=FACTS1_N : i<FACTS1_N));
   const got = shuffle(pool).slice(0,n);
   got.forEach(i=>S.facts.push(i));
   return got;
 }
 function win(){
-  const i = battle.node, n = NODES[i];
-  const firstWin = !S.defeated.includes(i);
-  if(firstWin) S.defeated.push(i);
-  if(i===S.node && S.node < NODES.length-1) S.node++;
+  const mi = battle.map, M = MAPS[mi], nodes = M.nodes, P = mi===1 ? S.m2 : S;
+  const i = battle.node, n = nodes[i];
+  const firstWin = !P.defeated.includes(i);
+  if(firstWin) P.defeated.push(i);
+  if(i===P.node && P.node < nodes.length-1) P.node++;
   S.xp += 30;
-  const got = unlockFacts(firstWin ? 2 : 1);
+  const got = unlockFacts(firstWin ? 2 : 1, mi);
   saveState();
   battle = null;
-  const allDone = S.defeated.length===NODES.length;
+  const allDone = P.defeated.length===nodes.length;
+  const newMap = mi===0 && n.boss && map2Unlocked();
   app.innerHTML = header() + `<div class="card center">
     <div class="bigStamp">${n.icon}</div>
-    <h2 style="font-family:Cinzel,serif;color:var(--gold2);margin:4px 0">${n.boss ? "🗼 Paris ist erobert !" : "Station geschafft !"}</h2>
+    <h2 style="font-family:Cinzel,serif;color:var(--gold2);margin:4px 0">${n.boss ? M.winBoss : "Station geschafft !"}</h2>
     <p>${n.foeIcon} <b>${esc(n.foe)}</b> <span class="muted">(${esc(n.foeDe)})</span> ist besiegt. <b>+30 XP</b>${firstWin?" und ein neuer Stempel für dein Reisetagebuch":""}.</p>
     ${got.map(fi=>`<div class="fact new"><div class="factT">📜 Neuer Frankreich-Fakt</div>${esc(FACTS[fi])}</div>`).join("")}
     ${!got.length ? `<p class="hint-sm">Du kennst schon alle Fakten – Chapeau !</p>` : ""}
     ${allDone && n.boss ? `<p><b>Félicitations !</b> Du hast alle Stationen geschafft. Übe weiter, damit die Sätze richtig sitzen.</p>` : ""}
-    <div class="btnRow center"><button class="btn" onclick="showMap()">🗺️ Zur Karte</button>
+    ${newMap ? `<p><b>🇫🇷 Neue Karte freigeschaltet: Reise durch Frankreich!</b> Dort warten neue Gegner und neue Fakten.</p>` : ""}
+    <div class="btnRow center">${newMap ? `<button class="btn" onclick="switchMap(1)">🇫🇷 Zur neuen Karte</button>` : ""}<button class="btn ${newMap?"ghost":""}" onclick="showMap()">🗺️ Zur Karte</button>
       <button class="btn ghost" onclick="enterNode(${i})">⚔️ Nochmal hier üben</button>
       <button class="btn ghost" onclick="showCarnet()">📔 Reisetagebuch</button></div>
   </div>`;
@@ -1235,17 +1442,21 @@ function win(){
 /* ---------- Reisetagebuch ---------- */
 function showCarnet(){
   battle = null;
-  const stamps = NODES.map((n,i)=> S.defeated.includes(i)
+  const stampsOf = (nodes, def) => nodes.map((n,i)=> def.includes(i)
     ? `<div class="stamp"><div class="e">${n.icon}</div><div class="n">${esc(n.name)}</div></div>`
     : `<div class="stamp locked"><div class="e">?</div><div class="n muted">noch nicht besucht</div></div>`).join("");
-  const facts = FACTS.map((f,i)=> S.facts.includes(i)
+  const stamps = stampsOf(NODES, S.defeated);
+  const stamps2 = map2Unlocked()
+    ? `<div class="card"><div class="hint-sm" style="margin-bottom:6px"><b>🇫🇷 Reise durch Frankreich</b> · ${S.m2.defeated.length} / ${NODES2.length}</div><div class="stamps">${stampsOf(NODES2, S.m2.defeated)}</div></div>` : "";
+  const facts = FACTS.map((f,i)=> i>=FACTS1_N && !map2Unlocked() ? "" : S.facts.includes(i)
     ? `<div class="fact"><div class="factT">📜 Fakt ${i+1}</div>${esc(f)}</div>`
     : `<div class="fact locked">? · noch nicht entdeckt</div>`).join("");
   app.innerHTML = header() + nav() + `
     <div class="sectionTitle">📔 Mon carnet de voyage – Reisetagebuch</div>
     <div class="hint-sm">Für jede besiegte Station gibt es einen Stempel und neue Fakten über Frankreich. Noch nicht entdeckte Fakten bleiben geheim.</div>
-    <div class="card"><div class="stamps">${stamps}</div></div>
-    <div class="sectionTitle" style="font-size:18px">Frankreich-Fakten · ${S.facts.length} / ${FACTS.length}</div>
+    <div class="card">${map2Unlocked() ? `<div class="hint-sm" style="margin-bottom:6px"><b>🗼 Paris</b> · ${S.defeated.length} / ${NODES.length}</div>` : ""}<div class="stamps">${stamps}</div></div>
+    ${stamps2}
+    <div class="sectionTitle" style="font-size:18px">Frankreich-Fakten · ${S.facts.length} / ${map2Unlocked() ? FACTS.length : FACTS1_N}</div>
     ${facts}`;
   window.scrollTo(0,0);
 }
@@ -1284,7 +1495,7 @@ function showEval(){
       <div class="hint-sm">Grün ab 85 % · Gelb 60–84 % · Rot unter 60 % · grau = weniger als 3 Antworten</div>
       <div class="sectionTitle" style="font-size:16px">Nach Buchteil</div>
       ${Object.keys(TAGS).filter(t=>!LOCKED.includes(t)).map(t=>bar(TAGS[t], S.stats[t])).join("")}
-      <div class="hint-sm" style="margin-top:6px">🔒 Noch nicht dran: ${esc(LOCKED_LABEL)}</div>
+      ${(LOCKED.length||LOCKED_IDS.length) ? `<div class="hint-sm" style="margin-top:6px">🔒 Noch nicht dran: ${esc(LOCKED_LABEL)}</div>` : ""}
       <div class="sectionTitle" style="font-size:16px">👀 Schon gesehen – nach Buchteil</div>
       <div class="hint-sm">Zeigt, wie viel vom Stoff Lukas schon mindestens einmal beantwortet hat. Die Zählung beginnt mit dieser Version; frühere Antworten sind nur bei den aktuellen Wackelkandidaten bekannt.</div>
       ${seenHTML}
@@ -1356,7 +1567,7 @@ function showSettings(){
       <div class="seg">${Object.keys(SCOPES).map(k=>`<button class="${S.scope===k?"on":""}" onclick="setScope('${k}')">${esc(SCOPES[k].label)}</button>`).join("")}</div>
       ${S.scope==="pages" ? pagesPanel() : ""}
       <div class="hint-sm" style="margin-top:8px">Im aktuellen Bereich: <b>${ns} Sätze</b> und <b>${nv} Vokabeln</b>.${(ns+nv)===0 ? ' <b style="color:#f09a5c">Keine Aufgaben in dieser Auswahl – bitte ändern.</b>' : ''}</div>
-      ${S.scope==="pages" ? `<div class="btnRow" style="margin-top:10px"><button class="btn" onclick="enterNode(Math.min(S.node,NODES.length-1))">▶ Jetzt mit dieser Auswahl üben</button></div>` : ""}
+      ${S.scope==="pages" ? `<div class="btnRow" style="margin-top:10px"><button class="btn" onclick="enterNode(Math.min(PR().node,CM().length-1))">▶ Jetzt mit dieser Auswahl üben</button></div>` : ""}
       ${(LOCKED.length||LOCKED_IDS.length) ? `<div class="hint-sm" style="margin-top:6px">🔒 Schon im Katalog, aber noch nicht dran (${esc(LOCKED_LABEL)}): ${ls} Sätze und ${lv} Vokabeln – sie werden erst abgefragt, wenn sie im Unterricht behandelt wurden.</div>` : ""}
     </div>
     <div class="card">
@@ -1383,7 +1594,7 @@ function showSettings(){
         <button class="btn ghost" onclick="showStateText()">📋 Text anzeigen</button></div>
       <div id="msg"></div>
     </div>
-    <div class="card">
+${mbCard()}    <div class="card">
       <b>Neu anfangen</b>
       <div class="hint-sm" style="margin:4px 0 8px">Löscht den kompletten Französisch-Spielstand auf diesem Gerät.</div>
       <div class="btnRow" id="resetRow"><button class="btn ghost" onclick="askReset()">🗑️ Spielstand zurücksetzen</button></div>
@@ -1454,6 +1665,115 @@ function pasteStateText(){
 /* ---------- Start ---------- */
 loadState();
 showMap();
+</script>
+<script>
+/* =========================================================
+   GESAMTSICHERUNG – alle Lern-Apps auf einmal sichern / zurückspielen
+   Identischer Block in allen vier Apps. Liest und schreibt nur die bekannten Speicherschlüssel
+   (gleicher Ordner = gleicher Browser-Speicher). Ändert nichts an den einzelnen Spielständen,
+   solange man nicht ausdrücklich "einspielen" wählt.
+   ========================================================= */
+const MB_FORMAT = "lernwelt-gesamtsicherung";
+const MB_APPS = [
+  ["englisch-abenteuer-v4","🇬🇧 Englisch-Abenteuer"],
+  ["mittelerde-reise-v1","⚔️ Mittelerde-Reise"],
+  ["paris-abenteuer-v1","🇫🇷 Paris-Abenteuer"],
+  ["faecher-v1","🌍 Fächer (Lernstand)"],
+  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"]
+];
+function mbStore(){ try{ return window.localStorage; }catch(e){ return null; } }
+function mbMsg(html, ok){
+  const b = document.getElementById("mbMsg"); if(!b) return;
+  b.style.display = "block"; b.style.borderColor = ok ? "rgba(90,154,90,.7)" : "rgba(192,69,58,.7)"; b.innerHTML = html;
+}
+function mbFileName(){ return "Lernwelt_Gesamtsicherung_" + new Date().toISOString().slice(0,10) + ".json"; }
+function mbInfo(key, raw){
+  try{ const o = JSON.parse(raw); if(key==="faecher-packs-v1") return Array.isArray(o) ? o.length+" Paket(e)" : "";
+       return (o && typeof o.xp==="number") ? o.xp+" XP" : ""; }catch(e){ return ""; }
+}
+function mbCollect(){
+  const ls = mbStore(), data = {}, found = [], missing = [];
+  MB_APPS.forEach(a=>{
+    let v = null; try{ v = ls ? ls.getItem(a[0]) : null; }catch(e){}
+    if(v){ data[a[0]] = v; found.push(a[1] + (mbInfo(a[0],v) ? " (" + mbInfo(a[0],v) + ")" : "")); }
+    else if(a[0]!=="faecher-packs-v1") missing.push(a[1]);
+  });
+  return {obj:{format:MB_FORMAT, version:1, created:new Date().toISOString(), data}, found, missing};
+}
+function mbSummary(c){
+  return "<b>Enthalten:</b> " + (c.found.length ? c.found.join(" · ") : "nichts")
+    + (c.missing.length ? '<br><span style="opacity:.85">Noch kein Spielstand vorhanden: ' + c.missing.join(", ") + '</span>' : "");
+}
+async function mbShare(){
+  const c = mbCollect();
+  if(!c.found.length){ mbMsg("⚠ Es gibt noch keinen Spielstand zum Sichern.", false); return; }
+  const txt = JSON.stringify(c.obj);
+  try{
+    const file = new File([txt], mbFileName(), {type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:mbFileName()});
+      mbMsg('✅ Wähle im Teilen-Menü <b>„In Dateien sichern“</b>.<br>' + mbSummary(c), true); return;
+    }
+  }catch(e){ if(e && e.name==="AbortError"){ mbMsg("Abgebrochen – es wurde nichts gespeichert.", false); return; } }
+  mbDownload();
+}
+function mbDownload(){
+  const c = mbCollect();
+  if(!c.found.length){ mbMsg("⚠ Es gibt noch keinen Spielstand zum Sichern.", false); return; }
+  try{
+    const blob = new Blob([JSON.stringify(c.obj)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = mbFileName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    mbMsg('✅ Download gestartet: <b>' + mbFileName() + '</b> – zu finden unter <b>Dateien → Downloads</b>.<br>' + mbSummary(c), true);
+  }catch(e){ mbMsg('⚠ Der Download hat nicht geklappt. Nutze bitte <b>„📋 Als Text“</b>.', false); }
+}
+function mbShowText(){
+  const c = mbCollect();
+  mbMsg('📋 Kopiere diesen Text und sichere ihn z. B. in einer Notiz. Zum Wiederherstellen hier einfügen und „Übernehmen“ tippen.<br>' + mbSummary(c), true);
+  const t = document.getElementById("mbText"); if(!t) return;
+  t.innerHTML = '<textarea id="mbBox" style="width:100%;height:110px;margin-top:8px;font-size:11px;border-radius:8px;padding:8px;background:rgba(0,0,0,.4);color:inherit;border:1px solid rgba(200,200,200,.4)"></textarea>'
+    + '<div class="btnRow" style="margin:8px 0 0"><button class="btn ghost" onclick="mbCopy()">📋 Kopieren</button><button class="btn ghost" onclick="mbApplyText()">✔ Übernehmen</button></div>';
+  const bx = document.getElementById("mbBox"); if(bx) bx.value = c.found.length ? JSON.stringify(c.obj) : "";
+}
+function mbCopy(){
+  const b = document.getElementById("mbBox"); if(!b) return;
+  b.select(); try{ b.setSelectionRange(0, 999999); }catch(e){}
+  try{ navigator.clipboard.writeText(b.value); }catch(e){ try{ document.execCommand("copy"); }catch(e2){} }
+}
+function mbApplyText(){ const b = document.getElementById("mbBox"); if(b) mbRestore(b.value); }
+function mbPickFile(){
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
+  inp.onchange = ()=>{ const f = inp.files && inp.files[0]; if(!f) return; const rd = new FileReader(); rd.onload = ()=>mbRestore(String(rd.result)); rd.readAsText(f); };
+  inp.click();
+}
+function mbRestore(text){
+  let o; try{ o = JSON.parse(text); }catch(e){ o = null; }
+  if(!o || o.format!==MB_FORMAT || typeof o.data!=="object" || !o.data){ mbMsg("⚠ Das ist keine Gesamtsicherung. (Einzelne Spielstände lädst du in der jeweiligen App.)", false); return; }
+  const ok = [];
+  MB_APPS.forEach(a=>{ const v = o.data[a[0]]; if(typeof v!=="string") return;
+    try{ const p = JSON.parse(v); if(p && typeof p==="object") ok.push([a[0], a[1], v]); }catch(e){} });
+  if(!ok.length){ mbMsg("⚠ In dieser Datei steckt kein gültiger Spielstand.", false); return; }
+  const d = o.created ? new Date(o.created) : null, ds = d && !isNaN(d) ? d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}) : "unbekanntem Datum";
+  const list = ok.map(x=>x[1] + (mbInfo(x[0],x[2]) ? " (" + mbInfo(x[0],x[2]) + ")" : "")).join("\n");
+  if(!window.confirm("Gesamtsicherung vom " + ds + " einspielen?\n\n" + list + "\n\nDer aktuelle Stand dieser Apps wird ersetzt.")){ mbMsg("Abgebrochen – nichts wurde verändert.", false); return; }
+  const ls = mbStore(); if(!ls){ mbMsg("⚠ Der Browser erlaubt kein Speichern.", false); return; }
+  try{ ok.forEach(x=>ls.setItem(x[0], x[2])); }catch(e){ mbMsg("⚠ Speichern hat nicht geklappt.", false); return; }
+  mbMsg("✅ Eingespielt: " + list.replace(/\n/g," · ") + "<br>Die Seite lädt gleich neu …", true);
+  setTimeout(()=>location.reload(), 900);
+}
+function mbCard(){
+  return '<div id="mbCard" style="margin:14px 0;padding:16px;border:1px solid rgba(200,200,200,.35);border-radius:16px;background:rgba(0,0,0,.22)">'
+    + '<b style="font-size:17px">🗄️ Gesamtsicherung – alle Apps auf einmal</b>'
+    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris und Fächer gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
+    + 'Zum Wiederherstellen oder für ein neues Gerät: <b>einspielen</b> – dabei wird der Stand der Apps ersetzt.</div>'
+    + '<div class="btnRow"><button class="btn ghost" onclick="mbShare()">📤 Alles sichern</button>'
+    + '<button class="btn ghost" onclick="mbDownload()">💾 Als Datei laden</button>'
+    + '<button class="btn ghost" onclick="mbPickFile()">📥 Gesamtsicherung einspielen</button>'
+    + '<button class="btn ghost" onclick="mbShowText()">📋 Als Text</button></div>'
+    + '<div id="mbMsg" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;background:rgba(0,0,0,.25);font-size:13.5px;line-height:1.5"></div><div id="mbText"></div></div>';
+}
 </script>
 </body>
 </html>
