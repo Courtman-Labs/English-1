@@ -125,6 +125,10 @@
   .seenBar{height:10px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}.seenBar>div{height:100%;background:#6fa8e8}
   details.unseen{margin-top:6px;font-size:13px}details.unseen summary{cursor:pointer;color:var(--gold2)}
   .weakItem{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px}
+  .spkRow{display:flex;justify-content:center;gap:8px;margin:6px 0 2px}
+  .spk{font-family:inherit;font-weight:800;font-size:14px;padding:7px 12px;border-radius:999px;border:1px solid rgba(217,168,60,.6);background:rgba(0,0,0,.3);color:var(--ink);cursor:pointer}
+  .spk:active,.spk.playing{background:linear-gradient(#f6d27a,#d9a83c);color:#2a1d07}
+  .spk.sm{padding:3px 9px;font-size:13px}
   .seg{display:flex;flex-wrap:wrap;gap:6px}
   .seg button{font-family:inherit;font-weight:800;font-size:14px;padding:9px 13px;border-radius:10px;border:1px solid rgba(217,168,60,.5);background:rgba(0,0,0,.3);color:var(--ink);cursor:pointer}
   .seg button.on{background:linear-gradient(#f6d27a,#d9a83c);color:#2a1d07}
@@ -699,6 +703,48 @@ const PR = () => S.map===1 ? S.m2 : S;
 const totalStamps = () => S.defeated.length + S.m2.defeated.length;
 
 
+/* ---------- Sprachausgabe (Aussprache üben) ----------
+   Nutzt die eingebaute Sprachausgabe des Geräts (Web Speech API, Französisch fr-FR) – keine Audiodateien, funktioniert offline,
+   wenn auf dem Gerät eine französische Stimme installiert ist (iPad: Einstellungen › Bedienungshilfen › Gesprochene Inhalte › Stimmen). */
+const TTS = {ok: (typeof window!=="undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window), voice:null};
+function ttsPickVoice(){
+  if(!TTS.ok) return null;
+  let vs = []; try{ vs = speechSynthesis.getVoices() || []; }catch(e){}
+  const fr = vs.filter(v=>/^fr([-_]|$)/i.test(v.lang||""));
+  if(!fr.length){ TTS.voice = null; return null; }
+  const score = v => (/fr[-_]FR/i.test(v.lang)?10:0) + (/premium|enhanced|erweitert|siri/i.test(v.name)?6:0) + (/thomas|amélie|amelie|audrey|google/i.test(v.name)?3:0) + (v.localService?1:0);
+  fr.sort((a,b)=>score(b)-score(a)); TTS.voice = fr[0]; return TTS.voice;
+}
+if(TTS.ok){ try{ ttsPickVoice(); speechSynthesis.addEventListener("voiceschanged", ttsPickVoice); }catch(e){} }
+function ttsClean(s){
+  return String(s).replace(/\s*\(?\s*qn\s*\/\s*qc\s*\)?/gi," quelqu'un ou quelque chose").replace(/\bqn\b/gi,"quelqu'un").replace(/\bqc\b/gi,"quelque chose")
+    .replace(/\s*…\s*/g,", ").replace(/\s*\/\s*/g,", ").replace(/;/g,",").replace(/\s+/g," ").replace(/^[–-]\s*/,"").replace(/\s+[–-]\s+/g,". ").trim();
+}
+function frText(it, what){
+  if(what==="ex") return it.exFr || "";
+  return it.kind==="v" ? alts(it.fr).join(", ") : it.frAlts[0];
+}
+function speakFr(text, slow){
+  if(!TTS.ok || !text) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(ttsClean(text));
+    u.lang = "fr-FR"; if(TTS.voice || ttsPickVoice()) u.voice = TTS.voice;
+    u.rate = slow ? 0.6 : 0.9; u.pitch = 1;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function say(id, slow, what){ const it = ITEM[id]; if(it) speakFr(frText(it, what), slow); }
+function spkBtns(id, what, label){
+  if(!TTS.ok) return "";
+  return `<div class="spkRow"><button class="spk" type="button" onclick="say('${id}',false,'${what||""}')" title="Anhören">🔊 ${label||"Anhören"}</button><button class="spk" type="button" onclick="say('${id}',true,'${what||""}')" title="Langsam anhören">🐢 langsam</button></div>`;
+}
+function autoSpeak(when){   /* when: "question" | "answer" */
+  if(!TTS.ok || !battle) return;
+  const m = S.tts.auto; if(m==="off" || (when==="question" && m!=="both")) return;
+  speakFr(frText(battle.item), S.tts.slow);
+}
+
 /* ---------- Aufbereitung ---------- */
 const VOCAB = VOCAB_RAW.map(r=>({id:r[0], fr:r[1], de:r[2], tag:r[3], exFr:r[4]||null, exDe:r[5]||null, info:r[6]==="info", kind:"v"}));
 const SENTS = SENT_RAW.map(r=>({id:r[0], frAlts:r[1].split("|"), deAlts:r[2].split("|"), tag:r[3], note:r[4]||"", deHint:r[5]||"", kind:"s"}));
@@ -765,7 +811,7 @@ function defaultState(){
   return {started:false, scope:"all", mode:"normal", node:0, xp:0, maxStreak:0, answered:0,
           stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}, rd:{}, rounds:{}, miss:{}, discOrder:"book",
           pages:{from:184, to:185, fromWord:"", toWord:"", kinds:"both"},
-          map:0, m2:{node:0, defeated:[]}};
+          map:0, m2:{node:0, defeated:[]}, tts:{auto:"after", slow:false}};
 }
 let S = defaultState();
 function normalizeState(){
@@ -791,6 +837,9 @@ function normalizeState(){
   S.m2.defeated = S.m2.defeated.filter(i=>Number.isInteger(i) && i>=0 && i<NODES2.length);
   S.m2.node = Math.max(0, Math.min(NODES2.length-1, parseInt(S.m2.node)||0));
   S.map = (S.map===1 && map2Unlocked()) ? 1 : 0;
+  if(typeof S.tts!=="object" || !S.tts || Array.isArray(S.tts)) S.tts = {auto:"after", slow:false};
+  if(!["off","after","both"].includes(S.tts.auto)) S.tts.auto = "after";
+  S.tts.slow = S.tts.slow===true;
   S.facts = S.facts.filter(i=>Number.isInteger(i) && i>=0 && i<FACTS.length);
   if(!map2Unlocked() && !S.m2.defeated.length) S.facts = S.facts.filter(i=>i<FACTS1_N);
   Object.keys(S.weak).forEach(id=>{ if(!ITEM[id] || !Number.isFinite(S.weak[id])) delete S.weak[id]; });
@@ -1188,7 +1237,7 @@ function renderBattle(){
   const accBar = `<div class="accBar">${ACCENTS.map((c,i)=>`<button class="acc" type="button" onclick="insertChar(${i})">${esc(c)}</button>`).join("")}</div>`;
   const enter = `onkeydown="if(event.key==='Enter'){event.preventDefault();checkType();}"`;
   if(battle.q==="vFD"){
-    q = `<div class="qLabel">Was bedeutet das Wort?</div><div class="qText fr">${esc(first(it.fr))}</div>
+    q = `<div class="qLabel">Was bedeutet das Wort?</div><div class="qText fr">${esc(first(it.fr))}</div>${spkBtns(it.id,"","Anhören")}
       <div class="opts">${battle.opts.map((o,i)=>`<button class="opt" onclick="answerMC(${i})">${esc(o)}</button>`).join("")}</div>`;
   } else if(battle.q==="vDF_mc"){
     q = `<div class="qLabel">Wie heißt das auf Französisch?</div><div class="qText">${esc(it.de.replace(/;/g,","))}</div>
@@ -1200,7 +1249,7 @@ function renderBattle(){
   } else if(battle.q==="sTiles"){
     const fd = battle.dir==="fd";
     q = `<div class="qLabel">Übersetze ins ${fd?"Deutsche":"Französische"} – lege die Bausteine</div>
-      <div class="qText ${fd?"fr":""}">${esc(fd?it.frAlts[0]:it.deAlts[0])}</div>
+      <div class="qText ${fd?"fr":""}">${esc(fd?it.frAlts[0]:it.deAlts[0])}</div>${fd ? spkBtns(it.id,"","Anhören") : ""}
       ${(!fd && it.deHint) ? `<div class="hint-sm center" style="margin:-6px 0 10px">(${esc(it.deHint)})</div>` : ""}
       <div class="line" id="line"></div><div class="bank" id="bank"></div>
       <div class="btnRow center"><button class="btn ghost" onclick="resetTiles()">↺ Zurücksetzen</button><button class="btn" onclick="checkTiles()">Prüfen ✔</button></div>
@@ -1208,7 +1257,7 @@ function renderBattle(){
   } else {
     const fd = battle.dir==="fd";
     q = `<div class="qLabel">Übersetze ins ${fd?"Deutsche":"Französische"} – schreib den ganzen Satz</div>
-      <div class="qText ${fd?"fr":""}">${esc(fd?it.frAlts[0]:it.deAlts[0])}</div>
+      <div class="qText ${fd?"fr":""}">${esc(fd?it.frAlts[0]:it.deAlts[0])}</div>${fd ? spkBtns(it.id,"","Anhören") : ""}
       ${(!fd && it.deHint) ? `<div class="hint-sm center" style="margin:-6px 0 10px">(${esc(it.deHint)})</div>` : ""}
       <input class="fillIn" id="typeIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ganzer Satz …" ${enter}>
       ${fd?"":accBar}
@@ -1238,6 +1287,7 @@ function renderBattle(){
     <div id="feedback"></div>
     <div class="btnRow center"><button class="btn ghost" onclick="flee()">✕ Rückzug</button></div>`;
   if(battle.q==="sTiles") renderTiles();
+  if(battle.q==="vFD" || ((battle.q==="sTiles"||battle.q==="sType") && battle.dir==="fd")) autoSpeak("question");
   const inp = document.getElementById("typeIn"); if(inp) setTimeout(()=>{ try{ inp.focus(); }catch(e){} }, 0);
   window.scrollTo(0,0);
 }
@@ -1384,9 +1434,11 @@ function showFeedback(ok, given, r, notes, attack){
   }
   const wrongLine = (!ok && given) ? `<div class="fbLine">Deine Antwort: <span class="yours">${yourDisp}</span></div>` : "";
   const done = battle.foeHP <= 0;
+  const spk = TTS.ok ? `<div class="fbLine small" style="margin-top:6px">Aussprache üben:</div>` + spkBtns(it.id,"","Französisch")
+      + ((it.kind==="v" && it.exFr) ? `<div class="spkRow"><button class="spk" type="button" onclick="say('${it.id}',false,'ex')">🔊 Beispielsatz</button><button class="spk" type="button" onclick="say('${it.id}',true,'ex')">🐢 langsam</button></div>` : "") : "";
   box.innerHTML = `<div class="fb ${ok?"ok":"no"}">
     <div class="fbTitle">${ok?"✓ Richtig ! Très bien !":"✗ Leider falsch"}</div>
-    ${wrongLine}${warn}${body}
+    ${wrongLine}${warn}${body}${spk}
     ${attack ? `<div class="fbLine atk">${attack}</div>` : ""}
     ${!ok ? `<div class="fbLine small">Die Serie beginnt wieder bei 0.</div>` : ""}
     ${notes.map(t=>`<div class="fbLine small">${t}</div>`).join("")}
@@ -1397,6 +1449,7 @@ function showFeedback(ok, given, r, notes, attack){
   if(ht) ht.textContent = `${battle.foeHP} / ${battle.foeMax} KP`;
   /* Fokus erst im nächsten Tick: sonst löst der Enter-Tastendruck, der die Antwort
      abgeschickt hat, sofort auch den Weiter-Button aus (bekannter Stolperstein). */
+  autoSpeak("answer");
   setTimeout(()=>{ const b = document.getElementById("nextBtn"); if(b){ try{ b.focus(); b.scrollIntoView({block:"nearest", behavior:"smooth"}); }catch(e){} } }, 0);
 }
 function continueBattle(){
@@ -1475,7 +1528,7 @@ function showEval(){
     const it = ITEM[id];
     const fr = it.kind==="v" ? alts(it.fr).join(" / ") : it.frAlts[0];
     const de = it.kind==="v" ? it.de.replace(/;/g,",") : it.deAlts[0];
-    return `<div class="weakItem"><span class="frTxt">${esc(fr)}</span><span class="muted" style="text-align:right">${esc(de)}</span></div>`;
+    return `<div class="weakItem"><span class="frTxt">${TTS.ok ? `<button class="spk sm" type="button" onclick="say('${id}',false)" title="Anhören">🔊</button> ` : ""}${esc(fr)}</span><span class="muted" style="text-align:right">${esc(de)}</span></div>`;
   }).join("") + (weakIds.length>20 ? `<div class="hint-sm">… und ${weakIds.length-20} weitere</div>` : "")
     : `<div class="hint-sm">Gerade nichts offen – très bien !</div>`;
   const seenHTML = Object.keys(TAGS).filter(t=>!LOCKED.includes(t)).map(t=>{
@@ -1554,6 +1607,7 @@ function pagesPanel(){
 }
 function setScope(s){ if(!SCOPES[s]) return; S.scope = s; resetBags(); saveState(); showSettings(); }
 function setOrder(o){ S.discOrder = o; resetBags(); saveState(); showSettings(); }
+function setTts(o){ Object.assign(S.tts, o); normalizeState(); saveState(); showSettings(); }
 function setMode(m){ S.mode = m; resetBags(); saveState(); showSettings(); }
 function showSettings(){
   battle = null;
@@ -1569,6 +1623,22 @@ function showSettings(){
       <div class="hint-sm" style="margin-top:8px">Im aktuellen Bereich: <b>${ns} Sätze</b> und <b>${nv} Vokabeln</b>.${(ns+nv)===0 ? ' <b style="color:#f09a5c">Keine Aufgaben in dieser Auswahl – bitte ändern.</b>' : ''}</div>
       ${S.scope==="pages" ? `<div class="btnRow" style="margin-top:10px"><button class="btn" onclick="enterNode(Math.min(PR().node,CM().length-1))">▶ Jetzt mit dieser Auswahl üben</button></div>` : ""}
       ${(LOCKED.length||LOCKED_IDS.length) ? `<div class="hint-sm" style="margin-top:6px">🔒 Schon im Katalog, aber noch nicht dran (${esc(LOCKED_LABEL)}): ${ls} Sätze und ${lv} Vokabeln – sie werden erst abgefragt, wenn sie im Unterricht behandelt wurden.</div>` : ""}
+    </div>
+    <div class="card">
+      <b>🔊 Aussprache</b>
+      ${TTS.ok ? `
+      <div class="hint-sm" style="margin:4px 0 8px">Neben den französischen Wörtern und Sätzen gibt es 🔊-Knöpfe (🐢 = langsam). Zusätzlich kann das Gerät automatisch vorlesen:</div>
+      <div class="seg">
+        <button class="${S.tts.auto==="off"?"on":""}" onclick="setTts({auto:'off'})">Nur per Knopf</button>
+        <button class="${S.tts.auto==="after"?"on":""}" onclick="setTts({auto:'after'})">Nach der Antwort</button>
+        <button class="${S.tts.auto==="both"?"on":""}" onclick="setTts({auto:'both'})">Bei Frage und Antwort</button></div>
+      <div class="seg" style="margin-top:6px">
+        <button class="${!S.tts.slow?"on":""}" onclick="setTts({slow:false})">Automatisch: normal</button>
+        <button class="${S.tts.slow?"on":""}" onclick="setTts({slow:true})">Automatisch: langsam</button>
+        <button onclick="speakFr('Bonjour ! Je m\\'appelle Lukas. Et toi ?', false)">▶ Test</button></div>
+      <div class="hint-sm" style="margin-top:8px">${TTS.voice ? "Stimme: "+esc(TTS.voice.name)+" ("+esc(TTS.voice.lang)+")" : "⚠ Auf diesem Gerät wurde keine französische Stimme gefunden. iPad: Einstellungen › Bedienungshilfen › Gesprochene Inhalte › Stimmen › Französisch laden. Danach die Seite neu öffnen."}
+      Kein Ton? Dann den Stumm-Schalter / die Lautstärke prüfen.</div>`
+      : `<div class="hint-sm" style="margin-top:6px">Dieser Browser unterstützt keine Sprachausgabe.</div>`}
     </div>
     <div class="card">
       <b>Modus</b>
