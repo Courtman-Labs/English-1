@@ -928,6 +928,8 @@ function bump(obj, key, ok){ obj[key]=obj[key]||{a:0,c:0}; obj[key].a++; if(ok) 
 /* Normalisierung: Groß-/Kleinschreibung und Satzzeichen zählen nicht – Akzente schon (streng). */
 function normFr(s){
   return String(s||"").toLocaleLowerCase("fr")
+    .replace(/œ/g,"oe").replace(/æ/g,"ae")      /* „oe“ und „œ“ gelten als gleich (Tastatur!) – sœur = soeur */
+    .replace(/\(?\s*\bqn\s*\/\s*qc\b\s*\)?/g," ").replace(/\b(qn|qc)\b/g," ")   /* Platzhalter „qn/qc“ (= jemand/etwas) muss nicht getippt werden; mit oder ohne gilt als richtig */
     .replace(/[’‘`´]/g,"'")
     .replace(/[«»"“”„]/g," ")
     .replace(/[–—]/g," ")
@@ -1283,7 +1285,7 @@ function showMap(){
 /* ---------- Kampf ---------- */
 let battle = null;
 const ATTACKS = {vFD:"🥖 Baguette-Stups", vDF_mc:"🥖 Baguette-Stups", vDF_type:"🧀 Käse-Wurf", sTiles:"🧱 Pflasterstein-Konter", sType:"✒️ Federkiel-Treffer"};
-const ACCENTS = ["é","è","ê","à","â","ç","ô","î","ù","û","ë","ï","'"];
+const ACCENTS = ["é","è","ê","à","â","ç","ô","î","ù","û","ë","ï","œ","'"];
 
 function enterNode(i){
   if(i > PR().node) return;
