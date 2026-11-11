@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Raumstation ORION-7 – 3D-Werkstatt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--cyan:#45d4e6;--cyan2:#9ff0fa;--ink:#e8f3fb;--ok:#4fbf74;--bad:#e0604f;--warn:#f2c230;--card:rgba(12,24,42,.88);--line:rgba(69,212,230,.32)}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{min-height:100vh;color:var(--ink);font-family:'Nunito',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(ellipse at top,#12305a 0%,#070d1a 70%);background-attachment:fixed}
+  #stars{position:fixed;inset:0;pointer-events:none;opacity:.6;
+    background-image:radial-gradient(1px 1px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 72% 12%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 40% 70%,#bdf3ff,transparent),radial-gradient(1px 1px at 85% 55%,#fff,transparent),
+    radial-gradient(1px 1px at 25% 88%,#fff,transparent),radial-gradient(1px 1px at 60% 40%,#cfe0ff,transparent),
+    radial-gradient(1.5px 1.5px at 92% 85%,#fff,transparent),radial-gradient(1px 1px at 5% 50%,#fff,transparent),
+    radial-gradient(1px 1px at 33% 33%,#fff,transparent),radial-gradient(1px 1px at 66% 90%,#fff,transparent)}
+  main{position:relative;max-width:760px;margin:0 auto;padding:max(12px,env(safe-area-inset-top)) 12px calc(40px + env(safe-area-inset-bottom))}
+  header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .brand{display:flex;align-items:center;gap:10px;cursor:pointer}
+  .logo{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#bff6ff,#1d7f9a);box-shadow:0 0 0 2px var(--cyan),0 0 16px rgba(69,212,230,.5);display:flex;align-items:center;justify-content:center;font-size:20px}
+  h1{font-family:'Orbitron',sans-serif;color:var(--cyan2);font-size:19px;margin:0;line-height:1.1;letter-spacing:.04em}
+  .sub{display:block;font-size:12px;opacity:.75;font-family:'Nunito'}
+  .hud{display:flex;flex-wrap:wrap;gap:6px}
+  .badge{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:800}
+  .btn{font-family:'Orbitron',sans-serif;font-weight:800;font-size:14px;letter-spacing:.02em;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;
+    background:linear-gradient(#7fe6f3,#2bb3c7);color:#06222b;box-shadow:0 4px 0 #157587;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 #157587}
+  .btn.ghost{background:rgba(0,0,0,.3);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  .btn.ok{background:linear-gradient(#8fe0a8,#3fae64);color:#062a12;box-shadow:0 4px 0 #23733f}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn.small{font-size:12px;padding:8px 12px}
+  .btnRow{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .btnRow.center{justify-content:center}
+  .btnRow.split{justify-content:space-between}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .center{text-align:center}
+  .sectionTitle{font-family:'Orbitron',sans-serif;color:var(--cyan2);font-size:17px;margin:16px 0 6px;letter-spacing:.03em}
+  .hint-sm{font-size:13.5px;opacity:.82;line-height:1.5}
+  .lead{font-size:16px;line-height:1.6}
+  .kepler{display:flex;gap:10px;align-items:flex-start}
+  .kepler .av{flex:0 0 42px;height:42px;border-radius:12px;background:linear-gradient(#1a4f73,#0b2338);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:22px}
+  .kepler .bubble{flex:1;line-height:1.6;font-size:15.5px}
+  .tag{display:inline-block;font-size:11.5px;font-weight:800;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin:2px 4px 2px 0;background:rgba(69,212,230,.08)}
+  /* Station */
+  .station{position:relative;width:100%;max-width:520px;margin:6px auto 0}
+  .station svg{width:100%;display:block}
+  .mod{cursor:pointer}
+  .mod .ring{transition:all .2s}
+  .mod.locked{cursor:default}
+  .mod.cur .ring{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{stroke-width:2.2}50%{stroke-width:3.6}}
+  /* Fortschritt */
+  .prog{display:flex;gap:4px;margin:8px 0 2px;flex-wrap:wrap}
+  .prog i{flex:1;min-width:14px;height:8px;border-radius:4px;background:rgba(255,255,255,.14);cursor:pointer}
+  .prog i.d{background:var(--cyan)}
+  .prog i.c{background:var(--warn)}
+  .phaseLbl{font-size:12px;opacity:.75;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+  .stepH{font-family:'Orbitron',sans-serif;font-size:17px;color:var(--cyan2);margin:6px 0 10px;line-height:1.3}
+  .skBox{background:#f1f6fc;border-radius:12px;padding:6px;margin:10px 0;border:1px solid rgba(255,255,255,.2)}
+  .sk{width:100%;height:auto;display:block;max-height:280px}
+  .shot{width:100%;border-radius:12px;margin:10px 0;border:2px solid var(--line);display:block}
+  details.tip{margin-top:10px;background:rgba(242,194,48,.1);border:1px solid rgba(242,194,48,.45);border-radius:12px;padding:10px 12px}
+  details.tip summary{cursor:pointer;font-weight:900;color:#ffe08a}
+  details.tip div{margin-top:8px;line-height:1.55;font-size:14.5px}
+  /* Quiz */
+  .opt{display:block;width:100%;text-align:left;font-family:'Nunito';font-weight:800;font-size:15.5px;padding:13px 14px;margin:8px 0;border-radius:12px;
+    border:1px solid var(--line);background:rgba(0,0,0,.28);color:var(--ink);cursor:pointer}
+  .opt.right{background:rgba(79,191,116,.25);border-color:var(--ok)}
+  .opt.wrong{background:rgba(224,96,79,.25);border-color:var(--bad)}
+  .opt:disabled{cursor:default}
+  .fb{margin-top:10px;padding:12px 14px;border-radius:12px;line-height:1.55}
+  .fb.ok{background:rgba(79,191,116,.14);border:1px solid var(--ok)}
+  .fb.bad{background:rgba(224,96,79,.14);border:1px solid var(--bad)}
+  /* Checkliste */
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;margin:8px 0;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.25);cursor:pointer;font-weight:800;line-height:1.4}
+  .chk .bx{flex:0 0 24px;height:24px;border-radius:6px;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-weight:900}
+  .chk.on{background:rgba(79,191,116,.16);border-color:var(--ok)}
+  .chk.on .bx{background:var(--ok);border-color:var(--ok);color:#06220f}
+  /* Liste */
+  .row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+  .row:last-child{border-bottom:none}
+  .row .ic{font-size:22px;flex:0 0 30px;text-align:center}
+  .row .tx{flex:1}
+  .pill{font-size:11.5px;font-weight:900;border-radius:999px;padding:3px 9px}
+  .pill.ok{background:rgba(79,191,116,.25);color:#b8f5cb}
+  .pill.no{background:rgba(255,255,255,.1);opacity:.8}
+  .bar{height:10px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#2bb3c7,#9ff0fa)}
+  .win{font-size:54px;text-align:center;margin:6px 0}
+  .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0d3346;border:1px solid var(--cyan);border-radius:12px;padding:10px 16px;font-weight:900;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:90%;text-align:center}
+  @media (max-width:420px){ h1{font-size:16px} .btn{font-size:13px;padding:11px 13px} .lead,.kepler .bubble{font-size:15px} }
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<main id="app"></main>
+<script>
+/* =========================================================
+   INHALT – Missionen der Raumstation ORION-7
+   Jede Mission: Geschichte, Bau-Schritte (mit Skizze und optionalem iPad-Bild),
+   Abschluss-Check, Replikator-Wissen (3D-Druck) und Quiz.
+   Neue Mission: einfach ein weiteres Objekt anhängen (id fortlaufend m10, m11 …)
+   und in STATION_POS eine Position ergänzen.
+   ========================================================= */
+
+/* iPad-Bilder (echte Bildschirmfotos der Tinkercad-iPad-App, rot markiert):
+   Datei assets/tc-<id>.jpg – fehlt die Datei, wird nur die Skizze gezeigt. */
+const SHOTS = {
+  "s01-start":       "Startseite: „+ Erstellen“ → „3D-Entwurf“",
+  "s02-arbeitsebene":"Leere Arbeitsebene, rechts die Leiste „Einfache Formen“",
+  "s03-ansicht":     "Ansichtswürfel und die Knöpfe links (Startansicht, Alles einpassen, Zoom, Ansicht)",
+  "s04-griffe":      "Ausgewählter Quader: weiße Eck-Griffe, schwarzer Kegel, Dreh-Pfeile",
+  "s05-masse":       "Zylinder: Maße erscheinen an den Griffen und können angetippt werden",
+  "s06-formfenster": "Form-Fenster: Volumenkörper/Bohrung, Länge, Breite, Höhe",
+  "s15-radius":      "Form-Fenster: Radius für runde Ecken",
+  "s07-text":        "Text-Form: Textfeld und Höhe (= Dicke)",
+  "s08-gruppieren":  "Zwei Formen ausgewählt, Symbol „Gruppieren“ in der Werkzeugleiste",
+  "s13-gruppentyp":  "Gruppentyp links „Bündel“ (Bohrung schneidet nicht), rechts „Vereinigung“ (Loch ist ausgestanzt)",
+  "s09-ausrichten":  "Symbol „Ausrichten“ und die schwarzen Ausrichtungspunkte",
+  "s10-duplizieren": "Symbol „Duplizieren und wiederholen“",
+  "s11-spiegeln":    "Symbol „Spiegeln“ und die Spiegel-Pfeile an der Form",
+  "s12-export":      "„Exportieren“ → Herunterladen → .STL",
+  "s14-fangraster":  "Fangraster unten rechts"
+};
+
+const RANKS = [
+  [0,   "Kadett"],
+  [250, "Techniker"],
+  [600, "Ingenieur"],
+  [1100,"Chefingenieur"],
+  [1700,"Kommandant"]
+];
+
+const MISSIONS = [
+/* ---------------------------------------------------------- 1 */
+{ id:"m1", icon:"🔧", module:"Werkstatt", title:"Erwachen in der Werkstatt",
+  story:`Willkommen an Bord der Raumstation <b>ORION-7</b>, Kadett! Ein Meteoritenschauer hat die Station beschädigt. Zum Glück haben wir den <b>Replikator</b> – eine Maschine, die Ersatzteile Schicht für Schicht aus Kunststoff baut. Aber der Replikator braucht <b>Baupläne</b>. Und die zeichnest ab heute du – mit dem Konstruktions-Programm <b>Tinkercad</b>.<br><br>Ich bin <b>KEPLER</b>, der Bordcomputer. Als Erstes schalten wir das Licht in der Werkstatt wieder ein. Dafür lernst du, dich in Tinkercad zu bewegen.`,
+  goal:"Du kannst einen Entwurf anlegen, eine Form auf die Arbeitsebene setzen und die Ansicht drehen, zoomen und zurücksetzen.",
+  skills:["Neuen Entwurf anlegen","Arbeitsebene","Ansicht drehen und zoomen","Rückgängig"],
+  steps:[
+    {t:"Neuen Entwurf anlegen", sk:"dashboard", shot:"s01-start",
+     d:`Öffne die <b>Tinkercad-App</b> und melde dich an. Tippe oben rechts auf <b>„+ Erstellen“</b> und wähle <b>„3D-Entwurf“</b>. Tinkercad gibt deinem Entwurf einen lustigen Zufallsnamen (z. B. „Smashing Allis“) – den ändern wir gleich.`,
+     tip:`Du siehst die Startseite nicht, sondern schon einen Entwurf? Tippe oben links auf das bunte TINKERCAD-Logo, dann kommst du zur Startseite zurück.`},
+    {t:"Die Arbeitsebene kennenlernen", sk:"workplane", shot:"s02-arbeitsebene",
+     d:`Das blaue Gitter in der Mitte ist die <b>Arbeitsebene</b> – dein Arbeitstisch. Jedes Kästchen ist <b>1 mm</b> groß, die dickeren Linien sind 10 mm voneinander entfernt. Rechts ist die <b>Formen-Leiste „Einfache Formen“</b>: Quader, Zylinder, Kugel, Kegel, Text und viele mehr. Die <b>grau gestreiften</b> Formen in der obersten Reihe sind fertige <b>Bohrungen</b> – die brauchen wir ab Mission 4.`,
+     tip:`Die Formen-Leiste ist weg? Tippe auf den kleinen Pfeil „‹“ am rechten Rand, dann klappt sie wieder auf. Über „Einfache Formen“ kannst du auch andere Formen-Sammlungen auswählen – für unsere Missionen bleiben wir bei „Einfache Formen“.`},
+    {t:"Einen Quader setzen", sk:"placeBox",
+     d:`Ziehe den roten <b>Quader</b> (zweite Reihe, links) aus der Formen-Leiste auf die Arbeitsebene. Lass ihn irgendwo los. Glückwunsch – das ist deine erste Form! Tippe daneben ins Leere: Die Auswahl verschwindet. Tippe wieder auf den Quader: Er ist ausgewählt und hat jetzt kleine <b>Griffe</b>.`},
+    {t:"Ansicht drehen, verschieben, zoomen", sk:"gestures", shot:"s03-ansicht",
+     d:`Schau dir den Quader von allen Seiten an:<br>• <b>Drehen:</b> mit einem Finger auf einer leeren Stelle wischen<br>• <b>Verschieben:</b> mit zwei Fingern wischen<br>• <b>Zoomen:</b> zwei Finger auseinander- oder zusammenziehen<br>Oben links ist der <b>Ansichtswürfel</b>: Tippe auf „OBEN“ oder „VORNE“, dann springt die Ansicht genau dorthin. Darunter sind die Knöpfe: <b>Haus</b> = zurück zur Startansicht, <b>Rahmen mit Raute</b> = alles einpassen (alle Formen passen auf den Bildschirm), <b>+ und −</b> = zoomen.`,
+     tip:`Wenn sich statt der Ansicht der Quader bewegt, hast du auf den Quader getippt – wisch auf einer leeren Stelle. Hast du dich „verflogen“: Haus-Knopf antippen.`},
+    {t:"Verschieben, löschen, rückgängig", sk:"undo",
+     d:`Ziehe den Quader mit dem Finger an eine andere Stelle. Jetzt löschen: Quader antippen und oben in der Werkzeugleiste den <b>Mülleimer</b> antippen. Oh nein, weg! Kein Problem: Der <b>Pfeil nach links</b> direkt neben dem Mülleimer ist „Rückgängig“ und holt ihn zurück. Rückgängig ist dein bester Freund – du kannst nichts kaputt machen.`},
+    {t:"Entwurf umbenennen", sk:"rename",
+     d:`Tippe oben links (neben dem TINKERCAD-Logo) auf den Zufallsnamen deines Entwurfs und nenne ihn <b>„ORION Werkstatt“</b>. Tinkercad speichert automatisch – du musst nie auf „Speichern“ drücken.`}
+  ],
+  check:["Ich habe einen neuen 3D-Entwurf angelegt","Ich kann die Ansicht drehen und zoomen","Ich habe mit „Rückgängig“ etwas zurückgeholt","Mein Entwurf heißt „ORION Werkstatt“"],
+  know:{t:"Was macht der Replikator eigentlich?", sk:"fdm",
+    d:`Unser Replikator ist ein <b>3D-Drucker</b>. Die häufigste Art funktioniert so: Ein dünner Kunststoff-Faden (das <b>Filament</b>) wird in einer heißen <b>Düse</b> geschmolzen – ungefähr 200 °C heiß. Die Düse fährt hin und her und legt eine hauchdünne Linie aus flüssigem Kunststoff ab, die sofort fest wird. So entsteht <b>Schicht für Schicht</b> von unten nach oben ein echtes Teil. Darum heißt das Verfahren auch „Schmelzschichtung“ (englisch FDM).`},
+  quiz:[
+    {q:"Wie groß ist ein kleines Kästchen auf der Arbeitsebene?", o:["1 mm","1 cm","1 m"], a:0, e:"Ein kleines Kästchen ist 1 Millimeter. Die dickeren Linien liegen 10 mm (= 1 cm) auseinander."},
+    {q:"Du hast aus Versehen etwas gelöscht. Was tust du?", o:["„Rückgängig“ antippen","Einen neuen Entwurf anfangen","Die App schließen"], a:0, e:"„Rückgängig“ holt den letzten Schritt zurück – beliebig oft hintereinander."},
+    {q:"Wie baut ein 3D-Drucker ein Teil?", o:["Schicht für Schicht von unten nach oben","Er schnitzt es aus einem Block","Er gießt es auf einmal in eine Form"], a:0, e:"Der Drucker legt hauchdünne Schichten übereinander. Das Schnitzen aus einem Block macht eine Fräsmaschine."},
+    {q:"Wie heißt der Kunststoff-Faden, den der Drucker schmilzt?", o:["Filament","Pixel","Granulat"], a:0, e:"Das Filament kommt auf einer Rolle und wird in der heißen Düse geschmolzen."}
+  ]},
+
+/* ---------------------------------------------------------- 2 */
+{ id:"m2", icon:"🧊", module:"Replikator", title:"Der Kalibrierwürfel",
+  story:`Die Werkstatt hat wieder Licht! Jetzt muss der <b>Replikator</b> neu eingestellt werden. Dafür braucht er einen <b>Kalibrierwürfel</b>: einen Würfel, der <b>genau 20 mm</b> in jede Richtung misst. Wenn der gedruckte Würfel nachher 20 mm misst, weiß der Replikator, dass er richtig rechnet. „Ungefähr“ reicht also nicht – heute lernst du, <b>Maße genau einzutippen</b>.`,
+  goal:"Du kannst eine Form auf ein genaues Maß in Millimetern bringen und die Höhe ändern.",
+  skills:["Griffe","Maße eintippen","Breite, Tiefe, Höhe"],
+  steps:[
+    {t:"Neuer Entwurf, neuer Quader", sk:"placeBox",
+     d:`Lege einen neuen 3D-Entwurf an und nenne ihn <b>„Kalibrierwürfel“</b>. Ziehe einen Quader auf die Arbeitsebene.`},
+    {t:"Die Griffe verstehen", sk:"handles", shot:"s04-griffe",
+     d:`Tippe den Quader an. Jetzt siehst du:<br>• <b>Weiße Quadrate an den Ecken unten</b> – ändern Länge und Breite<br>• <b>Weißes Quadrat oben in der Mitte</b> – ändert die Höhe<br>• <b>Schwarzer Kegel oben</b> – hebt die Form hoch oder senkt sie ab<br>• <b>Gebogene Pfeile</b> – drehen die Form`,
+     tip:`Die Griffe sind sehr klein? Zoome näher heran, dann triffst du sie leichter.`},
+    {t:"Maße eintippen", sk:"dims20", shot:"s06-formfenster",
+     d:`Wenn der Quader ausgewählt ist, steht rechts das <b>Form-Fenster</b>. Unter <b>„Eigenschaften“</b> findest du <b>Länge, Breite und Höhe</b> in mm. Zieh zum Üben den Eck-Griff, bis der Quader größer ist – die Zahlen ändern sich mit. Dann tippe auf die Zahl bei <b>Länge</b> und gib <b>20</b> ein, ebenso bei <b>Breite</b>.`,
+     tip:`Du siehst nur eine kleine Leiste mit „Quader“ und zwei Farbkreisen? Tippe links daneben auf den kleinen Pfeil „˅“ – dann klappt das ganze Form-Fenster auf.`},
+    {t:"Die Höhe prüfen", sk:"dims20", shot:"s05-masse",
+     d:`Prüfe jetzt die <b>Höhe</b>: Stelle sie im Form-Fenster ebenfalls auf <b>20</b>. Nun ist dein Würfel 20 × 20 × 20 mm – genau wie der Replikator ihn braucht. Übrigens: Wenn du einen Griff antippst, erscheinen die Maße auch direkt an der Form und du kannst sie dort antippen und ändern (im Bild beim Zylinder: 11.00 und 10.00).`,
+     tip:`Bei manchen Formen (z. B. Zylinder) stehen die Maße nicht im Form-Fenster. Dann geht es nur über die Zahlen an den Griffen.`},
+    {t:"Bonus: ein „X“ obendrauf", sk:"cubeX",
+     d:`Damit man später weiß, wo oben ist: Ziehe die <b>Text</b>-Form (rotes „TEXT“) auf die Arbeitsebene, tippe im Form-Fenster ins Feld <b>Text</b> und schreibe <b>X</b>. Stelle bei <b>Höhe</b> (das ist die Dicke des Buchstabens) <b>1</b> ein und hebe ihn mit dem <b>schwarzen Kegel</b> auf <b>20</b> mm hoch. Schiebe ihn mitten auf den Würfel.`,
+     tip:`Das ist eine Bonus-Aufgabe. Wie man Formen genau in die Mitte setzt, lernst du in Mission 5 noch richtig.`}
+  ],
+  check:["Mein Würfel ist genau 20 × 20 × 20 mm","Ich weiß, welcher Griff was macht","Ich kann ein Maß eintippen"],
+  know:{t:"Wie lange druckt der Replikator?", sk:"cubeSizes",
+    d:`Ein 3D-Drucker ist geduldig, aber nicht schnell. Ein 20-mm-Würfel dauert etwa eine halbe Stunde. Ein Würfel mit <b>doppelter</b> Kantenlänge (40 mm) hat aber nicht doppelt so viel Material, sondern <b>8-mal so viel</b> (2 × 2 × 2)! Darum gilt für Ingenieure: <b>So groß wie nötig, so klein wie möglich.</b> Außerdem ist jeder Drucker begrenzt – viele Drucker schaffen höchstens etwa 18 bis 25 cm in jede Richtung.`},
+  quiz:[
+    {q:"Welcher Griff ändert die Höhe einer Form?", o:["Das weiße Quadrat oben in der Mitte","Der schwarze Kegel","Die gebogenen Pfeile"], a:0, e:"Das weiße Quadrat oben ändert die Höhe. Der schwarze Kegel hebt die ganze Form hoch, ohne sie größer zu machen."},
+    {q:"Was macht der schwarze Kegel über der Form?", o:["Er hebt die Form an oder senkt sie ab","Er macht die Form spitz","Er löscht die Form"], a:0, e:"Mit dem schwarzen Kegel schwebt die Form höher – das brauchst du, um Formen aufeinanderzustapeln."},
+    {q:"Ein Würfel hat 20 mm Kantenlänge. Du machst ihn 40 mm groß. Wie viel mehr Material braucht er?", o:["8-mal so viel","2-mal so viel","4-mal so viel"], a:0, e:"Breite, Tiefe und Höhe werden je doppelt so groß: 2 × 2 × 2 = 8."},
+    {q:"Wozu dient ein Kalibrierwürfel?", o:["Man prüft, ob der Drucker die Maße genau trifft","Er ist ein Spielwürfel","Er reinigt die Düse"], a:0, e:"Man misst den gedruckten Würfel nach. Sind es genau 20 mm, ist der Drucker richtig eingestellt."}
+  ]},
+
+/* ---------------------------------------------------------- 3 */
+{ id:"m3", icon:"🚪", module:"Crew-Quartiere", title:"Das Türschild",
+  story:`In den <b>Crew-Quartieren</b> sind alle Türschilder geschmolzen. Niemand weiß mehr, wer wo schläft! Deine Aufgabe: ein Türschild mit <b>deinem Namen</b>. Dafür lernst du, <b>Formen aufeinanderzustapeln</b> und mit <b>Text</b> zu arbeiten.`,
+  goal:"Du kannst eine Platte mit runden Ecken bauen, Text daraufsetzen und beides gruppieren.",
+  skills:["Form-Fenster","Abgerundete Ecken","Text-Form","Anheben","Gruppieren"],
+  steps:[
+    {t:"Die Grundplatte", sk:"plate",
+     d:`Neuer Entwurf „Türschild“. Ziehe einen Quader auf die Arbeitsebene und stelle im Form-Fenster <b>Länge 80</b>, <b>Breite 25</b> und <b>Höhe 3</b> mm ein.`,
+     tip:`Liegt die Platte quer statt längs? Das ist egal – du kannst die Ansicht drehen. Oder du tauschst Länge und Breite.`},
+    {t:"Runde Ecken", sk:"radius", shot:"s15-radius",
+     d:`Im Form-Fenster gibt es oben bei den Eigenschaften den Regler <b>„Radius“</b>. Stelle ihn auf <b>2</b> – die Ecken werden rund. Über den großen Farbkreis bei <b>„Volumenkörper“</b> kannst du die <b>Farbe</b> ändern. Wähle eine Farbe für dein Schild.`,
+     tip:`Den Radius nicht zu groß machen: Bei einer 3 mm dicken Platte reichen 1 bis 2 mm, sonst wird die Platte an den Rändern sehr dünn.`},
+    {t:"Text hinzufügen", sk:"textShape", shot:"s07-text",
+     d:`Ziehe die Form <b>Text</b> (rotes „TEXT“) auf die Arbeitsebene. Im Form-Fenster steht im Feld <b>Text</b> „TEXT“ – tippe hinein und schreibe deinen Namen, z. B. <b>LUKAS</b>. Achtung: <b>„Höhe“</b> bedeutet bei der Text-Form die <b>Dicke</b> der Buchstaben (am Anfang 10 mm). Stelle sie auf <b>2</b>. Ziehe dann an einem weißen Eck-Griff, bis der Text etwa <b>60 mm</b> lang ist.`,
+     tip:`Damit die Buchstaben nicht gequetscht werden: Tippe auf einen Eck-Griff, dann erscheinen die Maße. Ändere Länge und Breite im gleichen Verhältnis – z. B. 60 lang und 12 breit.`},
+    {t:"Text anheben", sk:"liftText",
+     d:`Der Text steht noch auf der Arbeitsebene und steckt <b>in</b> der Platte. Er soll aber <b>auf</b> der Platte stehen. Tippe den Text an und ziehe den <b>schwarzen Kegel</b> nach oben, bis die Zahl <b>3</b> erscheint (oder tippe 3 ein). Jetzt steht der Text genau auf der 3 mm dicken Platte. Schiebe ihn in die Mitte.`},
+    {t:"Gruppieren", sk:"group", shot:"s08-gruppieren",
+     d:`Tippe erst die Platte an und dann den Text – jetzt sind beide ausgewählt (im Form-Fenster steht „Shapes(2)“). Tippe oben in der Werkzeugleiste auf das Symbol <b>„Gruppieren“</b> – ein <b>Quadrat und ein Kreis in einem gestrichelten Rahmen</b>. Jetzt hängen Platte und Text zusammen. Im Form-Fenster steht <b>„Gruppentyp: Bündel“</b>: Die Teile bleiben einzeln und behalten ihre Farben – perfekt für ein zweifarbiges Schild.`,
+     tip:`Mehrere Formen auswählen: einfach nacheinander antippen. Aus Versehen etwas Falsches mit ausgewählt? Auf eine leere Stelle tippen und neu anfangen.`}
+  ],
+  check:["Die Platte ist 80 × 25 × 3 mm mit runden Ecken","Mein Name steht AUF der Platte (Höhe 3 mm angehoben)","Platte und Text sind gruppiert"],
+  know:{t:"Schichten und feine Details", sk:"layers",
+    d:`Der Replikator legt Schichten von meist <b>0,2 mm</b> übereinander – dein 3 mm dickes Schild hat also 15 Schichten. Die Düse ist ungefähr <b>0,4 mm</b> breit. Daraus folgt eine Ingenieurs-Regel: <b>Sehr dünne Linien gehen beim Drucken verloren.</b> Buchstaben sollten deshalb nicht zu klein sein – etwa ab 8 mm Buchstabenhöhe, mit Strichen von mindestens 1 mm, wird Text schön lesbar.`},
+  quiz:[
+    {q:"Der Text steht auf der Arbeitsebene und steckt in der 3 mm dicken Platte. Wie hoch musst du ihn anheben?", o:["3 mm","2 mm","5 mm"], a:0, e:"Die Platte ist 3 mm hoch. Hebst du den Text um 3 mm an, steht er genau auf der Oberseite."},
+    {q:"Was bewirkt „Gruppieren“?", o:["Mehrere Formen werden zu einem Teil","Die Formen werden doppelt so groß","Die Formen werden gelöscht"], a:0, e:"Gruppierte Formen verhalten sich wie ein einziges Teil – man kann sie zusammen verschieben und drucken."},
+    {q:"Wo stellst du ein, dass ein Quader runde Ecken bekommt?", o:["Im Form-Fenster beim „Radius“","Mit dem schwarzen Kegel","Mit den Dreh-Pfeilen"], a:0, e:"Das Form-Fenster zeigt die Einstellungen der ausgewählten Form, z. B. Radius, Farbe und Text."},
+    {q:"Wie dick ist eine Druck-Schicht ungefähr?", o:["0,2 mm","2 mm","2 cm"], a:0, e:"Typisch sind 0,1 bis 0,3 mm pro Schicht. Dünnere Schichten sehen schöner aus, dauern aber länger."}
+  ]},
+
+/* ---------------------------------------------------------- 4 */
+{ id:"m4", icon:"🔑", module:"Luftschleuse", title:"Der Zugangschip",
+  story:`Die <b>Luftschleuse</b> öffnet sich nur mit einem <b>Zugangschip</b>. Der alte ist im Weltall verschwunden. Wir brauchen einen neuen – mit einem <b>Loch</b> für den Schlüsselring und der eingravierten Aufschrift <b>ORION</b>. Heute lernst du den wichtigsten Trick von Tinkercad: die <b>Bohrung</b>.`,
+  goal:"Du kannst mit Bohrungen Löcher und Gravuren in Formen schneiden.",
+  skills:["Volumenkörper und Bohrung","Löcher schneiden","Gravur","Export als STL"],
+  steps:[
+    {t:"Der Chip-Körper", sk:"chipBody",
+     d:`Neuer Entwurf „Zugangschip“. Quader mit <b>50 × 30 × 4</b> mm, Radius <b>3</b>.`},
+    {t:"Volumenkörper oder Bohrung?", sk:"solidHole", shot:"s06-formfenster",
+     d:`Im Form-Fenster siehst du oben zwei große Kreise: <b>Volumenkörper</b> (fest, farbig) und <b>Bohrung</b> (durchsichtig, grau gestreift). Eine Bohrung ist wie ein <b>Radiergummi in 3D</b>: Wo sie andere Formen berührt, wird beim Gruppieren Material weggeschnitten.`},
+    {t:"Das Loch für den Schlüsselring", sk:"chipHole",
+     d:`Ziehe einen <b>Zylinder</b> auf die Arbeitsebene und tippe im Form-Fenster auf <b>Bohrung</b> (oder nimm gleich den grau gestreiften Zylinder aus der obersten Reihe). Tippe einen Eck-Griff an und stelle die Maße auf <b>6 × 6</b> mm; die Höhe auf <b>10</b> mm, damit er höher ist als der Chip. Schiebe ihn an ein Ende des Chips, etwa 5 mm vom Rand entfernt.`,
+     tip:`Die Bohrung muss durch das ganze Teil gehen. Ist sie zu niedrig, entsteht nur eine Mulde statt einem Loch.`},
+    {t:"Gravur „ORION“", sk:"chipEngrave",
+     d:`Ziehe eine <b>Text</b>-Form herüber, schreibe <b>ORION</b>, stelle sie auf <b>Bohrung</b> und die Höhe (Dicke) auf <b>2</b> mm. Hebe sie mit dem schwarzen Kegel auf <b>3</b> mm an. Jetzt ragt die Text-Bohrung 1 mm tief in den 4 mm dicken Chip hinein – das wird die Gravur.`},
+    {t:"Gruppieren als Vereinigung", sk:"chipDone", shot:"s13-gruppentyp",
+     d:`Tippe nacheinander den Chip, die Zylinder-Bohrung und die Text-Bohrung an und tippe dann auf <b>„Gruppieren“</b>. Jetzt kommt der wichtige Trick: Im Form-Fenster steht <b>„Gruppentyp“</b> mit drei Symbolen. Tippe auf das <b>mittlere Symbol „Vereinigung“</b>. Erst dann verschmilzt alles zu einem Teil – das Loch ist durchgestanzt und ORION ist eingraviert!`,
+     tip:`Die Bohrung ist noch grau zu sehen und das Loch fehlt? Dann steht der Gruppentyp auf „Bündel“ (das ist am Anfang eingestellt) – beim Bündel bleiben alle Teile einzeln und die Bohrung schneidet nicht. Auf „Vereinigung“ umstellen, wie im Bild rechts. Zum Trennen gibt es das Symbol „Gruppierung aufheben“ (rechts neben „Gruppieren“).`},
+    {t:"Bauplan für den Replikator exportieren", sk:"exportFlow", shot:"s12-export",
+     d:`Tippe oben rechts auf <b>„Exportieren“</b>. Im Fenster ist der Reiter <b>„Herunterladen“</b> ausgewählt – unter „Für 3D-Druck“ tippst du auf <b>.STL</b>. Das ist das Dateiformat, das jeder 3D-Drucker versteht. Die Datei landet in deinen Downloads. Noch haben wir keinen echten Replikator – aber so würdest du den Bauplan losschicken.`,
+     tip:`Das Exportieren ist freiwillig. Du kannst es auch nur anschauen und wieder abbrechen.`}
+  ],
+  check:["Der Chip hat ein durchgehendes Loch","ORION ist 1 mm tief eingraviert","Alles ist gruppiert","Ich weiß, wo der STL-Export ist"],
+  know:{t:"Löcher sind beim Drucken etwas kleiner", sk:"holeShrink",
+    d:`Ein Trick, den echte Ingenieure kennen: <b>Gedruckte Löcher werden meist etwas kleiner</b> als geplant, weil der geschmolzene Kunststoff ein bisschen nach innen fließt. Soll ein 6-mm-Stift durch ein Loch passen, plant man das Loch lieber <b>6,3 bis 6,5 mm</b> groß. Und noch etwas: Die <b>STL-Datei</b> beschreibt die Form als viele kleine Dreiecke – so sieht der Drucker dein Teil.`},
+  quiz:[
+    {q:"Du gruppierst Chip und Bohrung. Bei welchem Gruppentyp wird das Loch ausgestanzt?", o:["Vereinigung","Bündel","Bei beiden gleich"], a:0, e:"Erst die Vereinigung verschmilzt alles zu einem Teil und schneidet mit der Bohrung Material weg. Beim Bündel bleiben die Teile einzeln."},
+    {q:"Dein Chip ist 4 mm dick. Die Loch-Bohrung ist nur 2 mm hoch. Was passiert?", o:["Es entsteht nur eine Mulde, kein Loch","Das Loch geht trotzdem durch","Der Chip wird dünner"], a:0, e:"Die Bohrung schneidet nur dort, wo sie ist. Für ein Loch muss sie durch die ganze Dicke reichen."},
+    {q:"Welches Dateiformat versteht fast jeder 3D-Drucker?", o:["STL","MP3","JPG"], a:0, e:"STL beschreibt die Oberfläche als viele kleine Dreiecke. MP3 ist Musik, JPG ist ein Foto."},
+    {q:"Ein 6-mm-Stift soll durch ein gedrucktes Loch passen. Wie groß planst du das Loch?", o:["Etwas größer, z. B. 6,4 mm","Genau 6,0 mm","Kleiner, z. B. 5,5 mm"], a:0, e:"Gedruckte Löcher werden meist etwas kleiner. Deshalb gibt man ein paar Zehntel Millimeter dazu."}
+  ]},
+
+/* ---------------------------------------------------------- 5 */
+{ id:"m5", icon:"📡", module:"Funkturm", title:"Der Antennenmast",
+  story:`Ohne Funk keine Verbindung zur Erde! Der <b>Funkturm</b> braucht einen neuen <b>Antennenmast</b>: drei Zylinder, immer dünner, übereinandergestapelt, mit einer Spitze obendrauf. Das Schwierige: Alles muss <b>genau in der Mitte</b> sitzen, sonst wackelt der Empfang. Dafür gibt es das Werkzeug <b>Ausrichten</b>.`,
+  goal:"Du kannst Formen genau stapeln und mit „Ausrichten“ mittig ausrichten.",
+  skills:["Zylinder und Kegel","Stapeln mit genauer Höhe","Ausrichten","Glatte Rundungen (Seiten)"],
+  steps:[
+    {t:"Der Sockel", sk:"mastBase",
+     d:`Neuer Entwurf „Antennenmast“. Zylinder mit <b>30 × 30 × 6</b> mm (die Maße stellst du beim Zylinder über die Zahlen an den Griffen ein). Im Form-Fenster gibt es <b>„Seiten“</b> – stelle sie auf <b>64</b>. Dann ist der Zylinder schön rund statt eckig.`},
+    {t:"Der Mast", sk:"mastStack",
+     d:`Zweiter Zylinder: <b>10 × 10 × 40</b> mm, anheben auf <b>6</b> mm (er steht dann auf dem Sockel). Dritter Zylinder: <b>5 × 5 × 20</b> mm, anheben auf <b>46</b> mm (6 + 40).`,
+     tip:`Rechne immer: neue Höhe = Höhe aller Teile darunter zusammen. Zum Anheben den <b>schwarzen Kegel</b> antippen – dann erscheint die Höhe als Zahl, die du eintippen kannst.`},
+    {t:"Die Spitze", sk:"mastStack",
+     d:`Ziehe einen <b>Kegel</b> dazu: <b>8 × 8 × 10</b> mm, anheben auf <b>66</b> mm (46 + 20). Jetzt steht alles übereinander – aber wahrscheinlich noch schief nebeneinander.`},
+    {t:"Ausrichten!", sk:"align", shot:"s09-ausrichten",
+     d:`Tippe <b>alle vier Formen</b> nacheinander an und dann in der Werkzeugleiste auf <b>„Ausrichten“</b> (Symbol mit Balken an einer Linie). Es erscheinen schwarze Punkte an den Seiten. Tippe bei der Breite auf den <b>mittleren Punkt</b> und bei der Tiefe ebenfalls auf den <b>mittleren Punkt</b>. Zack – alles sitzt genau übereinander in der Mitte!`,
+     tip:`Tippe die Höhen-Punkte NICHT an, sonst rutschen alle Formen auf dieselbe Höhe.`},
+    {t:"Gruppieren und anschauen", sk:"mastDone",
+     d:`Gruppiere alles. Dreh die Ansicht und schau von unten: Der Sockel liegt flach auf der Arbeitsebene. Das ist wichtig für den Druck – gleich erfährst du warum.`}
+  ],
+  check:["Der Mast hat Sockel, zwei Zylinder und eine Spitze","Alles sitzt genau in der Mitte (Ausrichten)","Die Zylinder sind rund (Seiten erhöht)"],
+  know:{t:"Die 45-Grad-Regel", sk:"overhang",
+    d:`Der Replikator kann nicht in die Luft drucken – jede Schicht braucht eine Schicht darunter. Wenn eine Wand schräg nach außen geht (ein <b>Überhang</b>), steht jede neue Schicht ein bisschen über. Bis etwa <b>45 Grad</b> Schräge klappt das gut. Flacher wird es hässlich oder stürzt ab. Darum ist die <b>Spitze als Kegel</b> perfekt: Sie wird nach oben schmaler. Eine Kugel dagegen hat unten einen starken Überhang.`},
+  quiz:[
+    {q:"Was erreichst du mit „Ausrichten“ und den mittleren Punkten?", o:["Alle Formen sitzen genau in der Mitte übereinander","Alle Formen werden gleich groß","Alle Formen bekommen dieselbe Farbe"], a:0, e:"Ausrichten verschiebt die Formen so, dass ihre Mitten auf einer Linie liegen."},
+    {q:"Der Sockel ist 6 mm hoch, der Mast darauf 40 mm. Wie hoch hebst du das nächste Teil an?", o:["46 mm","40 mm","6 mm"], a:0, e:"Neue Höhe = alle Teile darunter zusammen: 6 + 40 = 46 mm."},
+    {q:"Welche Schräge kann ein 3D-Drucker ohne Hilfe meist noch gut drucken?", o:["Bis etwa 45 Grad","Bis etwa 80 Grad","Gar keine"], a:0, e:"Bis ungefähr 45 Grad liegt jede Schicht noch genug auf der darunter. Flachere Überhänge brauchen Stützen."},
+    {q:"Warum stellst du bei Zylindern die „Seiten“ höher?", o:["Damit sie rund statt eckig aussehen","Damit sie schneller drucken","Damit sie leichter werden"], a:0, e:"Ein Zylinder besteht aus vielen geraden Seitenflächen. Je mehr Seiten, desto runder."}
+  ]},
+
+/* ---------------------------------------------------------- 6 */
+{ id:"m6", icon:"☀️", module:"Energiedeck", title:"Die Solarflügel",
+  story:`Das <b>Energiedeck</b> ist dunkel – die Solarflügel sind zerbrochen. Ein Solarflügel ist ein Rahmen mit vielen gleichen Fenstern. Die alle einzeln zu bauen, dauert ewig. Darum lernst du heute zwei Ingenieurs-Abkürzungen: <b>Duplizieren und wiederholen</b> und <b>Spiegeln</b>.`,
+  goal:"Du kannst Formen in regelmäßigen Abständen vervielfältigen und spiegeln.",
+  skills:["Duplizieren und wiederholen","Muster","Spiegeln"],
+  steps:[
+    {t:"Der Rahmen", sk:"panel",
+     d:`Neuer Entwurf „Solarflügel“. Quader <b>66 × 30 × 2</b> mm.`},
+    {t:"Das erste Fenster", sk:"panelHole",
+     d:`Quader als <b>Bohrung</b>: <b>10 × 10 × 6</b> mm. Schiebe ihn in die linke untere Ecke des Rahmens, sodass ringsum etwa 4 mm Rand bleiben.`},
+    {t:"Duplizieren und wiederholen", sk:"repeat", shot:"s10-duplizieren",
+     d:`Tippe die Fenster-Bohrung an und dann oben links auf <b>„Duplizieren und wiederholen“</b> (das <b>dritte Symbol</b>: zwei übereinanderliegende Rechtecke, neben dem Mülleimer). Eine Kopie entsteht genau an derselben Stelle. Schiebe die Kopie <b>12 mm nach rechts</b>. Jetzt tippe noch dreimal auf <b>„Duplizieren und wiederholen“</b> – Tinkercad merkt sich die Verschiebung und setzt die nächsten Fenster automatisch im gleichen Abstand!`,
+     tip:`Wichtig: Zwischen dem ersten Duplizieren und dem Verschieben nichts anderes antippen, sonst vergisst Tinkercad das Muster.`},
+    {t:"Die zweite Reihe", sk:"repeat",
+     d:`Tippe alle 5 Fenster nacheinander an, dupliziere sie und schiebe die Kopie <b>12 mm nach hinten</b>. Gruppiere dann Rahmen und alle Fenster – fertig ist der Gitterrahmen mit 10 Fenstern.`},
+    {t:"Den zweiten Flügel spiegeln", sk:"mirror", shot:"s11-spiegeln",
+     d:`Dupliziere den fertigen Flügel und tippe auf <b>„Spiegeln“</b> (Symbol mit zwei Dreiecken). An der Form erscheinen Doppelpfeile – tippe auf den Pfeil für links/rechts. Der Flügel wird umgedreht wie in einem Spiegel. Schiebe ihn auf die andere Seite und setze in die Mitte einen Zylinder als <b>Verbindungsstange</b> (Ø 6 mm, quer gelegt).`,
+     tip:`Die Stange quer legen: Zylinder mit den gebogenen Pfeilen um 90° drehen. Beim Drehen rastet die Form in Schritten ein.`}
+  ],
+  check:["Mein Flügel hat 10 gleiche Fenster","Ich habe „Duplizieren und wiederholen“ benutzt","Der zweite Flügel ist gespiegelt"],
+  know:{t:"Stützen und die flache Unterseite", sk:"support",
+    d:`Manchmal hat ein Teil Stellen, die in der Luft hängen. Dann kann der Drucker <b>Stützstrukturen</b> mitdrucken – kleine Gerüste, die man danach abbricht. Das kostet Material und Zeit und hinterlässt raue Stellen. Kluge Ingenieure konstruieren deshalb so, dass ein Teil eine <b>große, flache Unterseite</b> hat. Die klebt gut auf dem Druckbett, und das Teil braucht keine Stützen. Dein Solarflügel ist perfekt: komplett flach!`},
+  quiz:[
+    {q:"Was macht „Duplizieren und wiederholen“ besonders?", o:["Es merkt sich die letzte Verschiebung und wiederholt sie","Es macht die Form doppelt so groß","Es dreht die Form um"], a:0, e:"Nach dem ersten Verschieben setzt jedes weitere Antippen eine Kopie im gleichen Abstand."},
+    {q:"Was bewirkt „Spiegeln“?", o:["Die Form wird seitenverkehrt umgeklappt","Die Form wird glänzend","Die Form wird kopiert"], a:0, e:"Spiegeln klappt eine Form um – wie dein Spiegelbild. Für eine Kopie musst du vorher duplizieren."},
+    {q:"Warum vermeidet man Stützstrukturen, wenn es geht?", o:["Sie kosten Material und Zeit und hinterlassen raue Stellen","Sie sind verboten","Sie machen das Teil schwerer zu exportieren"], a:0, e:"Stützen müssen mitgedruckt und wieder entfernt werden. Besser: so konstruieren, dass man keine braucht."},
+    {q:"Welche Unterseite ist für den Druck am besten?", o:["Eine große, flache Fläche","Eine Spitze","Eine runde Kugel-Unterseite"], a:0, e:"Eine große flache Fläche klebt gut auf dem Druckbett und braucht keine Stützen."}
+  ]},
+
+/* ---------------------------------------------------------- 7 */
+{ id:"m7", icon:"📦", module:"Lagerraum", title:"Die Versorgungskapsel",
+  story:`Im <b>Lagerraum</b> fliegen Schrauben und Snacks durch die Schwerelosigkeit! Wir brauchen eine <b>Versorgungskapsel</b>: eine Box mit <b>Deckel, der genau passt</b>. Nicht zu locker, nicht zu fest. Das ist echte Ingenieursarbeit – du lernst <b>Hohlkörper</b>, <b>Wandstärke</b> und <b>Spiel</b>.`,
+  goal:"Du kannst eine hohle Box mit passendem Deckel konstruieren.",
+  skills:["Hohlkörper","Wandstärke","Toleranz (Spiel)","Ausrichten"],
+  steps:[
+    {t:"Der Außenkörper", sk:"boxOuter",
+     d:`Neuer Entwurf „Versorgungskapsel“. Quader <b>40 × 40 × 30</b> mm.`},
+    {t:"Aushöhlen", sk:"boxHollow",
+     d:`Quader als <b>Bohrung</b>: <b>36 × 36 × 30</b> mm, anheben auf <b>2</b> mm. Tippe Außenkörper und Bohrung nacheinander an, <b>Ausrichten</b> mittig (Breite und Tiefe), dann <b>gruppieren</b> und den Gruppentyp auf <b>„Vereinigung“</b> stellen. Jetzt hat die Box 2 mm dicke Wände und einen 2 mm dicken Boden.`,
+     tip:`Warum 36? Die Box ist 40 breit, links und rechts je 2 mm Wand: 40 − 2 − 2 = 36.`},
+    {t:"Die Deckelplatte", sk:"lid",
+     d:`Neben der Box: Quader <b>40 × 40 × 2</b> mm – das ist die Deckelplatte.`},
+    {t:"Der Deckel-Rand mit Spiel", sk:"tolerance", shot:"s14-fangraster",
+     d:`Der Deckel braucht einen Rand, der in die Öffnung steckt. Die Öffnung ist 36 mm. Wenn der Rand auch 36 mm hätte, würde er klemmen! Darum planen wir <b>0,3 mm Spiel</b> auf jeder Seite: 36 − 0,3 − 0,3 = <b>35,4 mm</b>. Quader <b>35,4 × 35,4 × 4</b> mm, anheben auf <b>2</b> mm, mit der Deckelplatte mittig ausrichten, gruppieren.`,
+     tip:`Kommazahlen tippst du mit Punkt oder Komma ein – probiere 35.4. Wenn die Form beim Verschieben immer auf ganze Millimeter springt: unten rechts das <b>„Fangraster“</b> von 1,0 mm auf 0,1 mm stellen.`},
+    {t:"Probe-Aufsetzen", sk:"lidFit",
+     d:`Dupliziere den Deckel, drehe die Kopie mit den gebogenen Pfeilen um <b>180°</b> und setze sie auf die Box (anheben auf 32 mm). Schau von der Seite: Der Rand steckt in der Öffnung. Lösche die Kopie danach wieder – gedruckt werden Box und Deckel <b>getrennt</b>, beide mit der flachen Seite nach unten.`}
+  ],
+  check:["Die Box hat 2 mm Wände und 2 mm Boden","Der Deckel-Rand ist 35,4 mm (0,3 mm Spiel je Seite)","Box und Deckel liegen beide flach auf der Arbeitsebene"],
+  know:{t:"Wandstärke und Füllung", sk:"infill",
+    d:`Wie stabil wird ein Teil? Zwei Dinge entscheiden: Die <b>Wandstärke</b> – mindestens etwa <b>1,2 mm</b>, besser 2 mm, sonst wird es wabbelig. Und die <b>Füllung</b> (englisch Infill): Der Drucker füllt das Innere eines Teils nicht komplett, sondern mit einem Wabenmuster, zum Beispiel 15 bis 20 Prozent. Das spart viel Material und ist trotzdem stabil – wie bei Bienenwaben.`},
+  quiz:[
+    {q:"Die Box ist 40 mm breit, die Wände sollen 2 mm dick sein. Wie breit ist die Bohrung innen?", o:["36 mm","38 mm","40 mm"], a:0, e:"Links 2 mm und rechts 2 mm Wand: 40 − 2 − 2 = 36 mm."},
+    {q:"Warum bekommt der Deckel-Rand 0,3 mm Spiel je Seite?", o:["Damit er nicht klemmt, gedruckte Teile sind nie ganz exakt","Damit er wackelt","Damit er schneller druckt"], a:0, e:"Gedruckte Teile sind ein bisschen ungenau. Ohne Spiel passen zwei Teile oft nicht ineinander."},
+    {q:"Was ist die „Füllung“ (Infill)?", o:["Ein Wabenmuster im Inneren des Teils","Die Farbe des Teils","Der Kleber auf dem Druckbett"], a:0, e:"Der Drucker füllt das Innere nur teilweise mit einem Muster – das spart Material."},
+    {q:"Welche Wandstärke ist für ein stabiles Teil mindestens sinnvoll?", o:["Etwa 1,2 mm oder mehr","0,1 mm","Egal, Hauptsache dünn"], a:0, e:"Unter etwa 1,2 mm werden Wände sehr dünn und brechen leicht. 2 mm ist eine gute Wahl."}
+  ]},
+
+/* ---------------------------------------------------------- 8 */
+{ id:"m8", icon:"🚀", module:"Hangar", title:"Die Rettungsrakete",
+  story:`Alarm im <b>Hangar</b>! Für den Notfall braucht ORION-7 eine <b>Rettungsrakete</b>. Jetzt kombinierst du alles, was du gelernt hast: Zylinder, Kegel, Drehen, Ausrichten, Stapeln – und du achtest darauf, dass die Rakete gut druckbar ist.`,
+  goal:"Du kannst aus mehreren Formen ein druckbares Modell bauen und dabei drehen und ausrichten.",
+  skills:["Drehen","Kombinieren","Druckbar konstruieren"],
+  steps:[
+    {t:"Der Rumpf", sk:"rocketBody",
+     d:`Neuer Entwurf „Rettungsrakete“. Zylinder <b>20 × 20 × 50</b> mm, Seiten <b>64</b>.`},
+    {t:"Die Nase", sk:"rocketNose",
+     d:`Kegel <b>20 × 20 × 20</b> mm, anheben auf <b>50</b> mm. Rumpf und Nase nacheinander antippen, mittig <b>ausrichten</b>.`},
+    {t:"Die Flossen", sk:"rocketFins",
+     d:`Quader <b>44 × 2 × 16</b> mm – das ist ein Flossen-Paar, das quer durch den Rumpf geht. <b>Dupliziere</b> ihn und <b>drehe</b> die Kopie mit den gebogenen Pfeilen um <b>90°</b>. Jetzt hast du ein Kreuz. Wähle alles aus und richte es mittig aus.`,
+     tip:`Beim Drehen zeigt Tinkercad die Grad-Zahl an. Du kannst 90 auch direkt eintippen.`},
+    {t:"Bullaugen (Bonus)", sk:"rocketWindow",
+     d:`Ein kleiner Zylinder <b>6 × 6 × 4</b> mm als <b>Bohrung</b>, um 90° gekippt, so in den Rumpf geschoben, dass er 1 mm hineinragt. Dupliziere ihn für ein zweites Bullauge weiter oben. Zum Schluss beim Gruppieren „Vereinigung“ wählen, sonst schneiden die Bohrungen nicht.`},
+    {t:"Druck-Check", sk:"rocketDone",
+     d:`Gruppiere alles. Prüfe: Stehen Rumpf und Flossen unten <b>flach</b> auf der Arbeitsebene (Höhe 0)? Die Nase wird nach oben schmaler – kein Problem. Die Flossen sind 2 mm dick – stabil genug. Deine Rakete könnte stehend gedruckt werden, ganz ohne Stützen!`}
+  ],
+  check:["Rumpf, Nase und 4 Flossen sind mittig ausgerichtet","Ich habe eine Form um 90° gedreht","Alles steht flach auf der Arbeitsebene"],
+  know:{t:"Vom Entwurf zum Druck: der Slicer", sk:"slicer",
+    d:`Zwischen Tinkercad und dem Drucker gibt es noch ein Programm: den <b>Slicer</b> (englisch „to slice“ = in Scheiben schneiden). Er schneidet dein Modell in hunderte dünne Schichten und berechnet für jede Schicht den Weg der Düse. Heraus kommt eine Datei mit Befehlen für den Drucker (<b>G-Code</b>). Im Slicer stellt man auch Füllung, Schichthöhe und Stützen ein.<br><br><b>Sicherheit am Replikator:</b> Die Düse wird etwa 200 °C heiß, das Druckbett etwa 60 °C – während des Drucks nicht hineinfassen und nur mit einem Erwachsenen bedienen. Der häufigste Kunststoff heißt <b>PLA</b> und wird aus Pflanzen wie Mais gemacht.`},
+  quiz:[
+    {q:"Was macht ein Slicer?", o:["Er schneidet das Modell in Schichten und berechnet die Druckwege","Er malt das Modell an","Er schneidet das fertige Teil auseinander"], a:0, e:"Der Slicer übersetzt dein 3D-Modell in Schichten und Befehle (G-Code) für den Drucker."},
+    {q:"In welcher Reihenfolge geht es vom Entwurf zum Teil?", o:["Tinkercad → STL → Slicer → Drucker","Slicer → Tinkercad → Drucker → STL","Drucker → STL → Tinkercad"], a:0, e:"Erst konstruieren, dann als STL exportieren, im Slicer vorbereiten und dann drucken."},
+    {q:"Wie heiß wird die Düse beim Drucken mit PLA ungefähr?", o:["Etwa 200 °C","Etwa 40 °C","Etwa 1000 °C"], a:0, e:"Um 200 °C – deshalb nie in den laufenden Drucker fassen."},
+    {q:"Warum kann die Rakete stehend ohne Stützen gedruckt werden?", o:["Sie steht flach und die Nase wird nach oben schmaler","Weil Raketen immer schweben","Weil sie gruppiert ist"], a:0, e:"Flache Unterseite plus Formen, die nach oben schmaler werden – das ist ideal für den Druck."}
+  ]},
+
+/* ---------------------------------------------------------- 9 */
+{ id:"m9", icon:"🌟", module:"Kommandobrücke", title:"Deine eigene Erfindung",
+  story:`Die Station läuft wieder! Nur die <b>Kommandobrücke</b> fehlt noch. Der Kommandant sucht jemanden, der <b>selbst</b> etwas erfindet – ohne Bauanleitung. Das ist die Abschlussprüfung, Ingenieur. Überlege dir ein Teil, das du wirklich brauchen kannst, und konstruiere es. Wenn du den Druck-Check bestehst, wirst du <b>Kommandant</b> von ORION-7.`,
+  goal:"Du entwirfst selbstständig ein druckbares Teil und prüfst es mit dem Druck-Check.",
+  skills:["Eigene Idee","Planen mit Maßen","Druck-Check"],
+  steps:[
+    {t:"Idee finden", sk:"ideas",
+     d:`Ideen für dein Teil:<br>• Stifthalter für den Schreibtisch<br>• Halter für Ladekabel<br>• Handyständer<br>• Namensschild für deine Zimmertür<br>• Raumschiff oder Figur für dein Regal<br>• Haken für deinen Schlüssel<br>Oder etwas ganz Eigenes!`},
+    {t:"Erst messen, dann bauen", sk:"measure",
+     d:`Wenn dein Teil zu etwas passen soll (Stift, Handy, Kabel), <b>miss nach</b> – mit einem Lineal oder Messschieber. Schreib dir die Maße auf. Denk an das <b>Spiel</b>: Löcher und Öffnungen ein paar Zehntel Millimeter größer planen.`},
+    {t:"Konstruieren", sk:"workplane",
+     d:`Neuer Entwurf mit dem Namen deiner Erfindung. Nutze alles, was du kannst: Grundformen, Bohrungen, Ausrichten, Gruppieren, Duplizieren, Spiegeln. Bei einem Fehler: Rückgängig!`},
+    {t:"Druck-Check", sk:"printCheck",
+     d:`Prüfe dein Teil mit der Checkliste unten. Erst wenn alles stimmt, ist es druckbereit. Zeig es danach einem Erwachsenen und erkläre, wie du es gebaut hast.`}
+  ],
+  check:["Mein Teil hat eine flache Unterseite auf der Arbeitsebene","Überhänge sind höchstens etwa 45° (oder ich weiß, wo Stützen nötig wären)","Wände sind mindestens 1,2 mm dick","Kleine Details und Text sind nicht dünner als 1 mm","Alle Teile berühren sich und sind gruppiert – nichts schwebt","Das Teil passt in 18 × 18 × 18 cm","Ich habe es einem Erwachsenen gezeigt und erklärt"],
+  know:{t:"Wo drucken, wenn man keinen Replikator hat?", sk:"exportFlow",
+    d:`Du brauchst keinen eigenen Drucker, um deine Teile Wirklichkeit werden zu lassen. Viele <b>Stadtbibliotheken</b>, <b>Schulen</b> und <b>Makerspaces</b> (offene Werkstätten) haben 3D-Drucker, die man nutzen darf. Es gibt auch <b>Online-Druckdienste</b>, denen man die STL-Datei schickt und die das Teil per Post liefern. Frag einen Erwachsenen, was es in eurer Nähe gibt.`},
+  quiz:[
+    {q:"Dein Teil hat ein Stück, das in der Luft schwebt und nichts berührt. Was passiert beim Drucken?", o:["Es fällt herunter oder wird ein Fadengewirr","Es wird normal gedruckt","Der Drucker lässt es einfach weg und alles ist gut"], a:0, e:"Jede Schicht braucht etwas darunter. Schwebende Teile müssen mit dem Rest verbunden sein."},
+    {q:"Du baust einen Stifthalter für Stifte mit 8 mm Durchmesser. Wie groß planst du die Löcher?", o:["Etwa 8,5 mm","Genau 8 mm","7,5 mm"], a:0, e:"Gedruckte Löcher fallen kleiner aus, und der Stift soll leicht hineingehen – also etwas größer planen."},
+    {q:"Was ist ein Makerspace?", o:["Eine offene Werkstatt mit Maschinen wie 3D-Druckern","Ein Raumschiff","Ein Computerspiel"], a:0, e:"In Makerspaces kann man Werkzeuge und Maschinen gemeinsam nutzen und Hilfe bekommen."},
+    {q:"Was gehört zum Druck-Check? (Eine Antwort ist richtig.)", o:["Flache Unterseite, Wände dick genug, nichts schwebt","Möglichst viele Farben","Möglichst dünne Wände, damit es leicht wird"], a:0, e:"Flache Unterseite, genug Wandstärke und alles verbunden – dann klappt der Druck."}
+  ]}
+];
+
+/* Position der Module auf der Station (viewBox 0 0 100 110) */
+const STATION_POS = {
+  m1:[27,38], m2:[50,27], m3:[27,76], m4:[73,38], m5:[50,8], m6:[10,57], m7:[90,57], m8:[73,76], m9:[50,57]
+};
+
+/* =========================================================
+   SKIZZEN – isometrische Zeichnungen im Tinkercad-Stil (SVG, keine Bilddateien)
+   P(x,y,z) rechnet Millimeter in Bildpunkte um. x läuft nach rechts unten,
+   y nach links unten, z nach oben. Neue Skizze: Funktion in SK ergänzen.
+   ========================================================= */
+const COL = {red:"#e5533d", blue:"#3b8fd9", yellow:"#f2c230", green:"#45b26b", purple:"#9b6bd6", orange:"#f08a2c", teal:"#23a6a6", grey:"#9aa3ad"};
+function shade(hex, f){
+  const n = parseInt(hex.slice(1),16); let r=n>>16, g=(n>>8)&255, b=n&255;
+  const m = v => Math.max(0, Math.min(255, Math.round(f>1 ? v+(255-v)*(f-1) : v*f)));
+  return "#" + [m(r),m(g),m(b)].map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+function V(ox, oy, s){ return {ox, oy, s, out:[]}; }
+function P(o,x,y,z){ return [o.ox + (x-y)*0.866*o.s, o.oy + (x+y)*0.5*o.s - z*o.s]; }
+function pts(arr){ return arr.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" "); }
+function poly(o, ptsArr, fill, extra){ o.out.push(`<polygon points="${pts(ptsArr)}" fill="${fill}" stroke="#20324a" stroke-width="1" stroke-linejoin="round" ${extra||""}/>`); }
+function holeStyle(){ return `fill-opacity="0.35" stroke-dasharray="3 2"`; }
+function box(o,x,y,z,w,d,h,col,hole){
+  const c = hole ? COL.grey : col, ex = hole ? holeStyle() : "";
+  poly(o,[P(o,x+w,y,z),P(o,x+w,y+d,z),P(o,x+w,y+d,z+h),P(o,x+w,y,z+h)], shade(c,.82), ex);
+  poly(o,[P(o,x,y+d,z),P(o,x+w,y+d,z),P(o,x+w,y+d,z+h),P(o,x,y+d,z+h)], shade(c,.66), ex);
+  poly(o,[P(o,x,y,z+h),P(o,x+w,y,z+h),P(o,x+w,y+d,z+h),P(o,x,y+d,z+h)], shade(c,1.18), ex);
+}
+function cyl(o,cx,cy,z,r,h,col,hole){
+  const c = hole ? COL.grey : col, ex = hole ? holeStyle() : "";
+  const B = P(o,cx,cy,z), T = P(o,cx,cy,z+h), rx = 1.2247*r*o.s, ry = 0.7071*r*o.s;
+  o.out.push(`<path d="M${(B[0]-rx).toFixed(1)},${B[1].toFixed(1)} L${(T[0]-rx).toFixed(1)},${T[1].toFixed(1)} L${(T[0]+rx).toFixed(1)},${T[1].toFixed(1)} L${(B[0]+rx).toFixed(1)},${B[1].toFixed(1)} A${rx.toFixed(1)},${ry.toFixed(1)} 0 0 1 ${(B[0]-rx).toFixed(1)},${B[1].toFixed(1)} Z" fill="${shade(c,.78)}" stroke="#20324a" stroke-width="1" ${ex}/>`);
+  o.out.push(`<ellipse cx="${T[0].toFixed(1)}" cy="${T[1].toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${shade(c,1.15)}" stroke="#20324a" stroke-width="1" ${ex}/>`);
+}
+function cone(o,cx,cy,z,r,h,col){
+  const B = P(o,cx,cy,z), A = P(o,cx,cy,z+h), rx = 1.2247*r*o.s, ry = 0.7071*r*o.s;
+  o.out.push(`<path d="M${(B[0]-rx).toFixed(1)},${B[1].toFixed(1)} L${A[0].toFixed(1)},${A[1].toFixed(1)} L${(B[0]+rx).toFixed(1)},${B[1].toFixed(1)} A${rx.toFixed(1)},${ry.toFixed(1)} 0 0 1 ${(B[0]-rx).toFixed(1)},${B[1].toFixed(1)} Z" fill="${shade(col,.9)}" stroke="#20324a" stroke-width="1"/>`);
+}
+function grid(o,x0,y0,x1,y1,step){
+  const g = [];
+  poly(o,[P(o,x0,y0,0),P(o,x1,y0,0),P(o,x1,y1,0),P(o,x0,y1,0)],"#dbe9f7");
+  for(let x=x0; x<=x1+0.01; x+=step){ const a=P(o,x,y0,0), b=P(o,x,y1,0); g.push(`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}"/>`); }
+  for(let y=y0; y<=y1+0.01; y+=step){ const a=P(o,x0,y,0), b=P(o,x1,y,0); g.push(`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}"/>`); }
+  o.out.push(`<g stroke="#8fb3d9" stroke-width=".6">${g.join("")}</g>`);
+}
+function isoText(o,x,y,z,str,size,col,hole){
+  const p = P(o,x,y,z), s = o.s;
+  o.out.push(`<text transform="matrix(${(.866*s).toFixed(3)} ${(.5*s).toFixed(3)} ${(-.866*s).toFixed(3)} ${(.5*s).toFixed(3)} ${p[0].toFixed(1)} ${p[1].toFixed(1)})" font-family="Nunito,sans-serif" font-weight="900" font-size="${size}" fill="${hole?"#5c6670":col}" ${hole?'fill-opacity=".55"':""} stroke="#20324a" stroke-width="${(0.6/s).toFixed(2)}">${str}</text>`);
+}
+function lbl(o,x,y,t,anchor,col){ o.out.push(`<text x="${x}" y="${y}" font-family="Nunito,sans-serif" font-size="12" font-weight="800" fill="${col||"#20324a"}" text-anchor="${anchor||"start"}">${t}</text>`); }
+function arrow(o,x1,y1,x2,y2,col){ const c=col||"#d9442f"; o.out.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" marker-end="url(#ah)"/>`); }
+function raw(o,s){ o.out.push(s); }
+function svg(o, w, h, title){
+  return `<svg class="sk" viewBox="0 0 ${w||320} ${h||200}" role="img" aria-label="${title||"Skizze"}"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9442f"/></marker></defs>${o.out.join("")}</svg>`;
+}
+function handleSq(o,p){ raw(o,`<rect x="${(p[0]-4).toFixed(1)}" y="${(p[1]-4).toFixed(1)}" width="8" height="8" fill="#fff" stroke="#20324a" stroke-width="1.2"/>`); }
+
+const SK = {
+  dashboard(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="10" y="10" width="300" height="180" rx="10" fill="#f4f7fb" stroke="#20324a"/>
+      <rect x="10" y="10" width="300" height="30" rx="10" fill="#1d5fae"/><rect x="10" y="30" width="300" height="10" fill="#1d5fae"/>
+      <text x="22" y="30" font-family="Nunito" font-weight="900" font-size="14" fill="#fff">Tinkercad</text>
+      <rect x="214" y="15" width="88" height="20" rx="10" fill="none" stroke="#fff" stroke-width="1.5"/><text x="258" y="29" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="11" fill="#fff">+ Erstellen</text>
+      <rect x="196" y="40" width="104" height="44" rx="6" fill="#fff" stroke="#20324a"/>
+      <text x="206" y="58" font-family="Nunito" font-weight="800" font-size="11" fill="#20324a">🧊 3D-Entwurf</text>
+      <text x="206" y="76" font-family="Nunito" font-size="10" fill="#7a8794">Schaltkreis …</text>
+      ${[0,1,2].map(i=>`<rect x="${24+i*58}" y="96" width="50" height="50" rx="6" fill="#dbe9f7" stroke="#8fb3d9"/><rect x="${36+i*58}" y="112" width="26" height="20" fill="${[COL.red,COL.blue,COL.green][i]}" opacity=".8"/>`).join("")}
+      <text x="24" y="166" font-family="Nunito" font-size="11" fill="#20324a">Deine Entwürfe</text>`);
+    arrow(o,170,62,194,58);
+    return svg(o,320,200,"Startseite mit Knopf Neu");
+  },
+  workplane(){
+    const o = V(150,90,1.15);
+    grid(o,-50,-50,50,50,10);
+    box(o,-10,-10,0,20,20,20,COL.red);
+    raw(o,`<rect x="258" y="18" width="54" height="166" rx="6" fill="#fff" stroke="#20324a"/>
+      <text x="285" y="34" text-anchor="middle" font-family="Nunito" font-size="7.5" font-weight="800">Einfache Formen</text>
+      <rect x="268" y="44" width="16" height="14" fill="${COL.red}"/><rect x="290" y="44" width="14" height="14" rx="7" fill="${COL.blue}"/>
+      <circle cx="276" cy="76" r="8" fill="${COL.teal}"/><path d="M290 84 l7-16 l7 16z" fill="${COL.purple}"/>
+      <text x="268" y="106" font-family="Nunito" font-weight="900" font-size="12" fill="${COL.red}">Text</text>
+      <path d="M268 132 h16 l-16 -12z" fill="${COL.yellow}"/><rect x="290" y="120" width="14" height="12" fill="${COL.grey}" opacity=".6" stroke-dasharray="2 1" stroke="#20324a"/>`);
+    lbl(o,10,186,"Arbeitsebene: 1 Kästchen = 1 mm");
+    return svg(o,320,200,"Arbeitsebene mit Formen-Leiste");
+  },
+  placeBox(){
+    const o = V(140,110,1.3);
+    grid(o,-45,-45,45,45,10);
+    box(o,-10,-10,0,20,20,20,COL.red);
+    raw(o,`<rect x="250" y="30" width="44" height="40" rx="6" fill="#fff" stroke="#20324a"/><rect x="262" y="40" width="20" height="18" fill="${COL.red}"/>`);
+    raw(o,`<path d="M250 52 C 215 40, 190 50, 165 72" fill="none" stroke="#d9442f" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#ah)"/>`);
+    lbl(o,200,30,"ziehen & loslassen","middle");
+    return svg(o,320,200,"Quader auf die Arbeitsebene ziehen");
+  },
+  gestures(){
+    const o = V(0,0,1);
+    const hand = (x,y,t,sub,ico) => `<g><circle cx="${x}" cy="${y}" r="30" fill="#eef4fb" stroke="#20324a"/><text x="${x}" y="${y+9}" text-anchor="middle" font-size="26">${ico}</text>
+      <text x="${x}" y="${y+50}" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12" fill="#20324a">${t}</text>
+      <text x="${x}" y="${y+64}" text-anchor="middle" font-family="Nunito" font-size="10" fill="#4a5a6c">${sub}</text></g>`;
+    raw(o, hand(55,70,"Drehen","1 Finger wischen","☝️") + hand(160,70,"Verschieben","2 Finger wischen","✌️") + hand(265,70,"Zoomen","2 Finger auf/zu","🤏"));
+    raw(o,`<g transform="translate(130,160)"><rect width="60" height="30" rx="5" fill="#fff" stroke="#20324a"/><text x="30" y="20" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="10">OBEN</text></g>
+      <text x="200" y="180" font-family="Nunito" font-size="11" font-weight="800" fill="#20324a">⌂ = Startansicht</text>`);
+    return svg(o,320,200,"Gesten für die Ansicht");
+  },
+  undo(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="20" y="20" width="280" height="44" rx="8" fill="#fff" stroke="#20324a"/>
+      <g font-family="Nunito" font-weight="900" font-size="22" fill="#20324a"><text x="40" y="51">↶</text><text x="80" y="51">↷</text><text x="130" y="51">🗑</text></g>
+      <circle cx="47" cy="43" r="17" fill="none" stroke="#d9442f" stroke-width="2.5"/>`);
+    lbl(o,30,92,"↶ Rückgängig – holt den letzten Schritt zurück");
+    lbl(o,30,112,"↷ Wiederholen – macht ihn wieder");
+    lbl(o,30,132,"🗑 Löschen – entfernt die ausgewählte Form");
+    lbl(o,30,170,"Tipp: Rückgängig geht beliebig oft hintereinander!",null,"#1d5fae");
+    return svg(o,320,200,"Rückgängig, Wiederholen, Löschen");
+  },
+  rename(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="20" y="40" width="280" height="40" rx="8" fill="#fff" stroke="#20324a"/>
+      <text x="36" y="66" font-family="Nunito" font-size="14" fill="#9aa3ad" text-decoration="line-through">Fabelhafter Bombul-Krugg</text>
+      <rect x="20" y="110" width="280" height="40" rx="8" fill="#fff" stroke="#1d5fae" stroke-width="2"/>
+      <text x="36" y="136" font-family="Nunito" font-weight="900" font-size="14" fill="#20324a">ORION Werkstatt</text>`);
+    arrow(o,160,84,160,106);
+    lbl(o,160,180,"Tinkercad speichert automatisch.","middle");
+    return svg(o,320,200,"Entwurf umbenennen");
+  },
+  fdm(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="20" y="168" width="200" height="12" fill="#7a8794"/>
+      <text x="230" y="178" font-family="Nunito" font-size="11" font-weight="800">Druckbett</text>
+      ${[0,1,2,3,4,5,6].map(i=>`<rect x="${70+i*0}" y="${160-i*8}" width="100" height="7" rx="3" fill="${shade(COL.orange, 1 - i*0.04)}" stroke="#20324a" stroke-width=".6"/>`).join("")}
+      <rect x="150" y="70" width="44" height="34" rx="4" fill="#5c6670" stroke="#20324a"/><path d="M162 104 h20 l-6 12 h-8z" fill="#c9a227" stroke="#20324a"/>
+      <path d="M172 20 C 172 40, 172 50, 172 70" stroke="${COL.orange}" stroke-width="3" fill="none"/>
+      <circle cx="172" cy="16" r="12" fill="none" stroke="${COL.orange}" stroke-width="3"/>
+      <path d="M170 116 C 168 112, 160 112, 160 108" stroke="${COL.orange}" stroke-width="3" fill="none"/>
+      <text x="200" y="20" font-family="Nunito" font-size="11" font-weight="800">Filament-Rolle</text>
+      <text x="200" y="86" font-family="Nunito" font-size="11" font-weight="800">heiße Düse (~200 °C)</text>
+      <text x="24" y="120" font-family="Nunito" font-size="11" font-weight="800">Schicht für Schicht</text>`);
+    arrow(o,198,90,192,92); arrow(o,60,124,72,132);
+    return svg(o,320,200,"So funktioniert ein 3D-Drucker");
+  },
+  handles(){
+    const o = V(150,128,2.6);
+    grid(o,-25,-25,25,25,5);
+    box(o,-10,-10,0,20,20,20,COL.red);
+    [[-10,-10],[10,-10],[10,10],[-10,10]].forEach(c=>handleSq(o,P(o,c[0],c[1],0)));
+    [[0,-10],[10,0],[0,10],[-10,0]].forEach(c=>handleSq(o,P(o,c[0],c[1],0)));
+    const top = P(o,0,0,20); handleSq(o,top);
+    const k = P(o,0,0,30); raw(o,`<path d="M${k[0]-6},${k[1]+8} L${k[0]},${k[1]-6} L${k[0]+6},${k[1]+8} Z" fill="#111"/>`);
+    const r = P(o,-4,16,0); raw(o,`<path d="M${r[0]-16},${r[1]+4} q16,-14 32,0" fill="none" stroke="#111" stroke-width="2" marker-start="url(#ahk)" marker-end="url(#ahk)"/>
+      <defs><marker id="ahk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111"/></marker></defs>`);
+    lbl(o,k[0]+12,k[1]+4,"schwarzer Kegel: anheben");
+    raw(o,`<line x1="74" y1="${top[1]-14}" x2="${top[0]-5}" y2="${top[1]-3}" stroke="#20324a"/>`); lbl(o,8,top[1]-12,"weiß oben: Höhe");
+    const c = P(o,10,10,0); lbl(o,c[0]+10,c[1]+16,"weiße Ecken: Breite & Tiefe");
+    lbl(o,r[0]-22,r[1]+4,"Pfeile: drehen","end");
+    return svg(o,320,200,"Die Griffe einer Form");
+  },
+  dims20(){
+    const o = V(150,140,3);
+    grid(o,-20,-20,20,20,5);
+    box(o,-10,-10,0,20,20,20,COL.red);
+    const a=P(o,-10,10,0), b=P(o,10,10,0), c=P(o,10,-10,0);
+    raw(o,`<g font-family="Nunito" font-weight="900" font-size="12"><rect x="${(a[0]+b[0])/2-16}" y="${(a[1]+b[1])/2+6}" width="32" height="18" rx="4" fill="#fff" stroke="#20324a"/><text x="${(a[0]+b[0])/2}" y="${(a[1]+b[1])/2+19}" text-anchor="middle">20</text>
+      <rect x="${(b[0]+c[0])/2+2}" y="${(b[1]+c[1])/2+6}" width="32" height="18" rx="4" fill="#fff" stroke="#20324a"/><text x="${(b[0]+c[0])/2+18}" y="${(b[1]+c[1])/2+19}" text-anchor="middle">20</text></g>`);
+    const t = P(o,10,-10,20), t0 = P(o,10,-10,0);
+    raw(o,`<line x1="${t[0]+14}" y1="${t[1]}" x2="${t0[0]+14}" y2="${t0[1]}" stroke="#20324a" stroke-width="1.2"/><rect x="${t[0]+20}" y="${(t[1]+t0[1])/2-9}" width="32" height="18" rx="4" fill="#fff" stroke="#20324a"/><text x="${t[0]+36}" y="${(t[1]+t0[1])/2+4}" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12">20</text>`);
+    lbl(o,10,22,"Alle Maße in mm");
+    return svg(o,320,200,"Würfel 20 mal 20 mal 20 mm");
+  },
+  cubeX(){
+    const o = V(150,140,3);
+    grid(o,-20,-20,20,20,5);
+    box(o,-10,-10,0,20,20,20,COL.red);
+    box(o,-4,-4,20,8,8,1,COL.yellow);
+    isoText(o,-3.2,2.6,21,"X",8,"#20324a");
+    lbl(o,10,22,"„X“ = 1 mm hoch, angehoben auf 20 mm");
+    return svg(o,320,200,"Würfel mit X obendrauf");
+  },
+  cubeSizes(){
+    const o = V(80,150,1.6);
+    box(o,-10,-10,0,20,20,20,COL.red);
+    const o2 = V(215,150,1.6); o2.out = o.out;
+    box(o2,-20,-20,0,40,40,40,COL.blue);
+    lbl(o,80,190,"20 mm","middle"); lbl(o,215,196,"40 mm = 8 × so viel","middle");
+    return svg(o,320,200,"Doppelte Kante, achtfaches Material");
+  },
+  plate(){
+    const o = V(150,110,1.9);
+    grid(o,-45,-20,45,20,10);
+    box(o,-40,-12.5,0,80,25,3,COL.blue);
+    lbl(o,20,180,"Quader 80 × 25 × 3 mm");
+    return svg(o,320,200,"Grundplatte");
+  },
+  radius(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="20" y="60" width="120" height="60" fill="${COL.blue}" stroke="#20324a"/>
+      <rect x="180" y="60" width="120" height="60" rx="14" fill="${COL.blue}" stroke="#20324a"/>
+      <text x="80" y="140" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="12">Radius 0</text>
+      <text x="240" y="140" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="12">Radius 2</text>
+      <rect x="40" y="160" width="240" height="26" rx="6" fill="#fff" stroke="#20324a"/>
+      <text x="52" y="178" font-family="Nunito" font-size="11" font-weight="800">Radius</text><line x1="110" y1="173" x2="250" y2="173" stroke="#8fb3d9" stroke-width="4"/><circle cx="150" cy="173" r="7" fill="#1d5fae"/>
+      <text x="160" y="30" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="12">Von oben gesehen</text>`);
+    arrow(o,144,90,176,90);
+    return svg(o,320,200,"Abgerundete Ecken mit Radius");
+  },
+  textShape(){
+    const o = V(150,120,2);
+    grid(o,-40,-20,40,20,10);
+    isoText(o,-30,6,0,"LUKAS",16,COL.red);
+    raw(o,`<rect x="210" y="14" width="100" height="56" rx="6" fill="#fff" stroke="#20324a"/><text x="220" y="32" font-family="Nunito" font-size="10" font-weight="800">Text</text>
+      <rect x="220" y="40" width="80" height="20" rx="3" fill="#eef4fb" stroke="#1d5fae"/><text x="226" y="54" font-family="Nunito" font-weight="900" font-size="11">LUKAS</text>`);
+    lbl(o,14,186,"Höhe der Buchstaben: 2 mm");
+    return svg(o,320,200,"Text-Form");
+  },
+  liftText(){
+    const o = V(150,118,1.9);
+    grid(o,-45,-20,45,20,10);
+    box(o,-40,-12.5,0,80,25,3,COL.blue);
+    box(o,-30,-6,3,60,12,2,COL.yellow);
+    isoText(o,-28,5.5,5,"LUKAS",14,COL.yellow);
+    const p = P(o,30,-6,5); raw(o,`<path d="M${p[0]+18},${p[1]+6} L${p[0]+24},${p[1]-8} L${p[0]+30},${p[1]+6} Z" fill="#111"/>`);
+    lbl(o,p[0]+34,p[1]+4,"auf 3 mm");
+    lbl(o,14,186,"Text steht AUF der Platte");
+    return svg(o,320,200,"Text auf 3 mm angehoben");
+  },
+  group(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="18" y="40" width="120" height="80" rx="8" fill="none" stroke="#1d5fae" stroke-width="2" stroke-dasharray="6 4"/>
+      <rect x="32" y="74" width="90" height="26" rx="5" fill="${COL.blue}" stroke="#20324a"/><text x="77" y="68" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="15" fill="${COL.yellow}" stroke="#20324a" stroke-width=".6">LUKAS</text>
+      <rect x="182" y="74" width="120" height="26" rx="5" fill="${COL.blue}" stroke="#20324a"/><text x="242" y="68" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="15" fill="${COL.blue}" stroke="#20324a" stroke-width=".6">LUKAS</text>
+      <rect x="110" y="140" width="100" height="30" rx="6" fill="#fff" stroke="#20324a"/><text x="160" y="160" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12">⧉ Gruppieren</text>`);
+    arrow(o,142,86,178,86);
+    lbl(o,20,30,"1. beide auswählen"); lbl(o,190,30,"2. = ein Teil");
+    return svg(o,320,200,"Gruppieren");
+  },
+  layers(){
+    const o = V(0,0,1);
+    raw(o, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14].map(i=>`<rect x="40" y="${168-i*9}" width="160" height="8" rx="4" fill="${shade(COL.blue,1+(i%2)*0.08)}" stroke="#20324a" stroke-width=".5"/>`).join("")
+      + `<text x="214" y="60" font-family="Nunito" font-size="12" font-weight="800">15 Schichten</text><text x="214" y="76" font-family="Nunito" font-size="12" font-weight="800">à 0,2 mm</text><text x="214" y="92" font-family="Nunito" font-size="12" font-weight="800">= 3 mm</text>`);
+    raw(o,`<line x1="30" y1="40" x2="30" y2="176" stroke="#20324a"/><text x="10" y="112" font-family="Nunito" font-size="11" font-weight="800" transform="rotate(-90 18 108)">3 mm</text>`);
+    return svg(o,320,200,"Schichten");
+  },
+  chipBody(){
+    const o = V(150,110,2.2);
+    grid(o,-30,-20,30,20,10);
+    box(o,-25,-15,0,50,30,4,COL.green);
+    lbl(o,14,186,"Quader 50 × 30 × 4 mm, Radius 3");
+    return svg(o,320,200,"Chip-Körper");
+  },
+  solidHole(){
+    const o = V(90,140,2.2);
+    box(o,-12,-12,0,24,24,24,COL.red);
+    const o2 = V(230,140,2.2); o2.out = o.out;
+    box(o2,-12,-12,0,24,24,24,COL.red,true);
+    lbl(o,90,30,"Volumenkörper","middle"); lbl(o,230,30,"Bohrung","middle");
+    lbl(o,90,190,"fest, farbig","middle"); lbl(o,230,190,"schneidet beim Gruppieren","middle");
+    return svg(o,320,200,"Volumenkörper und Bohrung");
+  },
+  chipHole(){
+    const o = V(150,118,2.2);
+    grid(o,-30,-20,30,20,10);
+    box(o,-25,-15,0,50,30,4,COL.green);
+    cyl(o,17,0,0,3,10,COL.grey,true);
+    lbl(o,14,186,"Zylinder-Bohrung Ø 6 mm, 10 mm hoch");
+    return svg(o,320,200,"Bohrung für den Schlüsselring");
+  },
+  chipEngrave(){
+    const o = V(150,118,2.2);
+    grid(o,-30,-20,30,20,10);
+    box(o,-25,-15,0,50,30,4,COL.green);
+    cyl(o,17,0,0,3,10,COL.grey,true);
+    isoText(o,-21,4.5,3.3,"ORION",9,"#5c6670",true);
+    lbl(o,14,176,"Text-Bohrung 2 mm hoch, angehoben auf 3 mm");
+    lbl(o,14,192,"→ 1 mm tiefe Gravur");
+    return svg(o,320,200,"Gravur");
+  },
+  chipDone(){
+    const o = V(150,118,2.2);
+    grid(o,-30,-20,30,20,10);
+    box(o,-25,-15,0,50,30,4,COL.green);
+    const c = P(o,17,0,4); raw(o,`<ellipse cx="${c[0]}" cy="${c[1]}" rx="${1.2247*3*o.s}" ry="${.7071*3*o.s}" fill="#dbe9f7" stroke="#20324a"/>`);
+    isoText(o,-21,4.5,4,"ORION",9,shade(COL.green,.55));
+    lbl(o,14,186,"Nach dem Gruppieren: Loch + Gravur");
+    return svg(o,320,200,"Fertiger Zugangschip");
+  },
+  exportFlow(){
+    const o = V(0,0,1);
+    const st = (x,ico,t) => `<rect x="${x}" y="62" width="62" height="62" rx="10" fill="#fff" stroke="#20324a"/><text x="${x+31}" y="100" text-anchor="middle" font-size="26">${ico}</text><text x="${x+31}" y="144" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="11">${t}</text>`;
+    raw(o, st(8,"🧊","Tinkercad") + st(88,"📄",".STL") + st(168,"🔪","Slicer") + st(248,"🖨️","Drucker"));
+    arrow(o,72,93,86,93); arrow(o,152,93,166,93); arrow(o,232,93,246,93);
+    lbl(o,160,36,"Vom Entwurf zum Teil","middle");
+    return svg(o,320,200,"Vom Entwurf zum Teil");
+  },
+  holeShrink(){
+    const o = V(0,0,1);
+    raw(o,`<circle cx="90" cy="96" r="44" fill="none" stroke="#20324a" stroke-width="2" stroke-dasharray="5 3"/>
+      <circle cx="90" cy="96" r="38" fill="#dbe9f7" stroke="${COL.green}" stroke-width="10" stroke-opacity=".5"/>
+      <text x="90" y="160" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">geplant 6,0 → gedruckt ≈ 5,8</text>
+      <circle cx="236" cy="96" r="46" fill="none" stroke="#20324a" stroke-width="2" stroke-dasharray="5 3"/>
+      <circle cx="236" cy="96" r="44" fill="#dbe9f7" stroke="${COL.green}" stroke-width="4" stroke-opacity=".5"/><circle cx="236" cy="96" r="40" fill="#c9a227" opacity=".7"/>
+      <text x="236" y="160" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">geplant 6,4 → Stift passt</text>`);
+    lbl(o,160,26,"Löcher drucken etwas kleiner","middle");
+    return svg(o,320,200,"Löcher werden kleiner");
+  },
+  mastBase(){
+    const o = V(150,120,2.2);
+    grid(o,-25,-25,25,25,5);
+    cyl(o,0,0,0,15,6,COL.blue);
+    raw(o,`<polygon points="${[0,1,2,3,4,5].map(i=>[262+22*Math.cos(i*Math.PI/3), 60+22*Math.sin(i*Math.PI/3)]).map(p=>p.join(",")).join(" ")}" fill="${COL.blue}" stroke="#20324a"/>
+      <circle cx="262" cy="130" r="22" fill="${COL.blue}" stroke="#20324a"/>
+      <text x="262" y="98" text-anchor="middle" font-family="Nunito" font-size="10" font-weight="800">6 Seiten</text><text x="262" y="168" text-anchor="middle" font-family="Nunito" font-size="10" font-weight="800">64 Seiten</text>`);
+    lbl(o,14,186,"Zylinder 30 × 30 × 6 mm");
+    return svg(o,320,200,"Sockel");
+  },
+  mastStack(){
+    const o = V(140,176,1.72);
+    cyl(o,0,0,0,15,6,COL.blue);
+    cyl(o,0,0,6,5,40,COL.teal);
+    cyl(o,0,0,46,2.5,20,COL.yellow);
+    cone(o,0,0,66,4,10,COL.red);
+    [[6,"6"],[46,"46"],[66,"66"]].forEach(h=>{ const p=P(o,0,0,h[0]); raw(o,`<line x1="${p[0]+34}" y1="${p[1]}" x2="${p[0]+50}" y2="${p[1]}" stroke="#20324a"/><text x="${p[0]+54}" y="${p[1]+4}" font-family="Nunito" font-size="11" font-weight="800">${h[1]} mm</text>`); });
+    lbl(o,10,20,"Anheben um die Höhe darunter");
+    return svg(o,320,200,"Mast stapeln");
+  },
+  align(){
+    const o = V(0,0,1);
+    raw(o,`<g opacity=".45"><rect x="30" y="120" width="70" height="14" fill="${COL.blue}"/><rect x="64" y="60" width="18" height="60" fill="${COL.teal}"/><rect x="40" y="34" width="10" height="26" fill="${COL.yellow}"/></g>
+      <rect x="200" y="120" width="70" height="14" fill="${COL.blue}" stroke="#20324a"/><rect x="226" y="60" width="18" height="60" fill="${COL.teal}" stroke="#20324a"/><rect x="230" y="34" width="10" height="26" fill="${COL.yellow}" stroke="#20324a"/>
+      <circle cx="200" cy="150" r="5" fill="#111"/><circle cx="235" cy="150" r="7" fill="#d9442f"/><circle cx="270" cy="150" r="5" fill="#111"/>
+      <text x="235" y="176" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">mittleren Punkt antippen</text>
+      <line x1="235" y1="28" x2="235" y2="140" stroke="#d9442f" stroke-dasharray="4 3"/>`);
+    arrow(o,112,90,186,90);
+    lbl(o,64,24,"vorher","middle"); lbl(o,235,20,"nachher","middle");
+    return svg(o,320,200,"Ausrichten");
+  },
+  mastDone(){
+    const o = V(150,186,1.85);
+    grid(o,-25,-25,25,25,5);
+    cyl(o,0,0,0,15,6,COL.blue);
+    cyl(o,0,0,6,5,40,COL.blue);
+    cyl(o,0,0,46,2.5,20,COL.blue);
+    cone(o,0,0,66,4,10,COL.blue);
+    lbl(o,10,20,"Gruppiert – Sockel liegt flach auf");
+    return svg(o,320,200,"Fertiger Antennenmast");
+  },
+  overhang(){
+    const o = V(0,0,1);
+    const stair = (x0, dx, col) => [0,1,2,3,4,5,6,7].map(i=>`<rect x="${x0+i*dx}" y="${160-i*12}" width="40" height="11" fill="${col}" stroke="#20324a" stroke-width=".6"/>`).join("");
+    raw(o, stair(20,6,COL.green) + stair(120,12,COL.yellow) + stair(220,22,COL.red));
+    raw(o,`<line x1="10" y1="172" x2="310" y2="172" stroke="#20324a" stroke-width="2"/>
+      <text x="50" y="192" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">steil ✓</text>
+      <text x="160" y="192" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">45° ✓</text>
+      <text x="275" y="192" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11" fill="#c0453a">zu flach ✗</text>`);
+    return svg(o,320,200,"Die 45-Grad-Regel");
+  },
+  panel(){
+    const o = V(150,112,2);
+    grid(o,-38,-20,38,20,10);
+    box(o,-33,-15,0,66,30,2,COL.teal);
+    lbl(o,14,186,"Rahmen 66 × 30 × 2 mm");
+    return svg(o,320,200,"Rahmen");
+  },
+  panelHole(){
+    const o = V(150,112,2);
+    grid(o,-38,-20,38,20,10);
+    box(o,-33,-15,0,66,30,2,COL.teal);
+    box(o,-29,1,0,10,10,6,COL.grey,true);
+    lbl(o,14,186,"Bohrung 10 × 10 mm in der Ecke, 4 mm Rand");
+    return svg(o,320,200,"Erstes Fenster");
+  },
+  repeat(){
+    const o = V(150,112,2);
+    grid(o,-38,-20,38,20,10);
+    box(o,-33,-15,0,66,30,2,COL.teal);
+    for(let r=0;r<2;r++) for(let i=0;i<5;i++) box(o,-29+i*12,1-r*12,0,10,10,6,COL.grey,true);
+    const a = P(o,-24,11,0), b = P(o,-12,11,0);
+    raw(o,`<line x1="${a[0]}" y1="${a[1]+16}" x2="${b[0]}" y2="${b[1]+16}" stroke="#d9442f" stroke-width="2" marker-end="url(#ah)"/><text x="${(a[0]+b[0])/2-34}" y="${a[1]+40}" font-family="Nunito" font-weight="900" font-size="11" fill="#d9442f">12 mm</text>`);
+    lbl(o,14,186,"Duplizieren + wiederholen: gleicher Abstand");
+    return svg(o,320,200,"Duplizieren und wiederholen");
+  },
+  mirror(){
+    const o = V(0,0,1);
+    const wing = (x, flip) => `<g transform="translate(${x},70) scale(${flip?-1:1},1)"><rect x="0" y="0" width="100" height="50" fill="${COL.teal}" stroke="#20324a"/>${[0,1,2,3].map(i=>`<rect x="${8+i*23}" y="8" width="16" height="14" fill="#dbe9f7" stroke="#20324a"/><rect x="${8+i*23}" y="28" width="16" height="14" fill="#dbe9f7" stroke="#20324a"/>`).join("")}<path d="M10 4 l8 0" stroke="#d9442f" stroke-width="3"/></g>`;
+    raw(o, wing(20,false) + wing(300,true) + `<rect x="120" y="90" width="80" height="8" fill="${COL.grey}" stroke="#20324a"/><line x1="160" y1="40" x2="160" y2="150" stroke="#1d5fae" stroke-dasharray="5 4" stroke-width="2"/>`);
+    lbl(o,160,32,"Spiegelachse","middle"); lbl(o,160,176,"rote Markierung zeigt: seitenverkehrt","middle");
+    return svg(o,320,200,"Spiegeln");
+  },
+  support(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="10" y="170" width="300" height="8" fill="#7a8794"/>
+      <rect x="30" y="80" width="30" height="90" fill="${COL.orange}" stroke="#20324a"/><rect x="30" y="80" width="110" height="24" fill="${COL.orange}" stroke="#20324a"/>
+      ${[0,1,2,3,4,5].map(i=>`<line x1="${68+i*13}" y1="104" x2="${68+i*13}" y2="170" stroke="#9aa3ad" stroke-width="3"/>`).join("")}
+      <text x="85" y="194" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">mit Stützen (grau)</text>
+      <rect x="190" y="146" width="110" height="24" fill="${COL.orange}" stroke="#20324a"/><rect x="190" y="80" width="30" height="90" fill="${COL.orange}" stroke="#20324a"/>
+      <text x="245" y="194" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">umgedreht: keine Stützen ✓</text>`);
+    return svg(o,320,200,"Stützen vermeiden");
+  },
+  boxOuter(){
+    const o = V(150,150,2.2);
+    grid(o,-25,-25,25,25,5);
+    box(o,-20,-20,0,40,40,30,COL.purple);
+    lbl(o,14,192,"Quader 40 × 40 × 30 mm");
+    return svg(o,320,200,"Außenkörper");
+  },
+  boxHollow(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="60" y="40" width="200" height="140" fill="${COL.purple}" stroke="#20324a"/>
+      <rect x="70" y="40" width="180" height="130" fill="#eef4fb" stroke="#20324a" stroke-dasharray="4 3"/>
+      <text x="160" y="110" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="13">innen 36 mm</text>
+      <text x="64" y="30" font-family="Nunito" font-weight="800" font-size="11">2 mm Wand</text><text x="200" y="30" font-family="Nunito" font-weight="800" font-size="11">2 mm Wand</text>
+      <text x="160" y="196" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">2 mm Boden · außen 40 mm (Schnitt von vorne)</text>`);
+    return svg(o,320,200,"Box aushöhlen");
+  },
+  lid(){
+    const o = V(150,120,2.2);
+    grid(o,-25,-25,25,25,5);
+    box(o,-20,-20,0,40,40,2,COL.yellow);
+    lbl(o,14,192,"Deckelplatte 40 × 40 × 2 mm");
+    return svg(o,320,200,"Deckelplatte");
+  },
+  tolerance(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="40" y="100" width="20" height="80" fill="${COL.purple}" stroke="#20324a"/><rect x="260" y="100" width="20" height="80" fill="${COL.purple}" stroke="#20324a"/>
+      <rect x="40" y="70" width="240" height="14" fill="${COL.yellow}" stroke="#20324a"/><rect x="66" y="84" width="188" height="36" fill="${COL.yellow}" stroke="#20324a"/>
+      <line x1="60" y1="130" x2="66" y2="130" stroke="#d9442f" stroke-width="3"/><line x1="254" y1="130" x2="260" y2="130" stroke="#d9442f" stroke-width="3"/>
+      <text x="70" y="150" font-family="Nunito" font-weight="900" font-size="11" fill="#d9442f">0,3 mm Spiel</text>
+      <text x="160" y="106" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12">Rand 35,4 mm</text>
+      <text x="160" y="196" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">Öffnung der Box: 36 mm (Schnitt, Deckel aufgesetzt)</text>`);
+    return svg(o,320,200,"Spiel beim Deckel");
+  },
+  lidFit(){
+    const o = V(150,170,1.9);
+    grid(o,-25,-25,25,25,5);
+    box(o,-20,-20,0,40,40,30,COL.purple);
+    box(o,-20,-20,34,40,40,2,COL.yellow);
+    lbl(o,14,24,"Probe: Deckel umgedreht aufsetzen");
+    lbl(o,14,40,"(danach Kopie wieder löschen)");
+    return svg(o,320,200,"Deckel probehalber aufsetzen");
+  },
+  infill(){
+    const o = V(0,0,1);
+    let hex = "";
+    for(let r=0;r<5;r++) for(let c=0;c<8;c++){ const x=86+c*21+(r%2)*10.5, y=56+r*18;
+      hex += `<polygon points="${[0,1,2,3,4,5].map(i=>[x+10*Math.cos(i*Math.PI/3+Math.PI/6), y+10*Math.sin(i*Math.PI/3+Math.PI/6)]).map(p=>p.map(v=>v.toFixed(1)).join(",")).join(" ")}" fill="none" stroke="${COL.orange}" stroke-width="1.4"/>`; }
+    raw(o,`<rect x="70" y="40" width="190" height="110" fill="#fff" stroke="${COL.orange}" stroke-width="8"/>${hex}
+      <text x="165" y="180" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">außen feste Wände · innen Waben (z. B. 15–20 %)</text>`);
+    return svg(o,320,200,"Füllung");
+  },
+  rocketBody(){
+    const o = V(150,170,2);
+    grid(o,-25,-25,25,25,5);
+    cyl(o,0,0,0,10,50,COL.red);
+    lbl(o,14,24,"Zylinder 20 × 20 × 50 mm");
+    return svg(o,320,200,"Rumpf");
+  },
+  rocketNose(){
+    const o = V(150,182,1.95);
+    cyl(o,0,0,0,10,50,COL.red);
+    cone(o,0,0,50,10,20,COL.yellow);
+    lbl(o,14,24,"Kegel 20 × 20 × 20, angehoben auf 50 mm");
+    return svg(o,320,200,"Nase");
+  },
+  rocketFins(){
+    const o = V(150,182,1.95);
+    box(o,-1,-22,0,2,22,16,COL.blue);
+    box(o,-22,-1,0,22,2,16,COL.blue);
+    cyl(o,0,0,0,10,50,COL.red);
+    cone(o,0,0,50,10,20,COL.yellow);
+    box(o,0,-1,0,22,2,16,COL.blue);
+    box(o,-1,0,0,2,22,16,COL.blue);
+    lbl(o,14,24,"2 Quader 44 × 2 × 16, einer um 90° gedreht");
+    return svg(o,320,200,"Flossen");
+  },
+  rocketWindow(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="120" y="40" width="80" height="140" rx="4" fill="${COL.red}" stroke="#20324a"/>
+      <rect x="188" y="74" width="30" height="24" fill="${COL.grey}" fill-opacity=".4" stroke="#20324a" stroke-dasharray="3 2"/>
+      <rect x="188" y="120" width="30" height="24" fill="${COL.grey}" fill-opacity=".4" stroke="#20324a" stroke-dasharray="3 2"/>
+      <text x="228" y="90" font-family="Nunito" font-weight="800" font-size="11">Bohrung ragt</text><text x="228" y="104" font-family="Nunito" font-weight="800" font-size="11">1 mm hinein</text>
+      <text x="160" y="196" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">Schnitt von vorne</text>`);
+    return svg(o,320,200,"Bullaugen");
+  },
+  rocketDone(){
+    const o = V(150,170,1.8);
+    grid(o,-28,-28,28,28,7);
+    box(o,-1,-22,0,2,22,16,COL.red);
+    box(o,-22,-1,0,22,2,16,COL.red);
+    cyl(o,0,0,0,10,50,COL.red);
+    cone(o,0,0,50,10,20,COL.red);
+    box(o,0,-1,0,22,2,16,COL.red);
+    box(o,-1,0,0,2,22,16,COL.red);
+    lbl(o,14,24,"Steht flach auf – druckbar ohne Stützen ✓");
+    return svg(o,320,200,"Fertige Rakete");
+  },
+  slicer(){
+    const o = V(0,0,1);
+    raw(o,`<path d="M60 170 L60 70 L90 30 L120 70 L120 170 Z" fill="${COL.red}" stroke="#20324a"/>
+      ${[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>`<line x1="50" y1="${166-i*11}" x2="130" y2="${166-i*11}" stroke="#fff" stroke-width="1.2"/>`).join("")}
+      <text x="90" y="192" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">in Scheiben geschnitten</text>
+      <rect x="180" y="50" width="120" height="100" rx="6" fill="#20324a"/>
+      <text x="190" y="72" font-family="monospace" font-size="10" fill="#7fe0a0">G1 X10 Y12</text><text x="190" y="88" font-family="monospace" font-size="10" fill="#7fe0a0">G1 X40 Y12</text>
+      <text x="190" y="104" font-family="monospace" font-size="10" fill="#7fe0a0">G1 Z0.4</text><text x="190" y="120" font-family="monospace" font-size="10" fill="#7fe0a0">…</text>
+      <text x="240" y="170" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">G-Code für den Drucker</text>`);
+    arrow(o,138,100,174,100);
+    return svg(o,320,200,"Der Slicer");
+  },
+  ideas(){
+    const o = V(0,0,1);
+    const t = (x,y,ico,s) => `<rect x="${x}" y="${y}" width="92" height="72" rx="10" fill="#fff" stroke="#20324a"/><text x="${x+46}" y="${y+38}" text-anchor="middle" font-size="26">${ico}</text><text x="${x+46}" y="${y+60}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="10">${s}</text>`;
+    raw(o, t(10,14,"✏️","Stifthalter")+t(114,14,"🔌","Kabelhalter")+t(218,14,"📱","Handyständer")+t(10,108,"🚪","Türschild")+t(114,108,"🛸","Raumschiff")+t(218,108,"🔑","Schlüsselhaken"));
+    return svg(o,320,200,"Ideen");
+  },
+  measure(){
+    const o = V(0,0,1);
+    raw(o,`<rect x="20" y="70" width="280" height="30" fill="#f2c230" stroke="#20324a"/>
+      ${Array.from({length:28},(_,i)=>`<line x1="${30+i*10}" y1="70" x2="${30+i*10}" y2="${i%5===0?86:80}" stroke="#20324a"/>`).join("")}
+      <rect x="60" y="120" width="90" height="16" rx="8" fill="${COL.blue}" stroke="#20324a"/><path d="M150 120 l18 8 l-18 8z" fill="#c9a227" stroke="#20324a"/>
+      <line x1="60" y1="150" x2="60" y2="160" stroke="#20324a"/><line x1="60" y1="155" x2="150" y2="155" stroke="#20324a"/><line x1="150" y1="150" x2="150" y2="160" stroke="#20324a"/>
+      <text x="105" y="176" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11">Stift: Ø 8 mm → Loch 8,5 mm</text>`);
+    lbl(o,160,40,"Erst messen, dann bauen","middle");
+    return svg(o,320,200,"Messen");
+  },
+  printCheck(){
+    const o = V(0,0,1);
+    const items = ["Flache Unterseite","Überhänge ≤ 45°","Wände ≥ 1,2 mm","Details ≥ 1 mm","Nichts schwebt","Passt in den Drucker"];
+    raw(o, items.map((s,i)=>`<rect x="40" y="${16+i*29}" width="20" height="20" rx="4" fill="#fff" stroke="#20324a"/><text x="44" y="${32+i*29}" font-size="15" fill="#45b26b" font-weight="900">✓</text><text x="72" y="${31+i*29}" font-family="Nunito" font-weight="800" font-size="13">${s}</text>`).join(""));
+    return svg(o,320,200,"Druck-Check");
+  }
+};
+function sketch(name){ try{ return SK[name] ? SK[name]() : ""; }catch(e){ return ""; } }
+
+</script>
+<script>
+/* =========================================================
+   SPIELSTAND (localStorage, Schlüssel raumstation-3d-v1)
+   ========================================================= */
+const KEY = "raumstation-3d-v1";
+function defaultState(){ return {ver:1, xp:0, m:{}, weak:{}, reviews:0, rank:0}; }
+function load(){
+  let s = null; try{ s = JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  if(!s || typeof s!=="object") s = defaultState();
+  const d = defaultState(); for(const k in d) if(!(k in s)) s[k] = d[k];
+  if(typeof s.xp!=="number") s.xp = 0;
+  if(!s.m || typeof s.m!=="object") s.m = {};
+  if(!s.weak || typeof s.weak!=="object") s.weak = {};
+  return s;
+}
+let S = load();
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function MS(id){
+  const m = MISSIONS.find(x=>x.id===id);
+  if(!S.m[id]) S.m[id] = {phase:0, max:0, steps:[], checks:[], quizBest:0, quizDone:false, done:false};
+  const st = S.m[id];
+  if(!Array.isArray(st.steps)) st.steps = [];
+  if(!Array.isArray(st.checks)) st.checks = [];
+  return st;
+}
+function idx(id){ return MISSIONS.findIndex(m=>m.id===id); }
+function unlocked(i){ return i===0 || !!(S.m[MISSIONS[i-1].id] && S.m[MISSIONS[i-1].id].done); }
+function doneCount(){ return MISSIONS.filter(m=>S.m[m.id] && S.m[m.id].done).length; }
+function curMission(){ const i = MISSIONS.findIndex((m,i)=>unlocked(i) && !(S.m[m.id]&&S.m[m.id].done)); return i; }
+function rankIdx(){ let r = 0; RANKS.forEach((x,i)=>{ if(S.xp>=x[0]) r=i; }); return r; }
+function rankName(){ return RANKS[rankIdx()][1]; }
+function addXP(n){
+  const before = rankIdx(); S.xp += n; const after = rankIdx(); save();
+  if(after>before) toast("🎖️ Beförderung! Du bist jetzt " + RANKS[after][1] + "!");
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function toast(t){ const d = document.createElement("div"); d.className="toast"; d.innerHTML=t; document.body.appendChild(d); setTimeout(()=>d.remove(), 2600); }
+function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const app = document.getElementById("app");
+function go(html){ app.innerHTML = html; window.scrollTo(0,0); }
+
+function head(){
+  return `<header><div class="brand" onclick="showHome()"><div class="logo">🛰️</div><div><h1>ORION-7</h1><span class="sub">3D-Werkstatt · Tinkercad</span></div></div>
+    <div class="hud"><span class="badge">🎖️ ${esc(rankName())}</span><span class="badge">⚡ ${S.xp} XP</span><span class="badge">🔧 ${doneCount()}/${MISSIONS.length}</span></div></header>`;
+}
+
+/* =========================================================
+   STATION (Startbildschirm)
+   ========================================================= */
+function stationSVG(){
+  const cur = curMission();
+  const P2 = id => STATION_POS[id];
+  const links = [["m5","m2"],["m2","m9"],["m9","m8"],["m9","m3"],["m9","m1"],["m9","m4"],["m9","m6"],["m9","m7"],["m1","m2"],["m4","m2"]];
+  let s = `<svg viewBox="0 0 100 100" aria-label="Raumstation ORION-7">
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#9ff0fa" stop-opacity=".55"/><stop offset="1" stop-color="#9ff0fa" stop-opacity="0"/></radialGradient></defs>`;
+  /* Solarflügel-Deko */
+  const m6done = S.m.m6 && S.m.m6.done;
+  [[-1],[1]].forEach(([d])=>{ const x = d<0 ? 0 : 100; for(let r=0;r<2;r++) for(let c=0;c<3;c++){
+    s += `<rect x="${(d<0? 1+c*5.2 : 83.4+c*5.2)}" y="${40+r*5.4 - (r?0:0)}" width="4.6" height="4.6" fill="${m6done?"#2a7fb8":"#26313f"}" stroke="${m6done?"#9ff0fa":"#4a5868"}" stroke-width=".3"/>`;
+    s += `<rect x="${(d<0? 1+c*5.2 : 83.4+c*5.2)}" y="${69+r*5.4}" width="4.6" height="4.6" fill="${m6done?"#2a7fb8":"#26313f"}" stroke="${m6done?"#9ff0fa":"#4a5868"}" stroke-width=".3"/>`; } });
+  links.forEach(([a,b])=>{ const A=P2(a), B=P2(b); const lit = S.m[a]&&S.m[a].done && S.m[b]&&S.m[b].done;
+    s += `<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="${lit?"#45d4e6":"#33414f"}" stroke-width="${lit?1.6:1.2}" stroke-linecap="round"/>`; });
+  s += `<circle cx="50" cy="57" r="27" fill="none" stroke="#2a3a4c" stroke-width=".8" stroke-dasharray="1.5 1.5"/>`;
+  MISSIONS.forEach((m,i)=>{
+    const [x,y] = P2(m.id), st = S.m[m.id], done = st && st.done, open = unlocked(i), isCur = i===cur;
+    const r = m.id==="m9" ? 9.5 : 7.2;
+    const fill = done ? "#14435a" : open ? "#1d2a3a" : "#151c26";
+    const ring = done ? "#45d4e6" : isCur ? "#f2c230" : open ? "#6c8aa6" : "#3a4654";
+    s += `<g class="mod ${open?"":"locked"} ${isCur?"cur":""}" onclick="${open?`openMission('${m.id}')`:""}">
+      ${done?`<circle cx="${x}" cy="${y}" r="${r+5}" fill="url(#glow)"/>`:""}
+      <circle class="ring" cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${ring}" stroke-width="2.2"/>
+      <text x="${x}" y="${y+ (m.id==="m9"?2.6:2.2)}" text-anchor="middle" font-size="${m.id==="m9"?7.5:6}" ${open?"":'opacity=".35"'}>${open?m.icon:"🔒"}</text>
+      ${open?`<text x="${x}" y="${y+r+4.2}" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="3.2" fill="${done?"#9ff0fa":"#c9d6e2"}">${esc(m.module)}</text>`:""}
+      ${done?`<circle cx="${x+r*.72}" cy="${y-r*.72}" r="2.4" fill="#4fbf74"/><text x="${x+r*.72}" y="${y-r*.72+1.2}" text-anchor="middle" font-size="3" font-weight="900" fill="#06220f">✓</text>`:""}
+    </g>`;
+  });
+  return s + `</svg>`;
+}
+function showHome(){
+  const cur = curMission(), m = cur>=0 ? MISSIONS[cur] : null, dc = doneCount();
+  const intro = dc===0 && !(S.m.m1 && S.m.m1.max>0);
+  go(head() + `
+    <div class="card"><div class="kepler"><div class="av">🤖</div><div class="bubble">${
+      intro ? `Hallo Kadett! Ich bin <b>KEPLER</b>, der Bordcomputer von ORION-7. Ein Meteoritenschauer hat unsere Station beschädigt. Mit dem Konstruktions-Programm <b>Tinkercad</b> und unserem <b>Replikator</b> (einem 3D-Drucker) reparieren wir sie Modul für Modul. Tippe auf das leuchtende Modul!`
+      : m ? `Nächster Auftrag: <b>${esc(m.module)}</b> – „${esc(m.title)}“. Tippe auf das gelb blinkende Modul.`
+      : `Die ganze Station läuft wieder – dank dir, <b>Kommandant</b>! Du kannst jede Mission wiederholen, in der Wartungsrunde dein Wissen auffrischen oder dir neue Erfindungen ausdenken.`
+    }</div></div></div>
+    <div class="station">${stationSVG()}</div>
+    <div class="btnRow center">
+      ${m ? `<button class="btn" onclick="openMission('${m.id}')">${m.icon} Mission ${cur+1} starten</button>` : ""}
+      <button class="btn ghost" onclick="showReview()" ${dc?"":"disabled"}>🛠️ Wartungsrunde</button>
+      <button class="btn ghost" onclick="showLog()">📖 Logbuch</button>
+    </div>
+    <div class="card"><div class="hint-sm"><b>So geht's:</b> Öffne auf dem iPad <b>Tinkercad und diese Seite nebeneinander</b> (geteilte Ansicht: am oberen Rand auf die drei Punkte tippen). Links liest du die Anleitung, rechts baust du. Für jede Mission gibt es XP – und mit genug XP wirst du befördert: ${RANKS.map(r=>r[1]).join(" → ")}.</div>
+    <div class="bar" style="margin-top:10px"><i style="width:${Math.round(dc/MISSIONS.length*100)}%"></i></div></div>
+    <div class="btnRow center"><button class="btn ghost small" onclick="showParents()">⚙️ Für Eltern &amp; Sicherung</button>
+      <a class="btn ghost small" href="faecher.html">🏠 Alle Fächer</a></div>`);
+}
+
+/* =========================================================
+   MISSION – Phasen: 0 Briefing · 1..n Schritte · Wissen · Quiz · Check · Erfolg
+   ========================================================= */
+let Q = null;   /* laufendes Quiz */
+function phases(m){ return 1 + m.steps.length + 3; }   /* Briefing + Schritte + Wissen + Quiz + Check */
+function phaseName(m,p){
+  if(p===0) return "Auftrag";
+  if(p<=m.steps.length) return "Schritt " + p + " von " + m.steps.length;
+  if(p===m.steps.length+1) return "Replikator-Wissen";
+  if(p===m.steps.length+2) return "Funk-Quiz";
+  return "Abschluss-Check";
+}
+function openMission(id){ const st = MS(id); showPhase(id, st.done ? 0 : Math.min(st.phase, phases(MISSIONS[idx(id)])-1)); }
+function progBar(m, st, p){
+  let h = `<div class="prog">`;
+  for(let i=0;i<phases(m);i++){ const reach = i<=st.max;
+    h += `<i class="${i===p?"c":(reach?"d":"")}" ${reach?`onclick="showPhase('${m.id}',${i})"`:""} title="${esc(phaseName(m,i))}"></i>`; }
+  return h + `</div>`;
+}
+function shotHTML(id){ if(!id || !SHOTS[id]) return ""; return `<img class="shot" src="assets/tc-${id}.jpg" alt="${esc(SHOTS[id])}" onerror="this.remove()">`; }
+function showPhase(id, p){
+  const m = MISSIONS[idx(id)], st = MS(id), n = m.steps.length;
+  st.phase = p; if(p>st.max) st.max = p; save();
+  let body = "";
+  const top = `<div class="card"><div class="phaseLbl">${m.icon} Mission ${idx(id)+1} · ${esc(m.module)} · ${esc(phaseName(m,p))}</div>${progBar(m,st,p)}`;
+  if(p===0){
+    body = top + `<div class="stepH">${esc(m.title)}</div>
+      <div class="kepler"><div class="av">🤖</div><div class="bubble">${m.story}</div></div>
+      <div style="margin-top:12px" class="hint-sm"><b>Ziel:</b> ${esc(m.goal)}</div>
+      <div style="margin-top:8px">${m.skills.map(s=>`<span class="tag">${esc(s)}</span>`).join("")}</div>
+      <div class="btnRow split"><button class="btn ghost" onclick="showHome()">← Station</button>
+      <button class="btn" onclick="showPhase('${id}',1)">${st.done?"Schritte ansehen":"Los geht's"} →</button></div></div>`;
+  } else if(p<=n){
+    const s = m.steps[p-1], did = !!st.steps[p-1];
+    body = top + `<div class="stepH">${p}. ${esc(s.t)}</div>
+      <div class="lead">${s.d}</div>
+      ${s.sk ? `<div class="skBox">${sketch(s.sk)}</div>` : ""}
+      ${shotHTML(s.shot)}
+      ${s.tip ? `<details class="tip"><summary>💡 Klappt nicht? Tipp von KEPLER</summary><div>${s.tip}</div></details>` : ""}
+      <div class="btnRow split"><button class="btn ghost" onclick="showPhase('${id}',${p-1})">← Zurück</button>
+      <button class="btn ${did?"ghost":"ok"}" onclick="stepDone('${id}',${p})">${did?"Weiter →":"✓ Geschafft!"}</button></div></div>`;
+  } else if(p===n+1){
+    body = top + `<div class="stepH">🔬 ${esc(m.know.t)}</div>
+      <div class="lead">${m.know.d}</div>
+      ${m.know.sk ? `<div class="skBox">${sketch(m.know.sk)}</div>` : ""}
+      <div class="btnRow split"><button class="btn ghost" onclick="showPhase('${id}',${p-1})">← Zurück</button>
+      <button class="btn" onclick="startQuiz('${id}')">Zum Funk-Quiz →</button></div></div>`;
+  } else if(p===n+2){
+    if(!Q || Q.id!==id){ startQuiz(id); return; }
+    body = top + quizHTML() + `</div>`;
+  } else {
+    if(!st.quizDone){ showPhase(id, n+2); return; }
+    const all = m.check.every((_,i)=>st.checks[i]);
+    body = top + `<div class="stepH">✅ Abschluss-Check</div>
+      <div class="hint-sm">Schau dir dein Modell in Tinkercad an und hake ehrlich ab, was stimmt. ${m.id==="m9"?"Das ist der Druck-Check eines echten Ingenieurs!":""}</div>
+      ${m.check.map((c,i)=>`<div class="chk ${st.checks[i]?"on":""}" onclick="toggleCheck('${id}',${i})"><div class="bx">${st.checks[i]?"✓":""}</div><div>${esc(c)}</div></div>`).join("")}
+      <div class="btnRow split"><button class="btn ghost" onclick="showPhase('${id}',${p-1})">← Zurück</button>
+      <button class="btn ok" onclick="finishMission('${id}')" ${all?"":"disabled"}>${st.done?"Fertig ✓":"🔧 Modul reparieren!"}</button></div></div>`;
+  }
+  go(head() + body);
+}
+function stepDone(id, p){
+  const st = MS(id);
+  if(!st.steps[p-1]){ st.steps[p-1] = true; addXP(10); }
+  save(); showPhase(id, p+1);
+}
+function toggleCheck(id, i){ const st = MS(id); st.checks[i] = !st.checks[i]; save(); showPhase(id, st.phase); }
+function finishMission(id){
+  const m = MISSIONS[idx(id)], st = MS(id), first = !st.done;
+  st.done = true; save();
+  if(first) addXP(100);
+  const next = MISSIONS[idx(id)+1];
+  go(head() + `<div class="card center"><div class="win">${m.icon}</div>
+    <div class="stepH">${esc(m.module)} repariert!</div>
+    <div class="lead">${first ? `+100 XP · Das Modul <b>${esc(m.module)}</b> leuchtet wieder.` : `Gut gemacht – Mission wiederholt.`}</div>
+    ${next ? `<div class="hint-sm" style="margin-top:8px">Neuer Auftrag freigeschaltet: <b>${next.icon} ${esc(next.module)}</b></div>` : `<div class="lead" style="margin-top:10px">🌟 <b>Alle Module laufen!</b> Du hast ORION-7 komplett repariert. Ab jetzt ist jede eigene Erfindung eine neue Mission.</div>`}
+    <div class="btnRow center"><button class="btn" onclick="showHome()">🛰️ Zur Station</button>${next?`<button class="btn ghost" onclick="openMission('${next.id}')">Nächste Mission →</button>`:""}</div></div>`);
+}
+
+/* ---------- Quiz ---------- */
+function qKey(mid, i){ return mid + ":" + i; }
+function startQuiz(id){
+  const m = MISSIONS[idx(id)];
+  Q = {id, mode:"mission", list: shuffle(m.quiz.map((q,i)=>({mid:id, i, q}))), pos:0, right:0, picked:null};
+  prepQ(); showPhase(id, m.steps.length+2);
+}
+function prepQ(){ const it = Q.list[Q.pos]; it.order = shuffle(it.q.o.map((_,k)=>k)); Q.picked = null; }
+function quizHTML(){
+  const it = Q.list[Q.pos], q = it.q, ans = Q.picked!==null;
+  let h = `<div class="stepH">📡 Frage ${Q.pos+1} von ${Q.list.length}</div><div class="lead"><b>${esc(q.q)}</b></div>`;
+  it.order.forEach(k=>{
+    let cls = ""; if(ans){ if(k===q.a) cls="right"; else if(k===Q.picked) cls="wrong"; }
+    h += `<button class="opt ${cls}" onclick="pick(${k})" ${ans?"disabled":""}>${esc(q.o[k])}</button>`;
+  });
+  if(ans){
+    const ok = Q.picked===q.a;
+    h += `<div class="fb ${ok?"ok":"bad"}"><b>${ok?"Richtig!":"Nicht ganz."}</b> ${esc(q.e)}</div>
+      <div class="btnRow center"><button class="btn" onclick="nextQ()">${Q.pos+1<Q.list.length?"Nächste Frage →":"Auswertung →"}</button></div>`;
+  }
+  return h;
+}
+function pick(k){
+  if(Q.picked!==null) return;
+  const it = Q.list[Q.pos], ok = k===it.q.a, key = qKey(it.mid, it.i);
+  Q.picked = k;
+  if(ok){ Q.right++; addXP(Q.mode==="review"?5:10); if(S.weak[key]){ S.weak[key]--; if(S.weak[key]<=0) delete S.weak[key]; } }
+  else { S.weak[key] = (S.weak[key]||0) + 2; }
+  save();
+  if(Q.mode==="review") renderReview(); else showPhase(Q.id, MISSIONS[idx(Q.id)].steps.length+2);
+}
+function nextQ(){
+  Q.pos++;
+  if(Q.pos < Q.list.length){ prepQ(); if(Q.mode==="review") renderReview(); else showPhase(Q.id, MISSIONS[idx(Q.id)].steps.length+2); return; }
+  if(Q.mode==="review"){ endReview(); return; }
+  const id = Q.id, m = MISSIONS[idx(id)], st = MS(id), r = Q.right, n = Q.list.length, pass = r >= Math.ceil(n*0.75);
+  st.quizBest = Math.max(st.quizBest||0, r); if(pass) st.quizDone = true; save();
+  const p = m.steps.length+2;
+  go(head() + `<div class="card"><div class="phaseLbl">${m.icon} Mission ${idx(id)+1} · Funk-Quiz</div>${progBar(m,st,p)}
+    <div class="center"><div class="win">${pass?"📡":"📻"}</div><div class="stepH">${r} von ${n} richtig</div>
+    <div class="lead">${pass ? "Funkverbindung steht! Jetzt noch der Abschluss-Check." : `Für die Funkverbindung brauchst du mindestens ${Math.ceil(n*0.75)} richtige Antworten. Lies dir die Erklärungen noch einmal durch – dann klappt es!`}</div></div>
+    <div class="btnRow split"><button class="btn ghost" onclick="Q=null;showPhase('${id}',${p-1})">← Wissen</button>
+    ${pass ? `<button class="btn" onclick="Q=null;showPhase('${id}',${p+1})">Zum Check →</button>` : `<button class="btn" onclick="startQuiz('${id}')">🔁 Nochmal</button>`}</div></div>`);
+  Q = pass ? null : Q;
+}
+
+/* ---------- Wartungsrunde (Wiederholung) ---------- */
+function showReview(){
+  const pool = [];
+  MISSIONS.forEach(m=>{ if(S.m[m.id] && S.m[m.id].done) m.quiz.forEach((q,i)=>pool.push({mid:m.id, i, q, w:1+(S.weak[qKey(m.id,i)]||0)*2})); });
+  if(!pool.length){ showHome(); return; }
+  const pickList = [], bag = pool.slice();
+  while(pickList.length < Math.min(6,pool.length) && bag.length){
+    const tot = bag.reduce((a,b)=>a+b.w,0); let r = Math.random()*tot, k = 0;
+    for(; k<bag.length; k++){ r -= bag[k].w; if(r<=0) break; }
+    pickList.push(bag.splice(Math.min(k,bag.length-1),1)[0]);
+  }
+  Q = {mode:"review", list:pickList, pos:0, right:0, picked:null}; prepQ(); renderReview();
+}
+function renderReview(){
+  const it = Q.list[Q.pos], m = MISSIONS[idx(it.mid)];
+  go(head() + `<div class="card"><div class="phaseLbl">🛠️ Wartungsrunde · aus Mission ${idx(it.mid)+1} (${esc(m.module)})</div>
+    <div class="prog">${Q.list.map((_,i)=>`<i class="${i<Q.pos?"d":i===Q.pos?"c":""}"></i>`).join("")}</div>${quizHTML()}</div>
+    <div class="btnRow center"><button class="btn ghost small" onclick="Q=null;showHome()">Abbrechen</button></div>`);
+}
+function endReview(){
+  const r = Q.right, n = Q.list.length; S.reviews = (S.reviews||0)+1; if(r===n) addXP(20); save(); Q = null;
+  go(head() + `<div class="card center"><div class="win">🛠️</div><div class="stepH">Wartung abgeschlossen: ${r} von ${n}</div>
+    <div class="lead">${r===n?"Alles fehlerfrei – +20 XP Bonus!":"Fragen, die noch nicht saßen, kommen in der nächsten Wartungsrunde öfter dran."}</div>
+    <div class="btnRow center"><button class="btn" onclick="showReview()">Noch eine Runde</button><button class="btn ghost" onclick="showHome()">🛰️ Station</button></div></div>`);
+}
+
+/* ---------- Logbuch ---------- */
+function showLog(){
+  let h = head() + `<div class="sectionTitle">📖 Logbuch des Ingenieurs</div><div class="hint-sm">Hier sammelst du das Replikator-Wissen jeder Mission, die du erreicht hast.</div>`;
+  MISSIONS.forEach((m,i)=>{
+    const st = S.m[m.id], seen = st && st.max >= m.steps.length+1;
+    h += seen ? `<div class="card"><div class="phaseLbl">${m.icon} ${esc(m.module)}</div><div class="stepH">${esc(m.know.t)}</div><div class="lead">${m.know.d}</div>${m.know.sk?`<div class="skBox">${sketch(m.know.sk)}</div>`:""}</div>`
+      : `<div class="card" style="opacity:.55"><div class="phaseLbl">🔒 Mission ${i+1}</div><div class="hint-sm">Noch nicht entdeckt.</div></div>`;
+  });
+  go(h + `<div class="btnRow center"><button class="btn" onclick="showHome()">🛰️ Station</button></div>`);
+}
+
+/* ---------- Für Eltern ---------- */
+function showParents(){
+  const rows = MISSIONS.map((m,i)=>{ const st = S.m[m.id]||{}; const steps = (st.steps||[]).filter(Boolean).length;
+    return `<div class="row"><div class="ic">${m.icon}</div><div class="tx"><b>${i+1}. ${esc(m.title)}</b><div class="hint-sm">Schritte ${steps}/${m.steps.length} · Quiz bestes Ergebnis ${st.quizBest||0}/${m.quiz.length}</div></div>
+      <span class="pill ${st.done?"ok":"no"}">${st.done?"fertig":unlocked(i)?"offen":"gesperrt"}</span></div>`; }).join("");
+  const shots = Object.keys(SHOTS).map(k=>`<div class="row"><div class="ic">📷</div><div class="tx"><b>tc-${k}.jpg</b><div class="hint-sm">${esc(SHOTS[k])}</div></div><span class="pill no" id="st-${k}">…</span></div>`).join("");
+  go(head() + `<div class="sectionTitle">⚙️ Für Eltern</div>
+    <div class="card"><b>Lernstand</b>${rows}<div class="hint-sm" style="margin-top:8px">Wartungsrunden gespielt: ${S.reviews||0} · Fragen, die öfter wiederholt werden: ${Object.keys(S.weak).length}</div></div>
+    <div class="card"><b>Tinkercad einrichten</b><div class="hint-sm" style="margin-top:6px">Tinkercad ist kostenlos (App Store: „Tinkercad“). Für Kinder unter 13 Jahren richtet ein Elternteil oder die Schule das Konto ein. Die Missionen sind nach der iPad-App (Stand November 2026) geschrieben. Bei App-Updates können sich Symbole oder Namen ändern.</div></div>
+    <div class="card"><b>iPad-Bilder</b><div class="hint-sm" style="margin:6px 0 4px">Echte Bildschirmfotos der Tinkercad-iPad-App liegen als <code>assets/tc-&lt;Name&gt;.jpg</code> im Ordner <code>assets</code>. Sie erscheinen automatisch im passenden Schritt (zusätzlich zur Skizze). Fehlt ein Bild, wird nur die Skizze gezeigt.</div>${shots}</div>
+    ${mbCard()}
+    <div class="card"><b>Spielstand dieser App</b><div class="btnRow"><button class="btn ghost small" onclick="resetAll()">🗑 Alles zurücksetzen</button></div></div>
+    <div class="btnRow center"><button class="btn" onclick="showHome()">🛰️ Station</button></div>`);
+  Object.keys(SHOTS).forEach(k=>{ const im = new Image(); const set = (ok)=>{ const e = document.getElementById("st-"+k); if(e){ e.textContent = ok?"vorhanden":"fehlt"; e.className = "pill " + (ok?"ok":"no"); } };
+    im.onload = ()=>set(true); im.onerror = ()=>set(false); im.src = "assets/tc-"+k+".jpg"; });
+}
+function resetAll(){
+  if(!window.confirm("Wirklich den ganzen Fortschritt der Raumstation löschen?")) return;
+  S = defaultState(); save(); showHome();
+}
+
+showHome();
+</script>
+<script>
+/* =========================================================
+   GESAMTSICHERUNG – alle Lern-Apps auf einmal sichern / zurückspielen
+   Identischer Block in allen fünf Apps. Liest und schreibt nur die bekannten Speicherschlüssel
+   (gleicher Ordner = gleicher Browser-Speicher). Ändert nichts an den einzelnen Spielständen,
+   solange man nicht ausdrücklich "einspielen" wählt.
+   ========================================================= */
+const MB_FORMAT = "lernwelt-gesamtsicherung";
+const MB_APPS = [
+  ["englisch-abenteuer-v4","🇬🇧 Englisch-Abenteuer"],
+  ["mittelerde-reise-v1","⚔️ Mittelerde-Reise"],
+  ["paris-abenteuer-v1","🇫🇷 Paris-Abenteuer"],
+  ["faecher-v1","🌍 Fächer (Lernstand)"],
+  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"],
+  ["raumstation-3d-v1","🛰️ Raumstation (3D-Werkstatt)"]
+];
+function mbStore(){ try{ return window.localStorage; }catch(e){ return null; } }
+function mbMsg(html, ok){
+  const b = document.getElementById("mbMsg"); if(!b) return;
+  b.style.display = "block"; b.style.borderColor = ok ? "rgba(90,154,90,.7)" : "rgba(192,69,58,.7)"; b.innerHTML = html;
+}
+function mbFileName(){ return "Lernwelt_Gesamtsicherung_" + new Date().toISOString().slice(0,10) + ".json"; }
+function mbInfo(key, raw){
+  try{ const o = JSON.parse(raw); if(key==="faecher-packs-v1") return Array.isArray(o) ? o.length+" Paket(e)" : "";
+       return (o && typeof o.xp==="number") ? o.xp+" XP" : ""; }catch(e){ return ""; }
+}
+function mbCollect(){
+  const ls = mbStore(), data = {}, found = [], missing = [];
+  MB_APPS.forEach(a=>{
+    let v = null; try{ v = ls ? ls.getItem(a[0]) : null; }catch(e){}
+    if(v){ data[a[0]] = v; found.push(a[1] + (mbInfo(a[0],v) ? " (" + mbInfo(a[0],v) + ")" : "")); }
+    else if(a[0]!=="faecher-packs-v1") missing.push(a[1]);
+  });
+  return {obj:{format:MB_FORMAT, version:1, created:new Date().toISOString(), data}, found, missing};
+}
+function mbSummary(c){
+  return "<b>Enthalten:</b> " + (c.found.length ? c.found.join(" · ") : "nichts")
+    + (c.missing.length ? '<br><span style="opacity:.85">Noch kein Spielstand vorhanden: ' + c.missing.join(", ") + '</span>' : "");
+}
+async function mbShare(){
+  const c = mbCollect();
+  if(!c.found.length){ mbMsg("⚠ Es gibt noch keinen Spielstand zum Sichern.", false); return; }
+  const txt = JSON.stringify(c.obj);
+  try{
+    const file = new File([txt], mbFileName(), {type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:mbFileName()});
+      mbMsg('✅ Wähle im Teilen-Menü <b>„In Dateien sichern“</b>.<br>' + mbSummary(c), true); return;
+    }
+  }catch(e){ if(e && e.name==="AbortError"){ mbMsg("Abgebrochen – es wurde nichts gespeichert.", false); return; } }
+  mbDownload();
+}
+function mbDownload(){
+  const c = mbCollect();
+  if(!c.found.length){ mbMsg("⚠ Es gibt noch keinen Spielstand zum Sichern.", false); return; }
+  try{
+    const blob = new Blob([JSON.stringify(c.obj)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = mbFileName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    mbMsg('✅ Download gestartet: <b>' + mbFileName() + '</b> – zu finden unter <b>Dateien → Downloads</b>.<br>' + mbSummary(c), true);
+  }catch(e){ mbMsg('⚠ Der Download hat nicht geklappt. Nutze bitte <b>„📋 Als Text“</b>.', false); }
+}
+function mbShowText(){
+  const c = mbCollect();
+  mbMsg('📋 Kopiere diesen Text und sichere ihn z. B. in einer Notiz. Zum Wiederherstellen hier einfügen und „Übernehmen“ tippen.<br>' + mbSummary(c), true);
+  const t = document.getElementById("mbText"); if(!t) return;
+  t.innerHTML = '<textarea id="mbBox" style="width:100%;height:110px;margin-top:8px;font-size:11px;border-radius:8px;padding:8px;background:rgba(0,0,0,.4);color:inherit;border:1px solid rgba(200,200,200,.4)"></textarea>'
+    + '<div class="btnRow" style="margin:8px 0 0"><button class="btn ghost" onclick="mbCopy()">📋 Kopieren</button><button class="btn ghost" onclick="mbApplyText()">✔ Übernehmen</button></div>';
+  const bx = document.getElementById("mbBox"); if(bx) bx.value = c.found.length ? JSON.stringify(c.obj) : "";
+}
+function mbCopy(){
+  const b = document.getElementById("mbBox"); if(!b) return;
+  b.select(); try{ b.setSelectionRange(0, 999999); }catch(e){}
+  try{ navigator.clipboard.writeText(b.value); }catch(e){ try{ document.execCommand("copy"); }catch(e2){} }
+}
+function mbApplyText(){ const b = document.getElementById("mbBox"); if(b) mbRestore(b.value); }
+function mbPickFile(){
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
+  inp.onchange = ()=>{ const f = inp.files && inp.files[0]; if(!f) return; const rd = new FileReader(); rd.onload = ()=>mbRestore(String(rd.result)); rd.readAsText(f); };
+  inp.click();
+}
+function mbRestore(text){
+  let o; try{ o = JSON.parse(text); }catch(e){ o = null; }
+  if(!o || o.format!==MB_FORMAT || typeof o.data!=="object" || !o.data){ mbMsg("⚠ Das ist keine Gesamtsicherung. (Einzelne Spielstände lädst du in der jeweiligen App.)", false); return; }
+  const ok = [];
+  MB_APPS.forEach(a=>{ const v = o.data[a[0]]; if(typeof v!=="string") return;
+    try{ const p = JSON.parse(v); if(p && typeof p==="object") ok.push([a[0], a[1], v]); }catch(e){} });
+  if(!ok.length){ mbMsg("⚠ In dieser Datei steckt kein gültiger Spielstand.", false); return; }
+  const d = o.created ? new Date(o.created) : null, ds = d && !isNaN(d) ? d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}) : "unbekanntem Datum";
+  const list = ok.map(x=>x[1] + (mbInfo(x[0],x[2]) ? " (" + mbInfo(x[0],x[2]) + ")" : "")).join("\n");
+  if(!window.confirm("Gesamtsicherung vom " + ds + " einspielen?\n\n" + list + "\n\nDer aktuelle Stand dieser Apps wird ersetzt.")){ mbMsg("Abgebrochen – nichts wurde verändert.", false); return; }
+  const ls = mbStore(); if(!ls){ mbMsg("⚠ Der Browser erlaubt kein Speichern.", false); return; }
+  try{ ok.forEach(x=>ls.setItem(x[0], x[2])); }catch(e){ mbMsg("⚠ Speichern hat nicht geklappt.", false); return; }
+  mbMsg("✅ Eingespielt: " + list.replace(/\n/g," · ") + "<br>Die Seite lädt gleich neu …", true);
+  setTimeout(()=>location.reload(), 900);
+}
+function mbCard(){
+  return '<div id="mbCard" style="margin:14px 0;padding:16px;border:1px solid rgba(200,200,200,.35);border-radius:16px;background:rgba(0,0,0,.22)">'
+    + '<b style="font-size:17px">🗄️ Gesamtsicherung – alle Apps auf einmal</b>'
+    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris, Fächer und Raumstation gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
+    + 'Zum Wiederherstellen oder für ein neues Gerät: <b>einspielen</b> – dabei wird der Stand der Apps ersetzt.</div>'
+    + '<div class="btnRow"><button class="btn ghost" onclick="mbShare()">📤 Alles sichern</button>'
+    + '<button class="btn ghost" onclick="mbDownload()">💾 Als Datei laden</button>'
+    + '<button class="btn ghost" onclick="mbPickFile()">📥 Gesamtsicherung einspielen</button>'
+    + '<button class="btn ghost" onclick="mbShowText()">📋 Als Text</button></div>'
+    + '<div id="mbMsg" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;background:rgba(0,0,0,.25);font-size:13.5px;line-height:1.5"></div><div id="mbText"></div></div>';
+}
+</script>
+</body>
+</html>
