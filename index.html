@@ -175,6 +175,14 @@
   .backRow{margin:10px 0 16px}
   .sectionTitle{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(18px,3.5vw,24px);margin:6px 0 4px}
   .hint-sm{font-size:13px;opacity:.7;margin-bottom:8px}
+  .spkRow{display:flex;justify-content:center;gap:8px;margin:6px 0 2px;flex-wrap:wrap}
+  .spk{font-family:inherit;font-weight:800;font-size:14px;padding:7px 12px;border-radius:999px;border:1px solid rgba(217,168,60,.7);background:rgba(0,0,0,.3);color:#f3e9cf;cursor:pointer}
+  .spk:active{background:linear-gradient(#f6d27a,#d9a83c);color:#2a1d07}
+  .spk.sm{padding:2px 8px;font-size:12px;margin-right:6px}
+  .rule .spk,.rule .spk:active{background:linear-gradient(#f6d27a,#d9a83c);color:#2a1d07;border-color:#b8862a}
+  .segRow{display:flex;gap:8px;flex-wrap:wrap}
+  .seg{flex:1;min-width:110px;text-align:center;padding:10px 8px;border-radius:12px;border:2px solid rgba(217,168,60,.35);cursor:pointer;font-weight:700}
+  .seg.active{background:rgba(217,168,60,.25);border-color:var(--gold);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -1590,7 +1598,7 @@ const TOPICS = {
  q23:["did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "did oder was/were entscheiden", "did oder was/were entscheiden", "Verneinung gemischt"],
 };
 
-let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[], review:{}};
+let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[], review:{}, tts:{auto:"after", slow:false}};
 /* Kalenderbasierte Wiederholung: Intervall wird nach jedem bestandenen Durchlauf
    verlaengert (wie bei klassischen Karteikasten-Systemen), bei Nichtbestehen zurueckgesetzt. */
 const REVIEW_DAYS = [3, 7, 14, 30, 60];
@@ -1633,6 +1641,7 @@ function normalizeState(){
   S.best    = (S.best    && typeof S.best==="object")    ? S.best    : {};
   S.perfect = (S.perfect && typeof S.perfect==="object") ? S.perfect : {};
   S.review  = (S.review  && typeof S.review==="object" && !Array.isArray(S.review)) ? S.review : {};
+  normalizeTts();
   S.xp = Number(S.xp)||0;
   S.maxStreak = Number(S.maxStreak)||0;
   // Kaputte oder veraltete Wiederholungs-Eintraege bereinigen
@@ -1850,6 +1859,104 @@ function downloadCard(idx){
    Ansichten
    ========================================================= */
 const app = document.getElementById("app");
+/* ---------- Sprachausgabe (Aussprache üben) ----------
+   Nutzt die eingebaute Sprachausgabe des Geräts (Web Speech API, Englisch bevorzugt en-GB) – keine Audiodateien, funktioniert offline,
+   wenn auf dem Gerät eine englische Stimme installiert ist (iPad: Einstellungen › Bedienungshilfen › Gesprochene Inhalte › Stimmen). */
+const TTS = {ok: (typeof window!=="undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window), voice:null, reg:[]};
+function ttsPickVoice(){
+  if(!TTS.ok) return null;
+  let vs = []; try{ vs = speechSynthesis.getVoices() || []; }catch(e){}
+  const en = vs.filter(v=>/^en([-_]|$)/i.test(v.lang||""));
+  if(!en.length){ TTS.voice = null; return null; }
+  const score = v => (/en[-_]GB/i.test(v.lang)?10:/en[-_](US|AU|IE)/i.test(v.lang)?6:0) + (/premium|enhanced|erweitert|siri/i.test(v.name)?6:0)
+                   + (/daniel|kate|serena|oliver|google uk|samantha|karen/i.test(v.name)?3:0) + (v.localService?1:0);
+  en.sort((a,b)=>score(b)-score(a)); TTS.voice = en[0]; return TTS.voice;
+}
+if(TTS.ok){ try{ ttsPickVoice(); speechSynthesis.addEventListener("voiceschanged", ttsPickVoice); }catch(e){} }
+function ttsClean(s){
+  return String(s).replace(/<[^>]*>/g,"").replace(/\bsb\s*\/\s*sth\b/gi,"somebody or something").replace(/\bsb's\b/gi,"somebody's").replace(/\bsb\b/gi,"somebody").replace(/\bsth\b/gi,"something")
+    .replace(/[()]/g,"").replace(/\s*…\s*/g,", ").replace(/\s*\/\s*/g," or ").replace(/;/g,",").replace(/\s+/g," ").trim();
+}
+function speakEn(parts, slow){
+  if(!TTS.ok) return;
+  const arr = (Array.isArray(parts) ? parts : [parts]).map(ttsClean).filter(Boolean);
+  if(!arr.length) return;
+  try{
+    speechSynthesis.cancel();
+    const hasV = TTS.voice || ttsPickVoice();
+    arr.forEach(tx=>{
+      const u = new SpeechSynthesisUtterance(tx);
+      u.lang = hasV ? TTS.voice.lang : "en-GB"; if(hasV) u.voice = TTS.voice;
+      u.rate = slow ? 0.6 : 0.9; u.pitch = 1;
+      speechSynthesis.speak(u);
+    });
+  }catch(e){}
+}
+function ttsReg(parts){ TTS.reg.push(parts); return TTS.reg.length-1; }
+function sayReg(i, slow){ speakEn(TTS.reg[i], slow); }
+function spkRow(items){   /* items: [{label, text}] – text = String oder Array (wird nacheinander gelesen) */
+  if(!TTS.ok) return "";
+  return items.filter(x=>x && x.text && (!Array.isArray(x.text) || x.text.length)).map(x=>{
+    const i = ttsReg(x.text);
+    return `<div class="spkRow"><button class="spk" type="button" onclick="sayReg(${i},false)">🔊 ${x.label}</button><button class="spk" type="button" onclick="sayReg(${i},true)">🐢 langsam</button></div>`;
+  }).join("");
+}
+function ttsSettingsCard(setFn, showFn, mk){   /* mk(label, active, js) -> Knopf-HTML der jeweiligen App */
+  if(!TTS.ok) return `<div class="hint-sm" style="margin-top:6px">Dieser Browser unterstützt keine Sprachausgabe.</div>`;
+  return `<div class="hint-sm" style="margin:4px 0 8px">Neben den englischen Wörtern und Sätzen gibt es 🔊-Knöpfe (🐢 = langsam). Zusätzlich kann das Gerät automatisch vorlesen:</div>
+    <div class="segRow" style="margin:6px 0">
+      ${mk("Nur per Knopf", S.tts.auto==="off", "setTts({auto:'off'})")}
+      ${mk("Nach der Antwort", S.tts.auto==="after", "setTts({auto:'after'})")}
+      ${mk("Bei Frage und Antwort", S.tts.auto==="both", "setTts({auto:'both'})")}</div>
+    <div class="segRow" style="margin:6px 0">
+      ${mk("Automatisch: normal", !S.tts.slow, "setTts({slow:false})")}
+      ${mk("Automatisch: langsam", S.tts.slow, "setTts({slow:true})")}
+      ${mk("▶ Test", false, "speakEn('Hello! My name is Lukas. How are you today?', false)")}</div>
+    <div class="hint-sm" style="margin-top:8px">${TTS.voice ? "Stimme: "+esc(TTS.voice.name)+" ("+esc(TTS.voice.lang)+")" : "⚠ Auf diesem Gerät wurde keine englische Stimme gefunden. iPad: Einstellungen › Bedienungshilfen › Gesprochene Inhalte › Stimmen › Englisch laden. Danach die Seite neu öffnen."}
+    Kein Ton? Dann den Stumm-Schalter / die Lautstärke prüfen.</div>`;
+}
+function setTts(o){ Object.assign(S.tts, o); normalizeTts(); saveState(); (typeof showTtsPage==="function" ? showTtsPage : showSettings)(); }
+function normalizeTts(){
+  if(!S.tts || typeof S.tts!=="object" || Array.isArray(S.tts)) S.tts = {auto:"after", slow:false};
+  if(!["off","after","both"].includes(S.tts.auto)) S.tts.auto = "after";
+  S.tts.slow = S.tts.slow===true;
+}
+
+/* Welche englischen Texte gehören zu einer Aufgabe? (Die Aufgaben mischen Deutsch und Englisch – daher einfache Erkennung) */
+function looksGerman(s){
+  return /[äöüßÄÖÜ]/.test(s) || /\b(der|die|das|den|dem|ein|eine|einen|und|ist|nicht|für|von|wie|auf|zu|ich|du|wir|ihr|sie|bedeutet|heißt|welche|welcher|wer|wo|gehört|nicht|wird)\b/i.test(s);
+}
+function quotedEnglish(q){   /* englische Wörter/Sätze in „…“ in der Frage (ohne Lücke) */
+  const out = []; if(/Fehler|falsch/i.test(q)) return out;   /* Fehlersuche: falsche Sätze nicht vorlesen */ const re = /„([^“”"]+)[“”"]/g; let m;
+  while((m = re.exec(q))){ const x = m[1].trim(); if(x && !x.includes("___") && /[A-Za-z]/.test(x) && !looksGerman(x)) out.push(x); }
+  return out;
+}
+function exAnswerText(ex, correctText){   /* was soll nach der Antwort vorgelesen werden? */
+  if(ex.type==="order") return String(ex.c);
+  const q = String(ex.q);
+  if(/falsch/i.test(q) && !/richtig ist/i.test(q)) return "";   /* gesucht ist ein falscher Satz – nicht vorlesen */
+  if(q.includes("___") && !q.includes("=")){
+    const base = q.replace(/\s*\([^)]*\)\s*$/,"").replace(/[„“”]/g,"").replace(/\s+[–-]\s+/g," ");
+    if(!looksGerman(base) && /[A-Za-z]/.test(base)) return base.replace("___", correctText);
+  }
+  const c = String(correctText);
+  if(!looksGerman(c) && /[A-Za-z]/.test(c)) return c;
+  const qe = quotedEnglish(q); return qe.length ? qe.join(". ") : "";
+}
+function autoSpeak(when, ex, correctText){
+  if(!TTS.ok) return; const m = S.tts.auto; if(m==="off" || (when==="question" && m!=="both")) return;
+  const tx = when==="question" ? quotedEnglish(String(ex.q)).join(". ") : exAnswerText(ex, correctText);
+  if(tx) speakEn(tx, S.tts.slow);
+}
+function showTtsPage(){
+  run = null;
+  app.innerHTML = headerHTML() + `
+   <div class="backRow"><button class="btn ghost" onclick="showHome()">← Zur Questkarte</button></div>
+   <div class="sectionTitle">🔊 Aussprache</div>
+   <div class="rule">${ttsSettingsCard("setTts","showTtsPage",(l,a,js)=>`<div class="seg ${a?"active":""}" onclick="${js}">${l}</div>`)}</div>`;
+  window.scrollTo(0,0);
+}
+
 let run = null; // aktueller Übungslauf
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;");}
@@ -1908,6 +2015,7 @@ function showHome(){
       <a class="btn ghost" href="franzoesisch-abenteuer.html" style="text-decoration:none;display:inline-flex;align-items:center">🇫🇷 Paris-Abenteuer</a>
       <a class="btn ghost" href="faecher.html" style="text-decoration:none;display:inline-flex;align-items:center">📚 Fächer</a>
       <button class="btn ghost" onclick="showEval()">📊 Auswertung</button>
+      ${TTS.ok ? `<button class="btn ghost" onclick="showTtsPage()">🔊 Aussprache</button>` : ""}
     </div>
     ${dueBlock}
     <div class="sectionTitle" style="margin-top:20px">⚔️ Grammatik-Quests</div>
@@ -1920,7 +2028,15 @@ function showHome(){
   window.scrollTo(0,0);
 }
 
+function ruleCell(c, isVocab){
+  if(!isVocab || !TTS.ok) return c;
+  const m = String(c).match(/^(.+?)\s+[–-]\s+/);
+  if(!m || looksGerman(m[1])) return c;
+  const i = ttsReg(m[1].replace(/<[^>]*>/g,""));
+  return `<button class="spk sm" type="button" onclick="sayReg(${i},false)" title="Anhören">🔊</button>${c}`;
+}
 function showIntro(qi){
+  TTS.reg.length = 0;
   const q = QUESTS[qi];
   app.innerHTML = headerHTML() + `
    <div class="backRow"><button class="btn ghost" onclick="showHome()">← Zur Questkarte</button></div>
@@ -1928,7 +2044,7 @@ function showIntro(qi){
      <h2>${q.num.replace("QUEST","📜 Quest").replace(" · ",": ")}</h2>
      <div class="lead">${q.title} — Lies zuerst die Regeln, dann beginnt die Prüfung!</div>
      ${q.rules.map(r=>`<div class="rule"><b>${r.h}</b><br>${r.t||""}
-        ${r.table?`<table>${r.table.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</table>`:""}
+        ${r.table?`<table>${r.table.map(row=>`<tr>${row.map(c=>`<td>${ruleCell(c, q.id[0]==="v")}</td>`).join("")}</tr>`).join("")}</table>`:""}
         ${r.ex?`<span class="ex">Beispiel: ${r.ex}</span>`:""}</div>`).join("")}
    </div>
    <div class="btnRow" style="justify-content:center;margin-top:18px">
@@ -1976,6 +2092,7 @@ function showExercise(){
 }
 
 function renderExercise(){
+  TTS.reg.length = 0;
   run.factShown = false;
   run.answered = false;
   const q = QUESTS[run.qi];
@@ -2010,6 +2127,7 @@ function renderExercise(){
     <div class="qCard">
       <div class="qType">${typeName} · Aufgabe ${run.pos+1} von ${run.order.length}</div>
       <div class="qText">${esc(ex.q).replace(/___/g,'<span class="blank">___</span>')}</div>
+      ${spkRow(quotedEnglish(String(ex.q)).length ? [{label:"Anhören", text:quotedEnglish(String(ex.q))}] : [])}
       ${ex.hint?`<div class="qHint">💡 ${esc(ex.hint)}</div>`:""}
       ${body}
       <div class="feedback" id="fb"></div>
@@ -2020,6 +2138,7 @@ function renderExercise(){
    </div>`;
   const inp=document.getElementById("fillInput"); if(inp) inp.focus();
   window.scrollTo(0,0);
+  autoSpeak("question", ex);
 }
 
 function currentEx(){ return QUESTS[run.qi].ex[run.order[run.pos]]; }
@@ -2056,6 +2175,9 @@ function resolve(ok, correctText){
       + (ex.hint ? `<br><span style="font-weight:400;opacity:.8">💡 ${esc(ex.hint)}</span>` : "")
       + "<br><span style='font-weight:400'>Merk es dir – die Karte wartet trotzdem auf dich!</span>";
   }
+  { const at = exAnswerText(ex, correctText);
+    if(at && TTS.ok){ fb.insertAdjacentHTML("beforeend", `<div style="font-weight:400;margin-top:6px">Aussprache üben:</div>` + spkRow([{label:"Anhören", text:at}])); }
+    autoSpeak("answer", ex, correctText); }
   document.getElementById("nextRow").style.display="flex";
   document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
   const inp=document.getElementById("fillInput"); if(inp) inp.disabled=true;
@@ -2324,7 +2446,7 @@ function showEval(){
      <div id="saveMsg" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;
        background:rgba(0,0,0,.25);font-size:13.5px;line-height:1.5"></div>
    </div>
-   <div class="btnRow"><button class="btn ghost" id="rst" onclick="resetStats()">🗑 Statistik zurücksetzen</button></div>`;
+${mbCard()}   <div class="btnRow"><button class="btn ghost" id="rst" onclick="resetStats()">🗑 Statistik zurücksetzen</button></div>`;
   window.scrollTo(0,0);
 }
 let rstArmed=false;
@@ -2350,6 +2472,115 @@ function resetStats(){
   }
 })();
 loadState().then(showHome);
+</script>
+<script>
+/* =========================================================
+   GESAMTSICHERUNG – alle Lern-Apps auf einmal sichern / zurückspielen
+   Identischer Block in allen vier Apps. Liest und schreibt nur die bekannten Speicherschlüssel
+   (gleicher Ordner = gleicher Browser-Speicher). Ändert nichts an den einzelnen Spielständen,
+   solange man nicht ausdrücklich "einspielen" wählt.
+   ========================================================= */
+const MB_FORMAT = "lernwelt-gesamtsicherung";
+const MB_APPS = [
+  ["englisch-abenteuer-v4","🇬🇧 Englisch-Abenteuer"],
+  ["mittelerde-reise-v1","⚔️ Mittelerde-Reise"],
+  ["paris-abenteuer-v1","🇫🇷 Paris-Abenteuer"],
+  ["faecher-v1","🌍 Fächer (Lernstand)"],
+  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"]
+];
+function mbStore(){ try{ return window.localStorage; }catch(e){ return null; } }
+function mbMsg(html, ok){
+  const b = document.getElementById("mbMsg"); if(!b) return;
+  b.style.display = "block"; b.style.borderColor = ok ? "rgba(90,154,90,.7)" : "rgba(192,69,58,.7)"; b.innerHTML = html;
+}
+function mbFileName(){ return "Lernwelt_Gesamtsicherung_" + new Date().toISOString().slice(0,10) + ".json"; }
+function mbInfo(key, raw){
+  try{ const o = JSON.parse(raw); if(key==="faecher-packs-v1") return Array.isArray(o) ? o.length+" Paket(e)" : "";
+       return (o && typeof o.xp==="number") ? o.xp+" XP" : ""; }catch(e){ return ""; }
+}
+function mbCollect(){
+  const ls = mbStore(), data = {}, found = [], missing = [];
+  MB_APPS.forEach(a=>{
+    let v = null; try{ v = ls ? ls.getItem(a[0]) : null; }catch(e){}
+    if(v){ data[a[0]] = v; found.push(a[1] + (mbInfo(a[0],v) ? " (" + mbInfo(a[0],v) + ")" : "")); }
+    else if(a[0]!=="faecher-packs-v1") missing.push(a[1]);
+  });
+  return {obj:{format:MB_FORMAT, version:1, created:new Date().toISOString(), data}, found, missing};
+}
+function mbSummary(c){
+  return "<b>Enthalten:</b> " + (c.found.length ? c.found.join(" · ") : "nichts")
+    + (c.missing.length ? '<br><span style="opacity:.85">Noch kein Spielstand vorhanden: ' + c.missing.join(", ") + '</span>' : "");
+}
+async function mbShare(){
+  const c = mbCollect();
+  if(!c.found.length){ mbMsg("⚠ Es gibt noch keinen Spielstand zum Sichern.", false); return; }
+  const txt = JSON.stringify(c.obj);
+  try{
+    const file = new File([txt], mbFileName(), {type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:mbFileName()});
+      mbMsg('✅ Wähle im Teilen-Menü <b>„In Dateien sichern“</b>.<br>' + mbSummary(c), true); return;
+    }
+  }catch(e){ if(e && e.name==="AbortError"){ mbMsg("Abgebrochen – es wurde nichts gespeichert.", false); return; } }
+  mbDownload();
+}
+function mbDownload(){
+  const c = mbCollect();
+  if(!c.found.length){ mbMsg("⚠ Es gibt noch keinen Spielstand zum Sichern.", false); return; }
+  try{
+    const blob = new Blob([JSON.stringify(c.obj)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = mbFileName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    mbMsg('✅ Download gestartet: <b>' + mbFileName() + '</b> – zu finden unter <b>Dateien → Downloads</b>.<br>' + mbSummary(c), true);
+  }catch(e){ mbMsg('⚠ Der Download hat nicht geklappt. Nutze bitte <b>„📋 Als Text“</b>.', false); }
+}
+function mbShowText(){
+  const c = mbCollect();
+  mbMsg('📋 Kopiere diesen Text und sichere ihn z. B. in einer Notiz. Zum Wiederherstellen hier einfügen und „Übernehmen“ tippen.<br>' + mbSummary(c), true);
+  const t = document.getElementById("mbText"); if(!t) return;
+  t.innerHTML = '<textarea id="mbBox" style="width:100%;height:110px;margin-top:8px;font-size:11px;border-radius:8px;padding:8px;background:rgba(0,0,0,.4);color:inherit;border:1px solid rgba(200,200,200,.4)"></textarea>'
+    + '<div class="btnRow" style="margin:8px 0 0"><button class="btn ghost" onclick="mbCopy()">📋 Kopieren</button><button class="btn ghost" onclick="mbApplyText()">✔ Übernehmen</button></div>';
+  const bx = document.getElementById("mbBox"); if(bx) bx.value = c.found.length ? JSON.stringify(c.obj) : "";
+}
+function mbCopy(){
+  const b = document.getElementById("mbBox"); if(!b) return;
+  b.select(); try{ b.setSelectionRange(0, 999999); }catch(e){}
+  try{ navigator.clipboard.writeText(b.value); }catch(e){ try{ document.execCommand("copy"); }catch(e2){} }
+}
+function mbApplyText(){ const b = document.getElementById("mbBox"); if(b) mbRestore(b.value); }
+function mbPickFile(){
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
+  inp.onchange = ()=>{ const f = inp.files && inp.files[0]; if(!f) return; const rd = new FileReader(); rd.onload = ()=>mbRestore(String(rd.result)); rd.readAsText(f); };
+  inp.click();
+}
+function mbRestore(text){
+  let o; try{ o = JSON.parse(text); }catch(e){ o = null; }
+  if(!o || o.format!==MB_FORMAT || typeof o.data!=="object" || !o.data){ mbMsg("⚠ Das ist keine Gesamtsicherung. (Einzelne Spielstände lädst du in der jeweiligen App.)", false); return; }
+  const ok = [];
+  MB_APPS.forEach(a=>{ const v = o.data[a[0]]; if(typeof v!=="string") return;
+    try{ const p = JSON.parse(v); if(p && typeof p==="object") ok.push([a[0], a[1], v]); }catch(e){} });
+  if(!ok.length){ mbMsg("⚠ In dieser Datei steckt kein gültiger Spielstand.", false); return; }
+  const d = o.created ? new Date(o.created) : null, ds = d && !isNaN(d) ? d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}) : "unbekanntem Datum";
+  const list = ok.map(x=>x[1] + (mbInfo(x[0],x[2]) ? " (" + mbInfo(x[0],x[2]) + ")" : "")).join("\n");
+  if(!window.confirm("Gesamtsicherung vom " + ds + " einspielen?\n\n" + list + "\n\nDer aktuelle Stand dieser Apps wird ersetzt.")){ mbMsg("Abgebrochen – nichts wurde verändert.", false); return; }
+  const ls = mbStore(); if(!ls){ mbMsg("⚠ Der Browser erlaubt kein Speichern.", false); return; }
+  try{ ok.forEach(x=>ls.setItem(x[0], x[2])); }catch(e){ mbMsg("⚠ Speichern hat nicht geklappt.", false); return; }
+  mbMsg("✅ Eingespielt: " + list.replace(/\n/g," · ") + "<br>Die Seite lädt gleich neu …", true);
+  setTimeout(()=>location.reload(), 900);
+}
+function mbCard(){
+  return '<div id="mbCard" style="margin:14px 0;padding:16px;border:1px solid rgba(200,200,200,.35);border-radius:16px;background:rgba(0,0,0,.22)">'
+    + '<b style="font-size:17px">🗄️ Gesamtsicherung – alle Apps auf einmal</b>'
+    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris und Fächer gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
+    + 'Zum Wiederherstellen oder für ein neues Gerät: <b>einspielen</b> – dabei wird der Stand der Apps ersetzt.</div>'
+    + '<div class="btnRow"><button class="btn ghost" onclick="mbShare()">📤 Alles sichern</button>'
+    + '<button class="btn ghost" onclick="mbDownload()">💾 Als Datei laden</button>'
+    + '<button class="btn ghost" onclick="mbPickFile()">📥 Gesamtsicherung einspielen</button>'
+    + '<button class="btn ghost" onclick="mbShowText()">📋 Als Text</button></div>'
+    + '<div id="mbMsg" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;background:rgba(0,0,0,.25);font-size:13.5px;line-height:1.5"></div><div id="mbText"></div></div>';
+}
 </script>
 </body>
 </html>

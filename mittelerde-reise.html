@@ -141,6 +141,10 @@
   .evBar{height:10px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;margin:3px 0}
   .evBar i{display:block;height:100%;border-radius:6px}
   a{color:var(--gold2)}
+  .spkRow{display:flex;justify-content:center;gap:8px;margin:6px 0 2px;flex-wrap:wrap}
+  .spk{font-family:inherit;font-weight:800;font-size:14px;padding:7px 12px;border-radius:999px;border:1px solid rgba(217,168,60,.7);background:rgba(0,0,0,.3);color:#f3e9cf;cursor:pointer}
+  .spk:active{background:linear-gradient(#f6d27a,#d9a83c);color:#2a1d07}
+  .spk.sm{padding:2px 8px;font-size:12px;margin-right:6px}
 </style>
 </head>
 <body>
@@ -241,7 +245,7 @@ BOSS_NODE2.trophy = "m2_boss";
 const OWN_KEY = "mittelerde-reise-v1";
 const MAIN_KEY = "englisch-abenteuer-v4";
 let S = {scope:"all", map:1, m2:{node:0,nodeHP:null,defeated:[]}, starter:null, unlockedInApp:[], node:0, nodeHP:null,
-         xp:0, maxStreak:0, stats:{}, defeated:[], trophies:[], weak:{}};
+         xp:0, maxStreak:0, stats:{}, defeated:[], trophies:[], weak:{}, tts:{auto:"after", slow:false}};
 let storageOK = true;
 
 function browserStore(){
@@ -257,6 +261,7 @@ function normalizeReise(){
   S.trophies      = Array.isArray(S.trophies)      ? S.trophies      : [];
   S.stats = (S.stats && typeof S.stats==="object") ? S.stats : {};
   S.weak  = (S.weak  && typeof S.weak==="object"  && !Array.isArray(S.weak)) ? S.weak : {};
+  normalizeTts();
   S.xp = Number(S.xp)||0; S.maxStreak = Number(S.maxStreak)||0;
   S.node = Math.min(Math.max(0, Number(S.node)||0), NODES.length);
   /* Zweite Karte: eigener Fortschritt in S.m2 */
@@ -790,6 +795,85 @@ function scopeLabel(){
 /* =========================================================
    Kampf
    ========================================================= */
+/* ---------- Sprachausgabe (Aussprache üben) ----------
+   Nutzt die eingebaute Sprachausgabe des Geräts (Web Speech API, Englisch bevorzugt en-GB) – keine Audiodateien, funktioniert offline,
+   wenn auf dem Gerät eine englische Stimme installiert ist (iPad: Einstellungen › Bedienungshilfen › Gesprochene Inhalte › Stimmen). */
+const TTS = {ok: (typeof window!=="undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window), voice:null, reg:[]};
+function ttsPickVoice(){
+  if(!TTS.ok) return null;
+  let vs = []; try{ vs = speechSynthesis.getVoices() || []; }catch(e){}
+  const en = vs.filter(v=>/^en([-_]|$)/i.test(v.lang||""));
+  if(!en.length){ TTS.voice = null; return null; }
+  const score = v => (/en[-_]GB/i.test(v.lang)?10:/en[-_](US|AU|IE)/i.test(v.lang)?6:0) + (/premium|enhanced|erweitert|siri/i.test(v.name)?6:0)
+                   + (/daniel|kate|serena|oliver|google uk|samantha|karen/i.test(v.name)?3:0) + (v.localService?1:0);
+  en.sort((a,b)=>score(b)-score(a)); TTS.voice = en[0]; return TTS.voice;
+}
+if(TTS.ok){ try{ ttsPickVoice(); speechSynthesis.addEventListener("voiceschanged", ttsPickVoice); }catch(e){} }
+function ttsClean(s){
+  return String(s).replace(/<[^>]*>/g,"").replace(/\bsb\s*\/\s*sth\b/gi,"somebody or something").replace(/\bsb's\b/gi,"somebody's").replace(/\bsb\b/gi,"somebody").replace(/\bsth\b/gi,"something")
+    .replace(/[()]/g,"").replace(/\s*…\s*/g,", ").replace(/\s*\/\s*/g," or ").replace(/;/g,",").replace(/\s+/g," ").trim();
+}
+function speakEn(parts, slow){
+  if(!TTS.ok) return;
+  const arr = (Array.isArray(parts) ? parts : [parts]).map(ttsClean).filter(Boolean);
+  if(!arr.length) return;
+  try{
+    speechSynthesis.cancel();
+    const hasV = TTS.voice || ttsPickVoice();
+    arr.forEach(tx=>{
+      const u = new SpeechSynthesisUtterance(tx);
+      u.lang = hasV ? TTS.voice.lang : "en-GB"; if(hasV) u.voice = TTS.voice;
+      u.rate = slow ? 0.6 : 0.9; u.pitch = 1;
+      speechSynthesis.speak(u);
+    });
+  }catch(e){}
+}
+function ttsReg(parts){ TTS.reg.push(parts); return TTS.reg.length-1; }
+function sayReg(i, slow){ speakEn(TTS.reg[i], slow); }
+function spkRow(items){   /* items: [{label, text}] – text = String oder Array (wird nacheinander gelesen) */
+  if(!TTS.ok) return "";
+  return items.filter(x=>x && x.text && (!Array.isArray(x.text) || x.text.length)).map(x=>{
+    const i = ttsReg(x.text);
+    return `<div class="spkRow"><button class="spk" type="button" onclick="sayReg(${i},false)">🔊 ${x.label}</button><button class="spk" type="button" onclick="sayReg(${i},true)">🐢 langsam</button></div>`;
+  }).join("");
+}
+function ttsSettingsCard(setFn, showFn, mk){   /* mk(label, active, js) -> Knopf-HTML der jeweiligen App */
+  if(!TTS.ok) return `<div class="hint-sm" style="margin-top:6px">Dieser Browser unterstützt keine Sprachausgabe.</div>`;
+  return `<div class="hint-sm" style="margin:4px 0 8px">Neben den englischen Wörtern und Sätzen gibt es 🔊-Knöpfe (🐢 = langsam). Zusätzlich kann das Gerät automatisch vorlesen:</div>
+    <div class="segRow" style="margin:6px 0">
+      ${mk("Nur per Knopf", S.tts.auto==="off", "setTts({auto:'off'})")}
+      ${mk("Nach der Antwort", S.tts.auto==="after", "setTts({auto:'after'})")}
+      ${mk("Bei Frage und Antwort", S.tts.auto==="both", "setTts({auto:'both'})")}</div>
+    <div class="segRow" style="margin:6px 0">
+      ${mk("Automatisch: normal", !S.tts.slow, "setTts({slow:false})")}
+      ${mk("Automatisch: langsam", S.tts.slow, "setTts({slow:true})")}
+      ${mk("▶ Test", false, "speakEn('Hello! My name is Lukas. How are you today?', false)")}</div>
+    <div class="hint-sm" style="margin-top:8px">${TTS.voice ? "Stimme: "+esc(TTS.voice.name)+" ("+esc(TTS.voice.lang)+")" : "⚠ Auf diesem Gerät wurde keine englische Stimme gefunden. iPad: Einstellungen › Bedienungshilfen › Gesprochene Inhalte › Stimmen › Englisch laden. Danach die Seite neu öffnen."}
+    Kein Ton? Dann den Stumm-Schalter / die Lautstärke prüfen.</div>`;
+}
+function setTts(o){ Object.assign(S.tts, o); normalizeTts(); saveState(); (typeof showTtsPage==="function" ? showTtsPage : showSettings)(); }
+function normalizeTts(){
+  if(!S.tts || typeof S.tts!=="object" || Array.isArray(S.tts)) S.tts = {auto:"after", slow:false};
+  if(!["off","after","both"].includes(S.tts.auto)) S.tts.auto = "after";
+  S.tts.slow = S.tts.slow===true;
+}
+
+/* Vorlesetexte einer Vokabel */
+function enParts(v){ return v.en.split(";").map(x=>x.trim()).filter(Boolean); }
+function exSentence(v){   /* Beispielsatz mit eingesetztem Wort – nur wenn das sicher richtig klingt */
+  if(!v.example || !v.example.includes("___")) return "";
+  if(/___[A-Za-z]/.test(v.example) || /\.\.\.|…/.test(v.example)) return "";
+  return v.example.replace("___", fillWord(v));
+}
+function autoSpeak(when){
+  if(!TTS.ok || !battle || !battle.current) return;
+  const m = S.tts.auto; if(m==="off" || (when==="question" && m!=="both")) return;
+  const v = battle.current;
+  if(when==="question"){ if(battle.qType==="mc" && battle.qDir==="en2de") speakEn(enParts(v), S.tts.slow); return; }
+  const s = battle.qType==="fill" ? exSentence(v) : "";
+  speakEn(s ? [s] : enParts(v), S.tts.slow);
+}
+
 let battle = null; // {nodeIndex, isBoss, foeHP, foeMaxHP, streak, answered, current}
 function enterNode(i){
   const pr = PR(), cm = CM();
@@ -820,6 +904,7 @@ function nextBattleQuestion(){
 }
 
 function renderBattle(){
+  TTS.reg.length = 0;
   const foe = foeMeta();
   const v = battle.current;
   const foePct = Math.max(0, Math.round(battle.foeHP/battle.foeMaxHP*100));
@@ -828,7 +913,7 @@ function renderBattle(){
   if(battle.qType==="mc"){
     if(battle.qDir==="en2de"){
       const opts = shuffledCopy([v.de.split(";")[0].trim(), ...distractorsFor(v,3)]);
-      qHTML = `<div class="qLabel">Was bedeutet dieses Wort?</div><div class="qText">${esc(v.en)}</div>
+      qHTML = `<div class="qLabel">Was bedeutet dieses Wort?</div><div class="qText">${esc(v.en)}</div>${spkRow([{label:"Anhören", text:enParts(v)}])}
         <div class="opts">${opts.map(o=>`<button class="opt" onclick="answerMC(this,'${esc(o).replace(/'/g,"\\'")}','${esc(v.de.split(';')[0].trim()).replace(/'/g,"\\'")}')">${esc(o)}</button>`).join("")}</div>`;
     } else {
       const correct = firstAnswer(v);
@@ -873,6 +958,7 @@ function renderBattle(){
    <div class="btnRow" style="justify-content:center"><button class="btn ghost" onclick="fleeBattle()">✕ Rückzug</button></div>`;
   window.scrollTo(0,0);
   const inp = document.getElementById("fillInput"); if(inp) setTimeout(()=>inp.focus(),50);
+  autoSpeak("question");
 }
 
 function answerMC(btn, chosen, correct){
@@ -973,6 +1059,7 @@ function showFeedback(ok, given, attack, reviewNote){
       ${attack ? `<div class="fbLine" style="color:var(--gold2);font-weight:700;margin-top:10px">${attack}</div>` : ""}
       ${(!ok && battle.streak===0) ? `<div class="fbLine fbDe" style="margin-top:6px">Die Serie beginnt wieder bei 0.</div>` : ""}
       ${reviewNote ? `<div class="fbLine" style="margin-top:6px;opacity:.85;font-size:13px">${reviewNote}</div>` : ""}
+      ${TTS.ok ? `<div class="fbLine fbDe" style="margin-top:8px">Aussprache üben:</div>` + spkRow([{label:"Wort", text:enParts(v)}, {label:"Beispielsatz", text:exSentence(v)}]) : ""}
       <div class="btnRow" style="justify-content:center;margin:12px 0 0">
         <button class="btn" id="nextBtn" onclick="continueBattle()">${done?"Sieg ansehen →":"Weiter →"}</button>
       </div>
@@ -980,6 +1067,7 @@ function showFeedback(ok, given, attack, reviewNote){
   // Fokus erst im nächsten Tick setzen: sonst kann derselbe Enter-Tastendruck,
   // der die Antwort abgeschickt hat, sofort auch den frisch fokussierten Weiter-Button auslösen.
   setTimeout(()=>{ const b=document.getElementById("nextBtn"); if(b) b.focus(); }, 0);
+  autoSpeak("answer");
 }
 function continueBattle(){
   const box=document.getElementById("feedback"); if(box) box.innerHTML="";
@@ -1111,6 +1199,10 @@ function showSettings(){
      </div>
      <div id="saveMsg" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;
        background:rgba(0,0,0,.25);font-size:13.5px;line-height:1.5"></div>
+   </div>
+   <div class="card">
+     <div class="cin" style="color:var(--gold2);margin-bottom:6px">🔊 Aussprache</div>
+     ${ttsSettingsCard("setTts","showSettings",(l,a,js)=>`<div class="seg ${a?"active":""}" onclick="${js}">${l}</div>`)}
    </div>
 ${mbCard()}   <div class="card">
      <div class="cin" style="color:var(--gold2);margin-bottom:6px">Reise neu beginnen</div>

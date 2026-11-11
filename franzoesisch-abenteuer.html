@@ -674,7 +674,25 @@ const FACTS2 = [
  "Frankreich hat ungefähr die Form eines Sechsecks. Deshalb nennen die Franzosen ihr Land auch „l'Hexagone“.",
  "Die Tour de France, das berühmteste Radrennen der Welt, findet jedes Jahr im Juli statt und endet meistens in Paris auf den Champs-Élysées.",
 ];
-const FACTS = FACTS1.concat(FACTS2);
+/* Fakten für Karte 3 (Monde francophone) – kommen nur auf Karte 3 vor */
+const FACTS3 = [
+ "In Belgien sprechen viele Menschen Französisch. In Brüssel (Bruxelles) sind Französisch und Niederländisch beide Amtssprachen.",
+ "In der Schweiz gibt es vier Landessprachen: Deutsch, Französisch, Italienisch und Rätoromanisch. In Genf (Genève) spricht man Französisch.",
+ "Québec ist die einzige Provinz Kanadas, in der Französisch die einzige Amtssprache ist. Dort leben über 8 Millionen Menschen.",
+ "Montréal gehört zu den größten französischsprachigen Städten der Welt. Im Winter kann man dort in einer „unterirdischen Stadt“ aus Einkaufsstraßen und Tunneln spazieren.",
+ "New Orleans in den USA wurde von Franzosen gegründet und nach dem Herzog von Orléans benannt. Das „French Quarter“ erinnert noch heute daran.",
+ "Martinique ist eine Karibikinsel, die zu Frankreich gehört – man bezahlt dort mit dem Euro. Auf der Insel liegt der Vulkan Montagne Pelée.",
+ "In Französisch-Guayana in Südamerika liegt Kourou, der Weltraumbahnhof, von dem europäische Raketen wie die Ariane ins All starten.",
+ "In Marokko ist Französisch eine wichtige Zweitsprache. In Marrakesch (Marrakech) gibt es den berühmten Platz Djemaa el-Fna mit Märchenerzählern und Gauklern.",
+ "Im Senegal ist Französisch Amtssprache. Die Hauptstadt Dakar liegt am westlichsten Punkt des afrikanischen Festlands.",
+ "Die Elfenbeinküste heißt auf Französisch „Côte d'Ivoire“ – das bedeutet wörtlich „Küste des Elfenbeins“.",
+ "Auf Madagaskar leben Lemuren, die es in der Natur sonst nirgends auf der Welt gibt. Neben Madagassisch wird dort auch Französisch gesprochen.",
+ "Tahiti gehört zu Französisch-Polynesien im Pazifik – mehr als 15.000 Kilometer von Paris entfernt.",
+ "Die Kerguelen gehören zu den französischen Süd- und Antarktisgebieten. Außer Forschenden lebt dort niemand – dafür aber viele Pinguine und Robben.",
+ "Französisch ist in fast 30 Ländern Amtssprache und wird weltweit von rund 300 Millionen Menschen gesprochen.",
+ "Der Tag der Frankophonie, an dem die französischsprachige Welt gefeiert wird, ist jedes Jahr am 20. März.",
+];
+const FACTS = FACTS1.concat(FACTS2, FACTS3);
 
 /* ---------- Karte 2: Reise durch Frankreich (Karte 100 × 130) ---------- */
 const NODES2 = [
@@ -692,15 +710,41 @@ const NODES2 = [
  {name:"Strasbourg", icon:"🥨", foe:"Le Bretzel Rebelle", foeDe:"die rebellische Brezel", foeIcon:"🥨", hp:230, x:85, y:47},
  {name:"Le Mont Blanc", icon:"🏔️", foe:"Le Yéti du Mont Blanc", foeDe:"der Yeti vom Mont Blanc", foeIcon:"❄️", hp:400, x:90, y:74, boss:true},
 ];
+/* ---------- Karte 3: Le monde francophone (Karte 100 × 130) – SCHWERER: viel mehr KP, weniger Schaden, Gegner erholen sich bei Fehlern ---------- */
+const NODES3 = [
+ {name:"Bruxelles", icon:"🧇", foe:"La Gaufre Géante", foeDe:"die Riesen-Waffel", foeIcon:"🧇", hp:260, heal:10, x:58, y:16},
+ {name:"Genève", icon:"⌚", foe:"La Montre Détraquée", foeDe:"die kaputte Uhr", foeIcon:"⏰", hp:280, heal:10, x:74, y:26},
+ {name:"Québec", icon:"🏰", foe:"L'Orignal Colérique", foeDe:"der wütende Elch", foeIcon:"🦌", hp:300, heal:12, x:34, y:16},
+ {name:"Montréal", icon:"❄️", foe:"Le Castor Têtu", foeDe:"der sture Biber", foeIcon:"🦫", hp:320, heal:14, x:22, y:30},
+ {name:"La Nouvelle-Orléans", short:"Nlle-Orléans", icon:"🎷", foe:"Le Crocodile Jazzman", foeDe:"das Jazz-Krokodil", foeIcon:"🐊", hp:340, heal:16, x:16, y:46},
+ {name:"Martinique", icon:"🌴", foe:"Le Volcan Furieux", foeDe:"der wütende Vulkan", foeIcon:"🌋", hp:360, heal:18, x:32, y:60},
+ {name:"Guyane (Kourou)", short:"Kourou", icon:"🚀", foe:"La Fusée Capricieuse", foeDe:"die launische Rakete", foeIcon:"🚀", hp:380, heal:20, x:40, y:76},
+ {name:"Dakar", icon:"🥁", foe:"Le Baobab Bavard", foeDe:"der geschwätzige Affenbrotbaum", foeIcon:"🌳", hp:400, heal:22, x:50, y:58},
+ {name:"Marrakech", icon:"🕌", foe:"Le Scorpion Malicieux", foeDe:"der freche Skorpion", foeIcon:"🦂", hp:420, heal:24, x:60, y:44},
+ {name:"Abidjan", icon:"🌍", foe:"L'Éléphant Barrissant", foeDe:"der trompetende Elefant", foeIcon:"🐘", hp:440, heal:26, x:62, y:70},
+ {name:"Madagascar", icon:"🌿", foe:"Le Lémurien Voleur", foeDe:"der diebische Lemur", foeIcon:"🐒", hp:460, heal:28, x:84, y:84},
+ {name:"Tahiti", icon:"🏝️", foe:"Le Requin Rieur", foeDe:"der lachende Hai", foeIcon:"🦈", hp:480, heal:30, x:86, y:106},
+ {name:"Îles Kerguelen", short:"Kerguelen", icon:"🧊", foe:"Le Roi des Manchots", foeDe:"der Pinguinkönig", foeIcon:"🐧", hp:800, heal:40, x:62, y:118, boss:true},
+];
 const MAPS = [
  {id:0, nodes:NODES,  name:"Paris", icon:"🗼", title:"Deine Reise durch Paris", doneText:"🏆 Du hast ganz Paris erobert!", practice:"Am Eiffelturm üben", winBoss:"🗼 Paris ist erobert !"},
  {id:1, nodes:NODES2, name:"Frankreich", icon:"🇫🇷", title:"Deine Reise durch Frankreich", doneText:"🏆 Du hast ganz Frankreich bereist!", practice:"Am Mont Blanc üben", winBoss:"🏔️ Frankreich ist erobert !"},
+ {id:2, nodes:NODES3, name:"Frankophonie", icon:"🌍", title:"Deine Reise durch die französischsprachige Welt", doneText:"🏆 Du hast die ganze Frankophonie bereist!", practice:"Auf den Kerguelen üben", winBoss:"🐧 Die Frankophonie ist erobert !",
+  dmgMul:0.7, mix:[0.2,0.4], hard:true},
 ];
 const FACTS1_N = FACTS1.length;
-const map2Unlocked = () => S.defeated.length >= NODES.length;
-const CM = () => MAPS[S.map===1 ? 1 : 0].nodes;
-const PR = () => S.map===1 ? S.m2 : S;
-const totalStamps = () => S.defeated.length + S.m2.defeated.length;
+const FACT_RANGES = [[0,FACTS1_N],[FACTS1_N,FACTS1_N+FACTS2.length],[FACTS1_N+FACTS2.length,FACTS.length]];
+const factMap = i => FACT_RANGES.findIndex(r=>i>=r[0] && i<r[1]);
+const mapUnlocked = i => i===0 || (i===1 && S.defeated.length>=NODES.length) || (i===2 && S.m2.defeated.length>=NODES2.length);
+const map2Unlocked = () => mapUnlocked(1);
+const map3Unlocked = () => mapUnlocked(2);
+const mapIdx = () => S.map===2 ? 2 : S.map===1 ? 1 : 0;
+const PRof = i => i===2 ? S.m3 : i===1 ? S.m2 : S;
+const CM = () => MAPS[mapIdx()].nodes;
+const PR = () => PRof(mapIdx());
+const totalStamps = () => S.defeated.length + S.m2.defeated.length + S.m3.defeated.length;
+const stampMax = () => NODES.length + (map2Unlocked()?NODES2.length:0) + (map3Unlocked()?NODES3.length:0);
+const factMax = () => FACT_RANGES.reduce((s,r,m)=> s + (mapUnlocked(m) ? r[1]-r[0] : 0), 0);
 
 
 /* ---------- Sprachausgabe (Aussprache üben) ----------
@@ -811,7 +855,7 @@ function defaultState(){
   return {started:false, scope:"all", mode:"normal", node:0, xp:0, maxStreak:0, answered:0,
           stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}, rd:{}, rounds:{}, miss:{}, discOrder:"book",
           pages:{from:184, to:185, fromWord:"", toWord:"", kinds:"both"},
-          map:0, m2:{node:0, defeated:[]}, tts:{auto:"after", slow:false}};
+          map:0, m2:{node:0, defeated:[]}, m3:{node:0, defeated:[]}, tts:{auto:"after", slow:false}};
 }
 let S = defaultState();
 function normalizeState(){
@@ -836,12 +880,16 @@ function normalizeState(){
   if(!Array.isArray(S.m2.defeated)) S.m2.defeated = [];
   S.m2.defeated = S.m2.defeated.filter(i=>Number.isInteger(i) && i>=0 && i<NODES2.length);
   S.m2.node = Math.max(0, Math.min(NODES2.length-1, parseInt(S.m2.node)||0));
-  S.map = (S.map===1 && map2Unlocked()) ? 1 : 0;
+  if(typeof S.m3!=="object" || !S.m3 || Array.isArray(S.m3)) S.m3 = {node:0, defeated:[]};
+  if(!Array.isArray(S.m3.defeated)) S.m3.defeated = [];
+  S.m3.defeated = S.m3.defeated.filter(i=>Number.isInteger(i) && i>=0 && i<NODES3.length);
+  S.m3.node = Math.max(0, Math.min(NODES3.length-1, parseInt(S.m3.node)||0));
+  S.map = (S.map===1 || S.map===2) && mapUnlocked(S.map) ? S.map : 0;
   if(typeof S.tts!=="object" || !S.tts || Array.isArray(S.tts)) S.tts = {auto:"after", slow:false};
   if(!["off","after","both"].includes(S.tts.auto)) S.tts.auto = "after";
   S.tts.slow = S.tts.slow===true;
   S.facts = S.facts.filter(i=>Number.isInteger(i) && i>=0 && i<FACTS.length);
-  if(!map2Unlocked() && !S.m2.defeated.length) S.facts = S.facts.filter(i=>i<FACTS1_N);
+  S.facts = S.facts.filter(i=>{ const m = factMap(i); return m<1 || mapUnlocked(m) || PRof(m).defeated.length>0; });
   Object.keys(S.weak).forEach(id=>{ if(!ITEM[id] || !Number.isFinite(S.weak[id])) delete S.weak[id]; });
   /* "gesehen"-Zähler: nur gültige IDs; was schon als Wackelkandidat vorkommt, wurde garantiert schon gefragt */
   Object.keys(S.seen).forEach(id=>{ if(!ITEM[id] || !(S.seen[id]>0)) delete S.seen[id]; });
@@ -1066,8 +1114,8 @@ function header(){
       <div><h1>Paris-Abenteuer</h1><span class="sub">L'aventure parisienne · Französisch</span></div></div>
     <div class="hud">
       <span class="badge">⭐ ${S.xp} XP</span>
-      <span class="badge">🗼 ${map2Unlocked() ? totalStamps()+"/"+(NODES.length+NODES2.length) : S.defeated.length+"/"+NODES.length} Stempel</span>
-      <span class="badge">📜 ${S.facts.length}/${map2Unlocked() ? FACTS.length : FACTS1_N} Fakten</span>
+      <span class="badge">🗼 ${map2Unlocked() ? totalStamps()+"/"+stampMax() : S.defeated.length+"/"+NODES.length} Stempel</span>
+      <span class="badge">📜 ${S.facts.length}/${factMax()} Fakten</span>
       ${weak ? `<span class="badge warnb" title="Aufgaben, die noch zweimal in Folge richtig sein müssen">🔁 ${weak} üben</span>` : ""}
     </div></header>`;
 }
@@ -1112,6 +1160,33 @@ function mapSVG(){
   const banner = (w,txt)=>`<rect x="3" y="2.5" width="${w}" height="7.5" rx="1.2" fill="#f7eed6" stroke="#a88b5c" stroke-width=".35"/>
     <rect x="3" y="2.5" width="2" height="7.5" fill="#2b5ca8"/><rect x="${w+1}" y="2.5" width="2" height="7.5" fill="#d13b3b"/>
     <text x="${3+w/2}" y="7.6" font-size="3.6" font-family="Cinzel, serif" fill="#5a4320" text-anchor="middle">${txt}</text>`;
+  if(S.map===2){
+    const land = 'fill="#f4ecd2" stroke="#a88b5c" stroke-width=".5" stroke-linejoin="round"';
+    return `<svg class="mapSvg" viewBox="0 0 100 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">${defs}
+    <rect width="100" height="130" fill="#cfe2ee"/>
+    <rect width="100" height="130" fill="url(#grid)" opacity=".5"/>
+    <line x1="0" y1="72" x2="100" y2="72" stroke="#4f7ea8" stroke-width=".25" stroke-dasharray="1.5 1.5" opacity=".6"/>
+    <text x="2" y="70.8" font-size="2" fill="#4f7ea8" font-style="italic">l'Équateur</text>
+    <path d="M6,12 L18,10 L38,12 L44,20 L36,26 L30,32 L26,42 L24,52 L16,54 L10,46 L8,32 Z" ${land}/>
+    <path d="M24,52 L28,56 L31,61 L27,63 L24,58 Z" ${land}/>
+    <ellipse cx="33" cy="60" rx="3" ry="1.4" ${land}/><ellipse cx="38" cy="57" rx="2" ry="1" ${land}/>
+    <path d="M28,64 L42,62 L50,72 L46,88 L40,100 L36,92 L30,78 Z" ${land}/>
+    <path d="M50,8 L66,6 L84,10 L90,20 L84,30 L74,34 L62,30 L52,26 L48,16 Z" ${land}/>
+    <path d="M52,40 L66,38 L80,44 L84,56 L78,70 L72,86 L62,92 L56,80 L52,66 L46,56 L48,46 Z" ${land}/>
+    <ellipse cx="84" cy="84" rx="3.6" ry="8.5" transform="rotate(12 84 84)" ${land}/>
+    <ellipse cx="85" cy="106" rx="2.4" ry="1.3" ${land}/><ellipse cx="90" cy="108" rx="1.6" ry=".9" ${land}/>
+    <path d="M2,119 Q30,113 62,116 Q82,112 98,119 L98,128 L2,128 Z" fill="#eef5fa" stroke="#b9cfe0" stroke-width=".4"/>
+    <ellipse cx="62" cy="118" rx="5.5" ry="3" ${land}/>
+    <text x="14" y="125" font-size="2.2" fill="#6f8aa0" font-style="italic" text-anchor="middle">Antarctique</text>
+    <text x="34" y="43" font-size="2.2" fill="#4f7ea8" font-style="italic" text-anchor="middle">L'Atlantique</text>
+    <text x="6" y="90" font-size="2.2" fill="#4f7ea8" font-style="italic">Le Pacifique</text>
+    <text x="80" y="96" font-size="2.2" fill="#4f7ea8" font-style="italic" text-anchor="middle">L'océan Indien</text>
+    ${route}
+    ${compass(92,62)}
+    ${banner(40,"Monde francophone")}
+    <rect width="100" height="130" fill="url(#vig)"/>
+  </svg>`;
+  }
   if(S.map===1){
     const france = "M48,10 L58,10 L68,12 L76,22 L90,34 L92,46 L88,58 L92,70 L90,84 L96,96 L88,106 L70,112 L52,114 L36,110 L30,116 L16,108 L12,96 L10,80 L8,64 L6,52 L8,44 L12,40 L12,28 L20,26 L28,20 L36,12 Z";
     const loire = "M62,88 C60,76 58,70 52,67 C46,64 40,64 34,64 C26,63 18,62 8,64";
@@ -1161,13 +1236,14 @@ function mapSVG(){
 
 let mapNote = "";
 function switchMap(i){
+  if(i===2 && !map3Unlocked()){ const left = NODES2.length-S.m2.defeated.length; mapNote = map2Unlocked() ? "🔒 Die Reise durch die Frankophonie wird freigeschaltet, sobald du alle 13 Stationen in Frankreich geschafft hast – noch "+left+" Sieg"+(left===1?"":"e")+"." : "🔒 Erst Paris, dann Frankreich – dann öffnet sich die Welt der Frankophonie."; showMap(); return; }
   if(i===1 && !map2Unlocked()){ mapNote = "🔒 Die Reise durch Frankreich wird freigeschaltet, sobald du alle 13 Stationen in Paris geschafft hast – noch "+(NODES.length-S.defeated.length)+" Sieg"+(NODES.length-S.defeated.length===1?"":"e")+"."; showMap(); return; }
-  S.map = i===1 ? 1 : 0; mapNote = ""; saveState(); showMap();
+  S.map = i===2 ? 2 : i===1 ? 1 : 0; mapNote = ""; saveState(); showMap();
 }
 function showMap(){
   battle = null;
   if(!S.started){ showStart(); return; }
-  const nodes = CM(), P = PR(), M = MAPS[S.map===1?1:0];
+  const nodes = CM(), P = PR(), M = MAPS[mapIdx()];
   const pins = nodes.map((n,i)=>{
     const done = P.defeated.includes(i), locked = i > P.node, cur = !done && i===P.node;
     return `<div class="pin ${done?"done":""} ${locked?"locked":""} ${cur?"cur":""} ${n.boss?"boss":""}"
@@ -1178,11 +1254,15 @@ function showMap(){
   const nx = Math.min(P.node, nodes.length-1), n = nodes[nx];
   const allDone = P.defeated.length===nodes.length;
   const tabs = `<div class="btnRow center" style="margin:6px 0">
-      <button class="btn ${S.map===1?"ghost":""}" onclick="switchMap(0)">🗼 Paris${S.defeated.length===NODES.length?" ✓":""}</button>
-      <button class="btn ${S.map===1?"":"ghost"}" onclick="switchMap(1)">${map2Unlocked()?"🇫🇷 Reise durch Frankreich"+(S.m2.defeated.length===NODES2.length?" ✓":""):"🔒 Frankreich"}</button></div>`;
+      <button class="btn ${mapIdx()===0?"":"ghost"}" onclick="switchMap(0)">🗼 Paris${S.defeated.length===NODES.length?" ✓":""}</button>
+      <button class="btn ${mapIdx()===1?"":"ghost"}" onclick="switchMap(1)">${map2Unlocked()?"🇫🇷 Frankreich"+(S.m2.defeated.length===NODES2.length?" ✓":""):"🔒 Frankreich"}</button>
+      <button class="btn ${mapIdx()===2?"":"ghost"}" onclick="switchMap(2)">${map3Unlocked()?"🌍 Frankophonie"+(S.m3.defeated.length===NODES3.length?" ✓":""):"🔒 Frankophonie"}</button></div>`;
   const newMapHint = (S.map===0 && map2Unlocked() && !S.m2.defeated.length)
     ? `<div class="card center"><b>🇫🇷 Neue Karte freigeschaltet: Reise durch Frankreich!</b><br><span class="hint-sm">Neue Stationen, neue Gegner, neue Fakten – von Versailles bis zum Mont Blanc.</span>
        <div class="btnRow center"><button class="btn" onclick="switchMap(1)">🇫🇷 Zur neuen Karte</button></div></div>` : "";
+  const newMap3Hint = (S.map===1 && map3Unlocked() && !S.m3.defeated.length)
+    ? `<div class="card center"><b>🌍 Neue Karte freigeschaltet: die französischsprachige Welt!</b><br><span class="hint-sm">Von Brüssel über Québec und Dakar bis zu den Kerguelen – aber Achtung: <b>die Gegner sind deutlich stärker</b> und erholen sich bei jedem Fehler.</span>
+       <div class="btnRow center"><button class="btn" onclick="switchMap(2)">🌍 Zur neuen Karte</button></div></div>` : "";
   const note = mapNote ? `<div class="card center hint-sm">${esc(mapNote)}</div>` : "";
   mapNote = "";
   app.innerHTML = header() + nav() + tabs + note + `
@@ -1190,7 +1270,8 @@ function showMap(){
     <div class="hint-sm">Bereich: <b>${esc(scopeLabel())}</b> · Modus: <b>${modeName()}</b> – ändern unter Einstellungen.
     Tippe auf eine freigeschaltete Station.</div>
     <div class="mapWrap">${mapSVG()}${pins}</div>
-    ${newMapHint}
+    ${newMapHint}${newMap3Hint}
+    ${M.hard ? `<div class="hint-sm center" style="margin:6px 0">⚠️ <b>Schwere Karte:</b> sehr viele Kampfpunkte, weniger Schaden pro Treffer, mehr Tipp-Aufgaben – und bei jedem Fehler <b>erholt sich der Gegner</b>.</div>` : ""}
     <div class="card center">
       ${allDone ? `<b>${M.doneText}</b><br><span class="hint-sm">Du kannst jede Station weiter zum Üben besuchen.</span>`
         : `Nächstes Ziel: <b>${n.icon} ${esc(n.name)}</b> – dort wartet <b>${n.foeIcon} ${esc(n.foe)}</b> <span class="muted">(${esc(n.foeDe)})</span>`}
@@ -1207,15 +1288,15 @@ const ACCENTS = ["é","è","ê","à","â","ç","ô","î","ù","û","ë","ï","'"
 function enterNode(i){
   if(i > PR().node) return;
   const n = CM()[i];
-  battle = {map:S.map===1?1:0, node:i, foeHP:n.hp, foeMax:n.hp, streak:0};
+  battle = {map:mapIdx(), node:i, foeHP:n.hp, foeMax:n.hp, streak:0};
   newQuestion();
 }
 function newQuestion(){
   const it = nextItem();
   Object.assign(battle, {item:it, answered:false, picked:[], tiles:null, opts:null, correct:null, dir:null});
   if(it.kind==="v"){
-    const r = Math.random();
-    battle.q = r < 0.33 ? "vFD" : (r < 0.62 ? "vDF_mc" : "vDF_type");
+    const r = Math.random(), mix = MAPS[battle.map].mix || [0.33,0.62];
+    battle.q = r < mix[0] ? "vFD" : (r < mix[1] ? "vDF_mc" : "vDF_type");
     if(battle.q==="vFD"){ const m = mcOptions(it,"de"); battle.opts=m.opts; battle.correct=m.correct; }
     if(battle.q==="vDF_mc"){ const m = mcOptions(it,"fr"); battle.opts=m.opts; battle.correct=m.correct; }
   } else {
@@ -1281,6 +1362,7 @@ function renderBattle(){
           <div class="hint-sm" id="hpTxt">${battle.foeHP} / ${battle.foeMax} KP</div></div></div>
       <div class="dots">${dots}</div>
       <div class="hint-sm center">Serie: <b>${battle.streak}</b> · bei 5/10/15 richtigen Antworten in Folge gibt es einen Extra-Angriff</div>
+      ${n.heal ? `<div class="hint-sm center">⚠️ Bei jedem Fehler erholt sich der Gegner um ${n.heal} KP.</div>` : ""}
       ${discHTML}
     </div>
     <div class="card">${q}</div>
@@ -1387,6 +1469,7 @@ function resolve(ok, given, r){
   if(ok){
     battle.streak++; if(battle.streak > S.maxStreak) S.maxStreak = battle.streak;
     let dmg = battle.q==="sType" ? 14 : battle.q==="sTiles" ? 10 : battle.q==="vDF_type" ? 9 : 7;
+    dmg = Math.max(1, Math.round(dmg * (MAPS[battle.map].dmgMul || 1)));
     let label = ATTACKS[battle.q];
     if(battle.streak % 15===0){ dmg += ri(60,80); label = "🗼 Eiffel-Blitz (15er-Serie!)"; }
     else if(battle.streak % 10===0){ dmg += ri(30,45); label = "🎺 Trompeten-Fanfare (10er-Serie!)"; }
@@ -1396,6 +1479,12 @@ function resolve(ok, given, r){
     attack = `${label}: −${dmg} KP`;
   } else {
     battle.streak = 0;
+    const fn = MAPS[battle.map].nodes[battle.node];
+    if(fn.heal && battle.foeHP > 0 && battle.foeHP < battle.foeMax){
+      const before = battle.foeHP;
+      battle.foeHP = Math.min(battle.foeMax, battle.foeHP + fn.heal);
+      attack = `🩹 ${esc(fn.foe)} erholt sich: +${battle.foeHP - before} KP`;
+    }
   }
   saveState();
   showFeedback(ok, given, r||{}, notes, attack);
@@ -1460,13 +1549,14 @@ function continueBattle(){
 function flee(){ battle = null; showMap(); }
 
 function unlockFacts(n, mapIdx){
-  const pool = FACTS.map((_,i)=>i).filter(i=>!S.facts.includes(i) && (mapIdx===1 ? i>=FACTS1_N : i<FACTS1_N));
+  const rg = FACT_RANGES[mapIdx] || FACT_RANGES[0];
+  const pool = FACTS.map((_,i)=>i).filter(i=>!S.facts.includes(i) && i>=rg[0] && i<rg[1]);
   const got = shuffle(pool).slice(0,n);
   got.forEach(i=>S.facts.push(i));
   return got;
 }
 function win(){
-  const mi = battle.map, M = MAPS[mi], nodes = M.nodes, P = mi===1 ? S.m2 : S;
+  const mi = battle.map, M = MAPS[mi], nodes = M.nodes, P = PRof(mi);
   const i = battle.node, n = nodes[i];
   const firstWin = !P.defeated.includes(i);
   if(firstWin) P.defeated.push(i);
@@ -1476,7 +1566,7 @@ function win(){
   saveState();
   battle = null;
   const allDone = P.defeated.length===nodes.length;
-  const newMap = mi===0 && n.boss && map2Unlocked();
+  const nm = mi+1, newMap = n.boss && mi<2 && mapUnlocked(nm) && !PRof(nm).defeated.length;
   app.innerHTML = header() + `<div class="card center">
     <div class="bigStamp">${n.icon}</div>
     <h2 style="font-family:Cinzel,serif;color:var(--gold2);margin:4px 0">${n.boss ? M.winBoss : "Station geschafft !"}</h2>
@@ -1484,8 +1574,8 @@ function win(){
     ${got.map(fi=>`<div class="fact new"><div class="factT">📜 Neuer Frankreich-Fakt</div>${esc(FACTS[fi])}</div>`).join("")}
     ${!got.length ? `<p class="hint-sm">Du kennst schon alle Fakten – Chapeau !</p>` : ""}
     ${allDone && n.boss ? `<p><b>Félicitations !</b> Du hast alle Stationen geschafft. Übe weiter, damit die Sätze richtig sitzen.</p>` : ""}
-    ${newMap ? `<p><b>🇫🇷 Neue Karte freigeschaltet: Reise durch Frankreich!</b> Dort warten neue Gegner und neue Fakten.</p>` : ""}
-    <div class="btnRow center">${newMap ? `<button class="btn" onclick="switchMap(1)">🇫🇷 Zur neuen Karte</button>` : ""}<button class="btn ${newMap?"ghost":""}" onclick="showMap()">🗺️ Zur Karte</button>
+    ${newMap ? `<p><b>${MAPS[nm].icon} Neue Karte freigeschaltet: ${esc(MAPS[nm].title.replace("Deine Reise durch ","").replace(/^die /,"die "))}!</b> Dort warten neue Gegner und neue Fakten${nm===2?" – und sie sind deutlich stärker":""}.</p>` : ""}
+    <div class="btnRow center">${newMap ? `<button class="btn" onclick="switchMap(${nm})">${MAPS[nm].icon} Zur neuen Karte</button>` : ""}<button class="btn ${newMap?"ghost":""}" onclick="showMap()">🗺️ Zur Karte</button>
       <button class="btn ghost" onclick="enterNode(${i})">⚔️ Nochmal hier üben</button>
       <button class="btn ghost" onclick="showCarnet()">📔 Reisetagebuch</button></div>
   </div>`;
@@ -1501,15 +1591,17 @@ function showCarnet(){
   const stamps = stampsOf(NODES, S.defeated);
   const stamps2 = map2Unlocked()
     ? `<div class="card"><div class="hint-sm" style="margin-bottom:6px"><b>🇫🇷 Reise durch Frankreich</b> · ${S.m2.defeated.length} / ${NODES2.length}</div><div class="stamps">${stampsOf(NODES2, S.m2.defeated)}</div></div>` : "";
-  const facts = FACTS.map((f,i)=> i>=FACTS1_N && !map2Unlocked() ? "" : S.facts.includes(i)
+  const stamps3 = map3Unlocked()
+    ? `<div class="card"><div class="hint-sm" style="margin-bottom:6px"><b>🌍 Frankophonie</b> · ${S.m3.defeated.length} / ${NODES3.length}</div><div class="stamps">${stampsOf(NODES3, S.m3.defeated)}</div></div>` : "";
+  const facts = FACTS.map((f,i)=> !mapUnlocked(factMap(i)) ? "" : S.facts.includes(i)
     ? `<div class="fact"><div class="factT">📜 Fakt ${i+1}</div>${esc(f)}</div>`
     : `<div class="fact locked">? · noch nicht entdeckt</div>`).join("");
   app.innerHTML = header() + nav() + `
     <div class="sectionTitle">📔 Mon carnet de voyage – Reisetagebuch</div>
     <div class="hint-sm">Für jede besiegte Station gibt es einen Stempel und neue Fakten über Frankreich. Noch nicht entdeckte Fakten bleiben geheim.</div>
     <div class="card">${map2Unlocked() ? `<div class="hint-sm" style="margin-bottom:6px"><b>🗼 Paris</b> · ${S.defeated.length} / ${NODES.length}</div>` : ""}<div class="stamps">${stamps}</div></div>
-    ${stamps2}
-    <div class="sectionTitle" style="font-size:18px">Frankreich-Fakten · ${S.facts.length} / ${map2Unlocked() ? FACTS.length : FACTS1_N}</div>
+    ${stamps2}${stamps3}
+    <div class="sectionTitle" style="font-size:18px">Frankreich-Fakten · ${S.facts.length} / ${factMax()}</div>
     ${facts}`;
   window.scrollTo(0,0);
 }
