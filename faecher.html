@@ -1007,6 +1007,8 @@ function showHome(){
     <a class="tile" href="index.html"><div class="ic">🇬🇧</div><h3>Englisch-Abenteuer</h3><div class="hint-sm">Mittelerde-Quests und Karten</div></a>
     <a class="tile" href="franzoesisch-abenteuer.html"><div class="ic">🇫🇷</div><h3>Paris-Abenteuer</h3><div class="hint-sm">Französisch: Vokabeln und Sätze</div></a>
     <a class="tile" href="mittelerde-reise.html"><div class="ic">⚔️</div><h3>Mittelerde-Reise</h3><div class="hint-sm">Englisch: die große Reise</div></a></div>
+  <div class="sectionTitle">Werkstatt</div><div class="grid">
+    <a class="tile" href="raumstation-3d.html"><div class="ic">🛰️</div><h3>Raumstation ORION-7</h3><div class="hint-sm">3D-Konstruktion mit Tinkercad</div></a></div>
   <div class="sectionTitle">Sachfächer</div><div class="grid">${subs.map(s=>`<div class="tile"><div class="ic">${s.icon}</div><h3>${esc(s.name)}</h3>${s.topics.map(t=>{const f=fitness(t);return `<button class="btn small" data-act="topic" data-arg="${t.id}">${t.icon} ${esc(t.name)} · ${f} %</button>`;}).join("")}</div>`).join("")}
     <div class="tile"><div class="ic">➕</div><h3>Neues Fach / Thema</h3><div class="hint-sm">Weitere Themenpakete einfügen</div><button class="btn small ghost" data-act="addpack">Themenpaket importieren</button></div></div>
   <div class="btnRow" style="margin-top:18px"><button class="btn ghost small" data-act="settings">⚙️ Einstellungen &amp; Sicherung</button></div>`;
@@ -1078,7 +1080,7 @@ function showSettings(from){
   <div class="card"><div class="sectionTitle" style="margin-top:0">💾 Sicherung</div><div class="hint-sm">Der Lernstand liegt nur in diesem Browser auf diesem Gerät. Zum Umziehen (z. B. auf ein anderes Gerät): Text kopieren und dort einfügen.</div>
    <div class="btnRow"><button class="btn small" data-act="export">Lernstand exportieren</button><button class="btn small ghost" data-act="import">Lernstand importieren</button></div>
    <textarea class="big" id="io" placeholder="Hier erscheint der Export oder füge hier den Import ein …"></textarea><div id="ioMsg" class="hint-sm"></div></div>
-  <div class="card"><div class="sectionTitle" style="margin-top:0">🗑 Zurücksetzen</div>
+${mbCard()}  <div class="card"><div class="sectionTitle" style="margin-top:0">🗑 Zurücksetzen</div>
    ${allSubjects().flatMap(s=>s.topics).map(t=>`<div class="btnRow"><button class="btn small ghost" data-act="reset" data-arg="${t.id}">${t.icon} ${esc(t.name)} zurücksetzen</button></div>`).join("")}</div>`;
 }
 function showAddPack(){
@@ -1159,6 +1161,116 @@ document.addEventListener("keydown",ev=>{
 });
 const _showTopic=showTopic; showTopic=function(tid){window.__topic=tid;_showTopic(tid);};
 showHome();
+</script>
+<script>
+/* =========================================================
+   GESAMTSICHERUNG – alle Lern-Apps auf einmal sichern / zurückspielen
+   Identischer Block in allen fünf Apps. Liest und schreibt nur die bekannten Speicherschlüssel
+   (gleicher Ordner = gleicher Browser-Speicher). Ändert nichts an den einzelnen Spielständen,
+   solange man nicht ausdrücklich "einspielen" wählt.
+   ========================================================= */
+const MB_FORMAT = "lernwelt-gesamtsicherung";
+const MB_APPS = [
+  ["englisch-abenteuer-v4","🇬🇧 Englisch-Abenteuer"],
+  ["mittelerde-reise-v1","⚔️ Mittelerde-Reise"],
+  ["paris-abenteuer-v1","🇫🇷 Paris-Abenteuer"],
+  ["faecher-v1","🌍 Fächer (Lernstand)"],
+  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"],
+  ["raumstation-3d-v1","🛰️ Raumstation (3D-Werkstatt)"]
+];
+function mbStore(){ try{ return window.localStorage; }catch(e){ return null; } }
+function mbMsg(html, ok){
+  const b = document.getElementById("mbMsg"); if(!b) return;
+  b.style.display = "block"; b.style.borderColor = ok ? "rgba(90,154,90,.7)" : "rgba(192,69,58,.7)"; b.innerHTML = html;
+}
+function mbFileName(){ return "Lernwelt_Gesamtsicherung_" + new Date().toISOString().slice(0,10) + ".json"; }
+function mbInfo(key, raw){
+  try{ const o = JSON.parse(raw); if(key==="faecher-packs-v1") return Array.isArray(o) ? o.length+" Paket(e)" : "";
+       return (o && typeof o.xp==="number") ? o.xp+" XP" : ""; }catch(e){ return ""; }
+}
+function mbCollect(){
+  const ls = mbStore(), data = {}, found = [], missing = [];
+  MB_APPS.forEach(a=>{
+    let v = null; try{ v = ls ? ls.getItem(a[0]) : null; }catch(e){}
+    if(v){ data[a[0]] = v; found.push(a[1] + (mbInfo(a[0],v) ? " (" + mbInfo(a[0],v) + ")" : "")); }
+    else if(a[0]!=="faecher-packs-v1") missing.push(a[1]);
+  });
+  return {obj:{format:MB_FORMAT, version:1, created:new Date().toISOString(), data}, found, missing};
+}
+function mbSummary(c){
+  return "<b>Enthalten:</b> " + (c.found.length ? c.found.join(" · ") : "nichts")
+    + (c.missing.length ? '<br><span style="opacity:.85">Noch kein Spielstand vorhanden: ' + c.missing.join(", ") + '</span>' : "");
+}
+async function mbShare(){
+  const c = mbCollect();
+  if(!c.found.length){ mbMsg("⚠ Es gibt noch keinen Spielstand zum Sichern.", false); return; }
+  const txt = JSON.stringify(c.obj);
+  try{
+    const file = new File([txt], mbFileName(), {type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:mbFileName()});
+      mbMsg('✅ Wähle im Teilen-Menü <b>„In Dateien sichern“</b>.<br>' + mbSummary(c), true); return;
+    }
+  }catch(e){ if(e && e.name==="AbortError"){ mbMsg("Abgebrochen – es wurde nichts gespeichert.", false); return; } }
+  mbDownload();
+}
+function mbDownload(){
+  const c = mbCollect();
+  if(!c.found.length){ mbMsg("⚠ Es gibt noch keinen Spielstand zum Sichern.", false); return; }
+  try{
+    const blob = new Blob([JSON.stringify(c.obj)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = mbFileName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    mbMsg('✅ Download gestartet: <b>' + mbFileName() + '</b> – zu finden unter <b>Dateien → Downloads</b>.<br>' + mbSummary(c), true);
+  }catch(e){ mbMsg('⚠ Der Download hat nicht geklappt. Nutze bitte <b>„📋 Als Text“</b>.', false); }
+}
+function mbShowText(){
+  const c = mbCollect();
+  mbMsg('📋 Kopiere diesen Text und sichere ihn z. B. in einer Notiz. Zum Wiederherstellen hier einfügen und „Übernehmen“ tippen.<br>' + mbSummary(c), true);
+  const t = document.getElementById("mbText"); if(!t) return;
+  t.innerHTML = '<textarea id="mbBox" style="width:100%;height:110px;margin-top:8px;font-size:11px;border-radius:8px;padding:8px;background:rgba(0,0,0,.4);color:inherit;border:1px solid rgba(200,200,200,.4)"></textarea>'
+    + '<div class="btnRow" style="margin:8px 0 0"><button class="btn ghost" onclick="mbCopy()">📋 Kopieren</button><button class="btn ghost" onclick="mbApplyText()">✔ Übernehmen</button></div>';
+  const bx = document.getElementById("mbBox"); if(bx) bx.value = c.found.length ? JSON.stringify(c.obj) : "";
+}
+function mbCopy(){
+  const b = document.getElementById("mbBox"); if(!b) return;
+  b.select(); try{ b.setSelectionRange(0, 999999); }catch(e){}
+  try{ navigator.clipboard.writeText(b.value); }catch(e){ try{ document.execCommand("copy"); }catch(e2){} }
+}
+function mbApplyText(){ const b = document.getElementById("mbBox"); if(b) mbRestore(b.value); }
+function mbPickFile(){
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
+  inp.onchange = ()=>{ const f = inp.files && inp.files[0]; if(!f) return; const rd = new FileReader(); rd.onload = ()=>mbRestore(String(rd.result)); rd.readAsText(f); };
+  inp.click();
+}
+function mbRestore(text){
+  let o; try{ o = JSON.parse(text); }catch(e){ o = null; }
+  if(!o || o.format!==MB_FORMAT || typeof o.data!=="object" || !o.data){ mbMsg("⚠ Das ist keine Gesamtsicherung. (Einzelne Spielstände lädst du in der jeweiligen App.)", false); return; }
+  const ok = [];
+  MB_APPS.forEach(a=>{ const v = o.data[a[0]]; if(typeof v!=="string") return;
+    try{ const p = JSON.parse(v); if(p && typeof p==="object") ok.push([a[0], a[1], v]); }catch(e){} });
+  if(!ok.length){ mbMsg("⚠ In dieser Datei steckt kein gültiger Spielstand.", false); return; }
+  const d = o.created ? new Date(o.created) : null, ds = d && !isNaN(d) ? d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}) : "unbekanntem Datum";
+  const list = ok.map(x=>x[1] + (mbInfo(x[0],x[2]) ? " (" + mbInfo(x[0],x[2]) + ")" : "")).join("\n");
+  if(!window.confirm("Gesamtsicherung vom " + ds + " einspielen?\n\n" + list + "\n\nDer aktuelle Stand dieser Apps wird ersetzt.")){ mbMsg("Abgebrochen – nichts wurde verändert.", false); return; }
+  const ls = mbStore(); if(!ls){ mbMsg("⚠ Der Browser erlaubt kein Speichern.", false); return; }
+  try{ ok.forEach(x=>ls.setItem(x[0], x[2])); }catch(e){ mbMsg("⚠ Speichern hat nicht geklappt.", false); return; }
+  mbMsg("✅ Eingespielt: " + list.replace(/\n/g," · ") + "<br>Die Seite lädt gleich neu …", true);
+  setTimeout(()=>location.reload(), 900);
+}
+function mbCard(){
+  return '<div id="mbCard" style="margin:14px 0;padding:16px;border:1px solid rgba(200,200,200,.35);border-radius:16px;background:rgba(0,0,0,.22)">'
+    + '<b style="font-size:17px">🗄️ Gesamtsicherung – alle Apps auf einmal</b>'
+    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris, Fächer und Raumstation gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
+    + 'Zum Wiederherstellen oder für ein neues Gerät: <b>einspielen</b> – dabei wird der Stand der Apps ersetzt.</div>'
+    + '<div class="btnRow"><button class="btn ghost" onclick="mbShare()">📤 Alles sichern</button>'
+    + '<button class="btn ghost" onclick="mbDownload()">💾 Als Datei laden</button>'
+    + '<button class="btn ghost" onclick="mbPickFile()">📥 Gesamtsicherung einspielen</button>'
+    + '<button class="btn ghost" onclick="mbShowText()">📋 Als Text</button></div>'
+    + '<div id="mbMsg" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid;border-radius:12px;background:rgba(0,0,0,.25);font-size:13.5px;line-height:1.5"></div><div id="mbText"></div></div>';
+}
 </script>
 </body>
 </html>
