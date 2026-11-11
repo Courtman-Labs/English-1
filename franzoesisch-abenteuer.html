@@ -1298,11 +1298,11 @@ function newQuestion(){
   Object.assign(battle, {item:it, answered:false, picked:[], tiles:null, opts:null, correct:null, dir:null});
   if(it.kind==="v"){
     const r = Math.random(), mix = MAPS[battle.map].mix || [0.33,0.62];
-    battle.q = r < mix[0] ? "vFD" : (r < mix[1] ? "vDF_mc" : "vDF_type");
+    battle.q = S.mode==="exam" ? (r < 0.4 ? "vDF_mc" : "vDF_type") : (r < mix[0] ? "vFD" : (r < mix[1] ? "vDF_mc" : "vDF_type"));
     if(battle.q==="vFD"){ const m = mcOptions(it,"de"); battle.opts=m.opts; battle.correct=m.correct; }
     if(battle.q==="vDF_mc"){ const m = mcOptions(it,"fr"); battle.opts=m.opts; battle.correct=m.correct; }
   } else {
-    battle.dir = Math.random() < 0.5 ? "fd" : "df";
+    battle.dir = S.mode==="exam" ? "df" : (Math.random() < 0.5 ? "fd" : "df");   /* Klassenarbeit: nur Deutsch→Französisch */
     const key = it.id+":"+battle.dir;
     battle.q = (S.stage[key]||0) ? "sType" : "sTiles";   /* erst Bausteine, später tippen */
     if(battle.q==="sTiles"){
@@ -1740,7 +1740,7 @@ function showSettings(){
         <button class="${S.mode==="normal"?"on":""}" onclick="setMode('normal')">Normal (⅔ Sätze, ⅓ Vokabeln)</button>
         <button class="${S.mode==="exam"?"on":""}" onclick="setMode('exam')">Klassenarbeit (nur Sätze)</button>
         <button class="${S.mode==="discover"?"on":""}" onclick="setMode('discover')">🔍 Neu entdecken</button></div>
-      <div class="hint-sm" style="margin-top:8px">Im Klassenarbeits-Modus kommen nur ganze Sätze dran – in beiden Richtungen, wie bei der Lehrerin.</div>
+      <div class="hint-sm" style="margin-top:8px">Im Klassenarbeits-Modus kommen nur ganze Sätze dran – immer vom Deutschen ins Französische, so wird auch in der Arbeit geprüft.</div>
       <div class="hint-sm" style="margin-top:6px"><b>Neu entdecken:</b> Es kommen nur Aufgaben dran, die in dieser Runde noch nicht beantwortet wurden – Vokabeln und Sätze gemischt, bis alles einmal dran war (+100 XP). Danach startet die nächste Runde mit den kniffligen Aufgaben zuerst. Falsch beantwortete Aufgaben kommen weiter häufiger wieder, bis sie zweimal in Folge richtig sind.</div>
       ${S.mode==="discover" ? `<div style="margin-top:10px"><b>Reihenfolge in Runde 1</b>
         <div class="seg" style="margin-top:6px"><button class="${S.discOrder==="book"?"on":""}" onclick="setOrder('book')">Nach Buchseite</button>
