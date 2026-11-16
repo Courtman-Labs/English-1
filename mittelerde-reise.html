@@ -239,6 +239,134 @@ const BOSS_NODE2 = {name:"Hochburg Dunkelhorst", icon:"👑", foe:"Morgrim, der 
 NODES2.forEach((n,i)=>{ n.trophy = "m2_"+i; });
 BOSS_NODE2.trophy = "m2_boss";
 
+/* ---------- Zufallskarten für Karte 2 ----------
+   Jeder Gegner auf Karte 2 (Wegpunkte + Endgegner) gibt beim ERSTEN Sieg eine zufällige Karte
+   aus dem Zusatzkarten-Pool des Englisch-Abenteuers. Die Liste muss in Reihenfolge und IDs mit
+   EXTRA_CARDS im Englisch-Abenteuer übereinstimmen (die Haupt-App speichert dort Indizes).
+   Gespeichert: S.found = {"m2_0":"karten-id", …}; die Karten-ID kommt zusätzlich in S.trophies –
+   daran erkennt das Album des Englisch-Abenteuers die Karte (ohne Änderung an der Haupt-App). */
+const EXTRA_POOL = [
+ {id:"aravereon-erbe-des-koenigs", name:"Aravereon Erbe des Königs"},
+ {id:"balrog", name:"Balrog"},
+ {id:"blastoise-gaertner-der-ruhe", name:"Blastoise Gärtner der Ruhe"},
+ {id:"blastoise-waechter-der-quellen", name:"Blastoise Wächter der Quellen"},
+ {id:"celebloom", name:"Celebloom"},
+ {id:"entfrau", name:"Entfrau"},
+ {id:"entterra", name:"Entterra"},
+ {id:"evoli-der-ringtraeger", name:"Evoli der Ringtraeger"},
+ {id:"evoli-der-ringtraeger-l060", name:"Evoli der Ringtraeger (Variante 60)"},
+ {id:"evoli-von-bruchtal", name:"Evoli von Bruchtal"},
+ {id:"fell-beast", name:"Fell Beast"},
+ {id:"flamarod-hueter-des-einen-rings", name:"Flamarod Hüter des Einen Rings"},
+ {id:"frodente-hueter-kleiner-wege", name:"Frodente Hüter Kleiner Wege"},
+ {id:"frolicento-hueter-der-kleinen-wege", name:"Frolicento Hüter der Kleinen Wege"},
+ {id:"galaboard-hueterin-von-lorien", name:"Galaboard Hüterin von Lorien"},
+ {id:"galadeon-weiser-des-lichts", name:"Galadeon Weiser des Lichts"},
+ {id:"galadriot-koenigin-des-lichts", name:"Galadriot Königin des Lichts"},
+ {id:"gandalf-nachtara", name:"Gandalf Nachtara"},
+ {id:"garrchomp", name:"Garrchomp"},
+ {id:"gimli", name:"Gimli"},
+ {id:"gimlross-felsenschild-von-khazad", name:"Gimlross Felsenschild von Khazad"},
+ {id:"gluraksyon", name:"Gluraksyon"},
+ {id:"grond-despotar", name:"Grond Despotar"},
+ {id:"gwalhir-feuerdrache", name:"Gwalhir Feuerdrache"},
+ {id:"gwalhir-himmelsgleiter", name:"Gwalhir Himmelsgleiter"},
+ {id:"hexenkoenig", name:"Hexenkönig"},
+ {id:"infernage-denethor", name:"Infernage Denethor"},
+ {id:"legolas", name:"Legolas"},
+ {id:"lucario", name:"Lucario"},
+ {id:"luthien-lied-des-waldes", name:"Lúthien Lied des Waldes"},
+ {id:"mebuk-zwergenschmied", name:"Mebuk Zwergenschmied"},
+ {id:"mewtu", name:"Mewtu"},
+ {id:"mewtu-baerenmut", name:"Mewtu Bärenmut"},
+ {id:"nazgul", name:"Nazgûl"},
+ {id:"nazgul-darkrai", name:"Nazgûl Darkrai"},
+ {id:"nazgul-schattenbote", name:"Nazgûl Schattenbote"},
+ {id:"nerial-koenigin-der-tiefen", name:"Nerial Königin der Tiefen"},
+ {id:"orgoran-hueter-der-gemeinschaft", name:"Orgoran Hüter der Gemeinschaft"},
+ {id:"ork-krieger", name:"Ork Krieger"},
+ {id:"orkador", name:"Orkador"},
+ {id:"pikalas", name:"Pikalas"},
+ {id:"pippfaxo-unerwarteter-held", name:"Pippfaxo Unerwarteter Held"},
+ {id:"samweis-gamdschie", name:"Samweis Gamdschie"},
+ {id:"samweis-leafu", name:"Samweis Leafu"},
+ {id:"saruman", name:"Saruman"},
+ {id:"saruzam-weise-des-gleichgewichts", name:"Saruzam Weise des Gleichgewichts"},
+ {id:"sauron-s-evoli", name:"Sauron's evoli"},
+ {id:"sauron-s-evoli-entwicklung", name:"Sauron's evoli Entwicklung"},
+ {id:"schattenfell", name:"Schattenfell"},
+ {id:"shelob", name:"Shelob"},
+ {id:"silvarion", name:"Silvarion"},
+ {id:"smaug", name:"Smaug"},
+ {id:"sumpfglanz-meister-der-taeuschung", name:"Sumpfglanz Meister der Täuschung"},
+ {id:"thranduil-herr-der-waldlichtung", name:"Thranduil Herr der Waldlichtung"},
+ {id:"undomiel-x-nachtara", name:"Undómiel × nachtara"},
+ {id:"uruk-hai-machomei", name:"Uruk Hai Machomei"},
+ {id:"voltielon", name:"Voltielon"},
+ {id:"weisser-baum-celebi", name:"Weißer Baum Celebi"},
+ {id:"clariomei", name:"Clariomei"},
+ {id:"voltfleder", name:"Voltfleder"},
+ {id:"skorapex", name:"Skorapex"},
+ {id:"orkabon", name:"Orkabon"},
+ {id:"saebelchu", name:"Saebelchu"},
+ {id:"percyana-a", name:"Percyana A"},
+ {id:"beckendrant", name:"Beckendrant"},
+ {id:"grovrumm", name:"Grovrumm"},
+ {id:"skorapod", name:"Skorapod"},
+ {id:"lukarion", name:"Lukarion"},
+ {id:"thalenso", name:"Thalenso"},
+ {id:"solpharos", name:"Solpharos"},
+ {id:"fenvoli", name:"Fenvoli"},
+ {id:"rakkuno", name:"Rakkuno"},
+ {id:"percyana-b", name:"Percyana B"},
+ {id:"florikatia", name:"Florikatia"},
+ {id:"pandarok", name:"Pandarok"},
+ {id:"pandarokhan", name:"Pandarokhan"},
+ {id:"suriko", name:"Suriko"},
+ {id:"travis-stoll", name:"Travis Stoll"},
+ {id:"percy-jackson", name:"Percy Jackson"},
+ {id:"charles-beckendorf", name:"Charles Beckendorf"},
+ {id:"annabeth-chase", name:"Annabeth Chase"},
+ {id:"nico-di-angelo", name:"Nico di Angelo"},
+ {id:"clarisse-la-rue", name:"Clarisse la Rue"},
+ {id:"thalia-grace", name:"Thalia Grace"}
+];
+function readMainExtras(){
+  // liest NUR: welche Zusatzkarten hat die Haupt-App schon (als Indizes in S.extras gespeichert)
+  try{
+    const ls = browserStore(); if(!ls) return [];
+    const v = ls.getItem(MAIN_KEY); if(!v) return [];
+    const d = JSON.parse(v);
+    return Array.isArray(d.extras) ? d.extras.map(i=>EXTRA_POOL[i]).filter(Boolean).map(c=>c.id) : [];
+  }catch(e){ return []; }
+}
+function randomFindPool(){
+  const owned = new Set([...readMainExtras(), ...S.trophies]);
+  NODES.forEach(n=>n.card && owned.add(n.card));      // Gegnerkarten von Karte 1 bleiben Belohnung der Gegner
+  return EXTRA_POOL.filter(c=>!owned.has(c.id));
+}
+function grantRandomCard(trophyId){
+  if(S.found[trophyId]) return null;
+  const pool = randomFindPool();
+  if(!pool.length) return null;
+  const c = pool[Math.floor(Math.random()*pool.length)];
+  S.found[trophyId] = c.id;
+  if(!S.trophies.includes(c.id)) S.trophies.push(c.id);
+  return c;
+}
+function extraById(id){ return EXTRA_POOL.find(c=>c.id===id) || null; }
+/* Nachträglich: Gegner auf Karte 2, die schon vor dieser Funktion besiegt wurden */
+function grantRetroCards(){
+  const got = [];
+  NODES2.concat([BOSS_NODE2]).forEach(n=>{
+    if(S.trophies.includes(n.trophy) && !S.found[n.trophy]){
+      const c = grantRandomCard(n.trophy); if(c) got.push({foe:n, card:c});
+    }
+  });
+  if(got.length) saveState();
+  return got;
+}
+
 /* =========================================================
    Speicher: eigener Fortschritt + Lesezugriff auf Haupt-App
    ========================================================= */
@@ -259,6 +387,7 @@ function normalizeReise(){
   S.unlockedInApp = Array.isArray(S.unlockedInApp) ? S.unlockedInApp : [];
   S.defeated      = Array.isArray(S.defeated)      ? S.defeated      : [];
   S.trophies      = Array.isArray(S.trophies)      ? S.trophies      : [];
+  S.found = (S.found && typeof S.found==="object" && !Array.isArray(S.found)) ? S.found : {};
   S.stats = (S.stats && typeof S.stats==="object") ? S.stats : {};
   S.weak  = (S.weak  && typeof S.weak==="object"  && !Array.isArray(S.weak)) ? S.weak : {};
   normalizeTts();
@@ -725,6 +854,8 @@ function buildMapOverlay(){
 
 /* ---------- Wegpunkt-Karte ---------- */
 function showMap(){
+  const retro = grantRetroCards();
+  if(retro.length){ showRetroCards(retro); return; }
   const cm = CM(), pr = PR(), nodes = cm.nodes, boss = cm.boss, n0 = poolSize();
   const pins=[];
   for(let i=0;i<nodes.length;i++){
@@ -773,7 +904,7 @@ function showMap(){
      <a class="btn ghost" href="faecher.html" style="text-decoration:none;display:inline-flex;align-items:center">🌍 Fächer</a></div>
    ${switcher}
    <div class="sectionTitle">${cm.title}</div>
-   <div class="hint-sm">Aktueller Wortschatz-Bereich: <b>${scopeLabel()}</b>. Tippe auf einen freien Wegpunkt, um die Schlacht zu beginnen.<br>${limitInfo}</div>
+   <div class="hint-sm">Aktueller Wortschatz-Bereich: <b>${scopeLabel()}</b>. Tippe auf einen freien Wegpunkt, um die Schlacht zu beginnen.${cm.id===2?` 🔓 Jeder Gegner hier hält eine Karte <b>gefangen</b> – besiege ihn und befreie sie für dein Album (${Object.keys(S.found).length} / ${NODES2.length+1} befreit).`:""}<br>${limitInfo}</div>
    ${note}
    <div class="mapWrap" style="aspect-ratio:${cm.aspect}">
      <img class="bg" src="${cm.img}" alt="${cm.alt}" data-try="0" onerror="mapImgFallback(this)">
@@ -1074,6 +1205,18 @@ function continueBattle(){
   if(battle.foeHP<=0){ winBattle(); return; }
   nextBattleQuestion();
 }
+function showRetroCards(list){
+  app.innerHTML = headerHTML() + `
+   <div class="result">
+     <h2>🔓 Gefangene befreit!</h2>
+     <p style="font-size:16px">In den Verlorenen Lande hält jeder Gegner eine Karte <b>gefangen</b>. ${list.length===1?"Als du diesen Gegner besiegt hast, ist seine Gefangene heimlich entkommen – jetzt hat sie dich gefunden:":"Als du diese "+list.length+" Gegner besiegt hast, sind ihre Gefangenen heimlich entkommen – jetzt haben sie dich gefunden:"}</p>
+     <div class="rosterGrid" style="margin-top:12px">${list.map(x=>`<div class="rslot"><img src="cards/${x.card.id}.jpg" alt="${esc(x.card.name)}">
+       <div class="rn">${esc(x.card.name)}</div><div class="rtier">befreit von ${esc(x.foe.foe)}</div></div>`).join("")}</div>
+     <p class="hint-sm" style="margin-top:10px">Die Karten landen im Album des Englisch-Abenteuers.</p>
+     <div class="btnRow" style="justify-content:center"><button class="btn green" onclick="showMap()">Weiter zur Karte →</button></div>
+   </div>`;
+  window.scrollTo(0,0);
+}
 function fleeBattle(){ battle=null; showMap(); }
 
 function winBattle(){
@@ -1083,6 +1226,8 @@ function winBattle(){
   const gotTrophy = trophyId && !S.trophies.includes(trophyId);
   if(gotTrophy) S.trophies.push(trophyId);
   const pr = PR(), cm = CM();
+  const randCard = (cm.id===2 && foeMeta().trophy) ? grantRandomCard(foeMeta().trophy) : null;
+  const poolEmpty = cm.id===2 && gotTrophy && !randCard;
   if(battle.isBoss){
     if(!pr.defeated.includes(999)) pr.defeated.push(999);
   } else {
@@ -1104,9 +1249,13 @@ function winBattle(){
      ${gotTrophy && foeCard?`<div class="rewardCard"><img src="cards/${foeCard}.jpg" alt="${foe.foe}"></div>
         <p style="font-family:'Cinzel',serif;color:var(--gold2)">👹 Gegnerkarte erbeutet: ${foe.foe}</p>
         <p class="hint-sm">Im Englisch-Abenteuer landet sie in deinem Album.</p>`:""}
-     ${gotTrophy && !foeCard?`<div class="trophyPlaque big">${foe.icon}</div>
+     ${randCard?`<div class="rewardCard"><img src="cards/${randCard.id}.jpg" alt="${esc(randCard.name)}"></div>
+        <p style="font-family:'Cinzel',serif;color:var(--gold2)">🔓 Befreit: ${esc(randCard.name)}</p>
+        <p style="font-size:15px">${foe.foe} hielt ${esc(randCard.name)} gefangen. Mit deinem Sieg sind die Fesseln gesprengt – ${esc(randCard.name)} ist frei und schließt sich deiner Sammlung an!</p>
+        <p class="hint-sm">Die Karte findest du jetzt im Album des Englisch-Abenteuers.</p>`:""}
+     ${gotTrophy && !foeCard && !randCard?`<div class="trophyPlaque big">${foe.icon}</div>
         <p style="font-family:'Cinzel',serif;color:var(--gold2)">🏆 Trophäe erbeutet: ${foe.foe}</p>
-        <p class="hint-sm">Du findest sie unter „🏆 Trophäen". Ein Kartenbild für diesen Gegner folgt später.</p>`:""}
+        <p class="hint-sm">${poolEmpty?"Du hast schon alle Zusatzkarten gesammelt – stark!":"Du findest sie unter „🏆 Trophäen“."}</p>`:""}
      ${newAlly?`<div class="rewardCard"><img src="cards/${newAlly.id}.jpg" alt="${newAlly.name}"></div>
         <p style="font-family:'Cinzel',serif;color:var(--gold2)">Neuer Gefährte: ${newAlly.name}</p>
         <p class="hint-sm">Steht dir ab jetzt als Angreifer zur Verfügung.</p>`
@@ -1128,18 +1277,20 @@ function showTrophies(){
   const have = new Set(S.trophies);
   const cell = (foe, mapNo)=>{
     const id = foe.card || foe.trophy, owned = have.has(id);
-    const art = owned ? (foe.card ? `<img src="cards/${foe.card}.jpg" alt="${esc(foe.foe)}">` : `<div class="trophyPlaque">${foe.icon}</div>`)
+    const fc = !foe.card && S.found[foe.trophy] ? extraById(S.found[foe.trophy]) : null;
+    const art = owned ? (foe.card ? `<img src="cards/${foe.card}.jpg" alt="${esc(foe.foe)}">`
+                      : fc ? `<img src="cards/${fc.id}.jpg" alt="${esc(fc.name)}">` : `<div class="trophyPlaque">${foe.icon}</div>`)
                       : `<div class="mystery"><span>?</span></div>`;
     return `<div class="rslot ${owned?"":"locked"}">${art}
-      <div class="rn">${owned?esc(foe.foe):"???"}</div>
-      <div class="rtier">${owned?(foe.card?"Gegnerkarte":"Trophäe"):"🔒"}</div></div>`;
+      <div class="rn">${owned?(fc?esc(fc.name):esc(foe.foe)):"???"}</div>
+      <div class="rtier">${owned?(foe.card?"Gegnerkarte":fc?"🔓 befreit von "+esc(foe.foe):"Trophäe"):"🔒"}</div></div>`;
   };
   const all = m => m.nodes.concat([m.boss]);
   const count = m => all(m).filter(f=>have.has(f.card||f.trophy)).length;
   app.innerHTML = headerHTML() + `
    <div class="btnRow"><button class="btn ghost" onclick="showMap()">← Zur Karte</button></div>
    <div class="sectionTitle">🏆 Trophäen</div>
-   <div class="hint-sm">Für jeden besiegten Gegner gibt es eine Trophäe. Auf Karte 1 sind das Gegnerkarten (sie landen auch im Album des Englisch-Abenteuers), auf Karte 2 zunächst Trophäen-Tafeln – Kartenbilder folgen später.</div>
+   <div class="hint-sm">Für jeden besiegten Gegner gibt es eine Trophäe. Auf Karte 1 sind das Gegnerkarten, auf Karte 2 hielt jeder Gegner eine Karte gefangen, die du befreit hast (beide landen auch im Album des Englisch-Abenteuers).</div>
    ${MAPS.map(m=>`<div class="cin" style="color:var(--gold2);margin:14px 0 6px">${m.short} · ${count(m)} / ${all(m).length}</div>
      <div class="rosterGrid">${all(m).map(f=>cell(f,m.id)).join("")}</div>`).join("")}`;
   window.scrollTo(0,0);
@@ -1292,7 +1443,7 @@ showStart();
 <script>
 /* =========================================================
    GESAMTSICHERUNG – alle Lern-Apps auf einmal sichern / zurückspielen
-   Identischer Block in allen vier Apps. Liest und schreibt nur die bekannten Speicherschlüssel
+   Identischer Block in allen fünf Apps. Liest und schreibt nur die bekannten Speicherschlüssel
    (gleicher Ordner = gleicher Browser-Speicher). Ändert nichts an den einzelnen Spielständen,
    solange man nicht ausdrücklich "einspielen" wählt.
    ========================================================= */
@@ -1302,7 +1453,8 @@ const MB_APPS = [
   ["mittelerde-reise-v1","⚔️ Mittelerde-Reise"],
   ["paris-abenteuer-v1","🇫🇷 Paris-Abenteuer"],
   ["faecher-v1","🌍 Fächer (Lernstand)"],
-  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"]
+  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"],
+  ["raumstation-3d-v1","🛰️ Raumstation (3D-Werkstatt)"]
 ];
 function mbStore(){ try{ return window.localStorage; }catch(e){ return null; } }
 function mbMsg(html, ok){
@@ -1389,7 +1541,7 @@ function mbRestore(text){
 function mbCard(){
   return '<div id="mbCard" style="margin:14px 0;padding:16px;border:1px solid rgba(200,200,200,.35);border-radius:16px;background:rgba(0,0,0,.22)">'
     + '<b style="font-size:17px">🗄️ Gesamtsicherung – alle Apps auf einmal</b>'
-    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris und Fächer gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
+    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris, Fächer und Raumstation gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
     + 'Zum Wiederherstellen oder für ein neues Gerät: <b>einspielen</b> – dabei wird der Stand der Apps ersetzt.</div>'
     + '<div class="btnRow"><button class="btn ghost" onclick="mbShare()">📤 Alles sichern</button>'
     + '<button class="btn ghost" onclick="mbDownload()">💾 Als Datei laden</button>'
