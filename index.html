@@ -1526,6 +1526,221 @@ const QUESTS = [
   {"type": "order", "q": "Baue die Frage:", "words": ["Were", "the", "lessons", "interesting", "today?"], "c": "Were the lessons interesting today?"},
   {"type": "order", "q": "Baue den Satz:", "words": ["We", "weren't", "at", "the", "fair", "yesterday."], "c": "We weren't at the fair yesterday."},
  ]
+},
+{
+ id:"q24", num:"QUEST 24 · Thal (Unit 2, Klasse 6)", title:"going to: Pläne & Vorhersagen – Bildung und Verneinung",
+ desc:"Über die Zukunft sprechen: Was du vorhast und was gleich passiert. Alle Formen von going to – mit Kurzformen und Verneinung.",
+ card:null, reward:"random",
+ rules:[
+  {"h": "Wofür going to?", "t": "1. <b>Pläne und Absichten</b>: Das hast du schon beschlossen.<br>2. <b>Vorhersagen</b>, wenn man es schon <b>sieht</b>: Gleich passiert etwas.", "table": [["Plan", "We're going to visit London next weekend."], ["Vorhersage", "Look at those clouds! It's going to rain."]], "ex": ""},
+  {"h": "So bildest du es", "t": "<b>am / is / are</b> + <b>going to</b> + <b>Grundform</b>", "table": [["I", "am → I'm", "going to watch"], ["you / we / they", "are → you're / we're / they're", "going to watch"], ["he / she / it", "is → he's / she's / it's", "going to watch"]], "ex": ""},
+  {"h": "Verneinung", "t": "<b>not</b> steht direkt hinter am/is/are.", "table": [["I'm not", "going to …"], ["he / she / it isn't", "going to …"], ["you / we / they aren't", "going to …"]], "ex": "Achtung: „I amn't“ gibt es nicht – nur <b>I'm not</b>."},
+  {"h": "Die vier häufigsten Fehler", "t": "", "table": [["✗ She going to swim.", "✓ She <b>is</b> going to swim."], ["✗ He's going to swims.", "✓ He's going to <b>swim</b>."], ["✗ They're going to playing.", "✓ They're going to <b>play</b>."], ["✗ I'm going to went.", "✓ I'm going to <b>go</b>."]], "ex": "Merke: Nach going to kommt IMMER die Grundform."},
+ ],
+ ex:[
+  {"type": "mc", "q": "I ___ going to visit my grandma on Sunday.", "opts": ["am", "is", "are"], "c": 0},
+  {"type": "mc", "q": "My sister ___ going to buy a new bike.", "opts": ["is", "are", "am"], "c": 0},
+  {"type": "mc", "q": "Ruby and Karam ___ going to take the bus.", "opts": ["are", "is", "am"], "c": 0},
+  {"type": "mc", "q": "We ___ going to have pizza tonight.", "opts": ["are", "is", "am"], "c": 0},
+  {"type": "mc", "q": "The film ___ going to start at eight.", "opts": ["is", "are", "am"], "c": 0},
+  {"type": "mc", "q": "You ___ going to love this museum!", "opts": ["are", "is", "am"], "c": 0},
+  {"type": "mc", "q": "Ty is going to ___ his friends at the station.", "opts": ["meet", "meets", "meeting"], "c": 0},
+  {"type": "mc", "q": "They're going to ___ a picnic in the park.", "opts": ["have", "has", "had"], "c": 0},
+  {"type": "mc", "q": "Lily is going to ___ to the Tate Modern.", "opts": ["go", "goes", "went"], "c": 0},
+  {"type": "fill", "q": "I ___ (play) football after school. (going to)", "c": ["am going to play", "'m going to play"], "hint": "Ich werde nach der Schule Fußball spielen."},
+  {"type": "fill", "q": "Karam ___ (practise) the guitar this evening. (going to)", "c": ["is going to practise", "'s going to practise", "is going to practice", "'s going to practice"]},
+  {"type": "fill", "q": "My parents ___ (paint) the kitchen. (going to)", "c": ["are going to paint", "'re going to paint"]},
+  {"type": "fill", "q": "We ___ (watch) a film on Friday. (going to)", "c": ["are going to watch", "'re going to watch"]},
+  {"type": "fill", "q": "It ___ (be) a great day! (going to)", "c": ["is going to be", "'s going to be"]},
+  {"type": "fill", "q": "I ___ (not/eat) any chocolate today. (going to)", "c": ["am not going to eat", "'m not going to eat"], "hint": "Ich werde heute keine Schokolade essen."},
+  {"type": "fill", "q": "Ryan ___ (not/talk) about history again. (going to)", "c": ["isn't going to talk", "is not going to talk", "'s not going to talk"]},
+  {"type": "fill", "q": "The twins ___ (not/come) to the party. (going to)", "c": ["aren't going to come", "are not going to come", "'re not going to come"]},
+  {"type": "fill", "q": "She ___ (not/take) a taxi. It's too expensive. (going to)", "c": ["isn't going to take", "is not going to take", "'s not going to take"]},
+  {"type": "mc", "q": "Look at those dark clouds! It ___ rain.", "opts": ["is going to", "are going to", "going to"], "c": 0},
+  {"type": "mc", "q": "Careful! You're going to ___ !", "opts": ["fall", "falls", "falling"], "c": 0},
+  {"type": "mc", "q": "Welcher Satz ist eine Vorhersage, weil man es schon sieht?", "opts": ["Look! The bus is going to leave without us!", "I'm going to learn French next year.", "We're going to visit Grandma at Christmas."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „She going to buy a T-shirt.“ Richtig ist:", "opts": ["She's going to buy a T-shirt.", "She going to buys a T-shirt.", "She's going buy a T-shirt."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „They're going to visiting the Tower.“ Richtig ist:", "opts": ["They're going to visit the Tower.", "They going to visit the Tower.", "They're going visit the Tower."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „I amn't going to go.“ Richtig ist:", "opts": ["I'm not going to go.", "I not going to go.", "I don't going to go."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „He's going to plays tennis.“ Richtig ist:", "opts": ["He's going to play tennis.", "He going to play tennis.", "He's going to playing tennis."], "c": 0},
+  {"type": "order", "q": "Baue den Satz:", "words": ["I'm", "going", "to", "visit", "my", "cousin", "in", "London."], "c": "I'm going to visit my cousin in London."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Lily", "isn't", "going", "to", "take", "a", "cab."], "c": "Lily isn't going to take a cab."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["We're", "going", "to", "look", "around", "the", "shops."], "c": "We're going to look around the shops."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["It's", "going", "to", "be", "a", "busy", "day."], "c": "It's going to be a busy day."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["My", "friends", "aren't", "going", "to", "wait", "for", "me."], "c": "My friends aren't going to wait for me."},
+ ]
+},
+{
+ id:"q25", num:"QUEST 25 · Erebor (Unit 2, Klasse 6)", title:"going to: Fragen, Fragewörter & Kurzantworten",
+ desc:"Andere nach ihren Plänen fragen: Ja/Nein-Fragen, Fragen mit Where, When, What time, Who, How – und die passenden Kurzantworten.",
+ card:null, reward:"random",
+ rules:[
+  {"h": "Ja/Nein-Fragen", "t": "<b>am / is / are</b> rückt <b>vor</b> das Subjekt.", "table": [["Are", "you", "going to play football?"], ["Is", "Lily", "going to come?"], ["Are", "they", "going to take the Tube?"]], "ex": "She is going to … → <b>Is she</b> going to …?"},
+  {"h": "Kurzantworten", "t": "Antworte mit der Form von <b>to be</b>. Bei <b>Yes</b> keine Kurzform am Ende!", "table": [["Yes, I am.", "No, I'm not."], ["Yes, he / she / it is.", "No, he / she / it isn't."], ["Yes, we / you / they are.", "No, we / you / they aren't."]], "ex": "✗ Yes, I'm. ✗ Yes, I do. → ✓ Yes, I am."},
+  {"h": "Fragen mit Fragewort", "t": "<b>Fragewort + am/is/are + Subjekt + going to + Grundform?</b>", "table": [["Where", "are you going to go?"], ["When / What time", "is the film going to start?"], ["Who", "are you going to meet?"], ["How", "are we going to get there?"], ["What", "is she going to wear?"]], "ex": ""},
+  {"h": "Fragewörter", "t": "where = wo/wohin · when = wann · what time = um wie viel Uhr · who = wer/wen · how = wie · what = was · how long = wie lange", "ex": ""},
+ ],
+ ex:[
+  {"type": "mc", "q": "___ you going to do anything special this weekend?", "opts": ["Are", "Is", "Do"], "c": 0},
+  {"type": "mc", "q": "___ Ty going to come to the party?", "opts": ["Is", "Are", "Does"], "c": 0},
+  {"type": "mc", "q": "___ your parents going to drive you?", "opts": ["Are", "Is", "Do"], "c": 0},
+  {"type": "mc", "q": "Welche Frage ist richtig?", "opts": ["Are you going to watch the match?", "Do you going to watch the match?", "You are going to watch the match?"], "c": 0},
+  {"type": "fill", "q": "___ you going to help me? (to be)", "c": ["are"]},
+  {"type": "fill", "q": "___ Mrs Kwan going to buy fish and chips? (to be)", "c": ["is"]},
+  {"type": "fill", "q": "___ (they/visit) the London Eye? (Frage mit going to)", "c": ["are they going to visit"], "hint": "Werden sie das London Eye besuchen?"},
+  {"type": "fill", "q": "___ (she/wear) her new jacket? (Frage mit going to)", "c": ["is she going to wear"]},
+  {"type": "mc", "q": "„Are you going to ride your bike?“ – „Yes, ___“", "opts": ["I am.", "I'm.", "I do."], "c": 0, "hint": "Bei Yes keine Kurzform am Ende."},
+  {"type": "mc", "q": "„Is Ryan going to talk about history?“ – „Yes, ___“", "opts": ["he is.", "he's.", "he does."], "c": 0},
+  {"type": "mc", "q": "„Are the girls going to go shopping?“ – „No, ___“", "opts": ["they aren't.", "they isn't.", "they don't."], "c": 0},
+  {"type": "fill", "q": "„Are you going to stay at home?“ „No, I ___.“", "c": ["'m not", "am not"]},
+  {"type": "fill", "q": "„Is it going to rain?“ „Yes, it ___.“", "c": ["is"]},
+  {"type": "fill", "q": "„Are we going to take the Tube?“ „No, we ___. We're going to walk.“", "c": ["aren't", "are not"]},
+  {"type": "mc", "q": "„___ are you going to go?“ – „To the cinema.“", "opts": ["Where", "When", "Who"], "c": 0},
+  {"type": "mc", "q": "„___ is the concert going to start?“ – „At seven o'clock.“", "opts": ["What time", "Where", "Who"], "c": 0},
+  {"type": "mc", "q": "„___ are you going to meet?“ – „My cousin Ella.“", "opts": ["Who", "Where", "How"], "c": 0},
+  {"type": "mc", "q": "„___ are you going to get there?“ – „By bus.“", "opts": ["How", "What", "Who"], "c": 0},
+  {"type": "mc", "q": "„___ are you going to stay in London?“ – „For a week.“", "opts": ["How long", "How", "What time"], "c": 0},
+  {"type": "fill", "q": "Where ___ you going to sleep? (to be)", "c": ["are"]},
+  {"type": "fill", "q": "What ___ (you/eat) for lunch? (going to)", "c": ["are you going to eat"], "hint": "Was wirst du zum Mittagessen essen?"},
+  {"type": "fill", "q": "When ___ (Lily/arrive)? (going to)", "c": ["is Lily going to arrive"]},
+  {"type": "fill", "q": "Who ___ (they/invite)? (going to)", "c": ["are they going to invite"]},
+  {"type": "mc", "q": "Finde den Fehler: „Where you are going to go?“ Richtig ist:", "opts": ["Where are you going to go?", "Where do you going to go?", "Where you going to go?"], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „Is he going to plays?“ Richtig ist:", "opts": ["Is he going to play?", "Does he going to play?", "Is he going to playing?"], "c": 0},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Are", "you", "going", "to", "meet", "your", "friends?"], "c": "Are you going to meet your friends?"},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Is", "the", "woman", "going", "to", "buy", "a", "sandwich?"], "c": "Is the woman going to buy a sandwich?"},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Where", "are", "you", "going", "to", "go", "on", "Saturday?"], "c": "Where are you going to go on Saturday?"},
+  {"type": "order", "q": "Baue die Frage:", "words": ["What", "time", "is", "the", "film", "going", "to", "start?"], "c": "What time is the film going to start?"},
+  {"type": "order", "q": "Baue die Frage:", "words": ["How", "are", "we", "going", "to", "get", "to", "Covent", "Garden?"], "c": "How are we going to get to Covent Garden?"},
+ ]
+},
+{
+ id:"q26", num:"QUEST 26 · Düsterwald (Unit 2, Klasse 6)", title:"Steigerung I: -er / -est und die Rechtschreibregeln",
+ desc:"Kurze Adjektive steigern: higher, the highest – mit allen Schreibregeln (nicer, easier, bigger) und Vergleichen mit than.",
+ card:null, reward:"random",
+ rules:[
+  {"h": "Kurze Adjektive (eine Silbe)", "t": "Komparativ: <b>-er</b> · Superlativ: <b>the …-est</b>", "table": [["high", "higher", "the highest"], ["cool", "cooler", "the coolest"], ["cheap", "cheaper", "the cheapest"], ["small", "smaller", "the smallest"]], "ex": ""},
+  {"h": "Regel 1: stummes -e", "t": "Hängt nur <b>-r</b> / <b>-st</b> an.", "table": [["nice", "nicer", "the nicest"], ["safe", "safer", "the safest"], ["large", "larger", "the largest"]], "ex": ""},
+  {"h": "Regel 2: Konsonant + y", "t": "<b>-y</b> wird zu <b>-i</b> (gilt auch für zweisilbige Wörter auf -y).", "table": [["easy", "easier", "the easiest"], ["happy", "happier", "the happiest"], ["funny", "funnier", "the funniest"], ["busy", "busier", "the busiest"]], "ex": ""},
+  {"h": "Regel 3: Konsonant verdoppeln", "t": "Kurzer Vokal + <b>ein</b> Konsonant am Ende → Konsonant verdoppeln.", "table": [["big", "bigger", "the biggest"], ["hot", "hotter", "the hottest"], ["sad", "sadder", "the saddest"], ["thin", "thinner", "the thinnest"]], "ex": "Aber: cool → cooler (zwei Vokale, nicht verdoppeln)"},
+  {"h": "Vergleichen", "t": "Komparativ + <b>than</b> (= als). Superlativ immer mit <b>the</b>.", "ex": "London is bigger <b>than</b> Greenwich. It's <b>the</b> biggest city in Britain."},
+ ],
+ ex:[
+  {"type": "fill", "q": "high – ___ – the highest", "c": ["higher"]},
+  {"type": "fill", "q": "cheap – cheaper – ___", "c": ["the cheapest", "cheapest"]},
+  {"type": "fill", "q": "small – ___ – the smallest", "c": ["smaller"]},
+  {"type": "fill", "q": "cool – cooler – ___", "c": ["the coolest", "coolest"]},
+  {"type": "fill", "q": "nice – ___ – the nicest", "c": ["nicer"]},
+  {"type": "fill", "q": "safe – safer – ___", "c": ["the safest", "safest"]},
+  {"type": "fill", "q": "easy – ___ – the easiest", "c": ["easier"]},
+  {"type": "fill", "q": "funny – funnier – ___", "c": ["the funniest", "funniest"]},
+  {"type": "fill", "q": "happy – ___ – the happiest", "c": ["happier"]},
+  {"type": "fill", "q": "big – ___ – the biggest", "c": ["bigger"]},
+  {"type": "fill", "q": "hot – hotter – ___", "c": ["the hottest", "hottest"]},
+  {"type": "fill", "q": "sad – ___ – the saddest", "c": ["sadder"]},
+  {"type": "mc", "q": "Komparativ von „large“:", "opts": ["larger", "largeer", "more large"], "c": 0},
+  {"type": "mc", "q": "Superlativ von „busy“:", "opts": ["the busiest", "the busyest", "the most busy"], "c": 0},
+  {"type": "mc", "q": "Komparativ von „thin“:", "opts": ["thinner", "thiner", "more thin"], "c": 0},
+  {"type": "mc", "q": "Komparativ von „cool“:", "opts": ["cooler", "cooller", "more cool"], "c": 0, "hint": "Zwei Vokale (oo) – nicht verdoppeln."},
+  {"type": "mc", "q": "Superlativ von „big“:", "opts": ["the biggest", "the bigest", "the most big"], "c": 0},
+  {"type": "mc", "q": "London is bigger ___ Greenwich.", "opts": ["than", "then", "as"], "c": 0},
+  {"type": "mc", "q": "The Shard is ___ building in London.", "opts": ["the highest", "higher", "the higher"], "c": 0},
+  {"type": "mc", "q": "My bag is ___ than your bag.", "opts": ["heavier", "the heaviest", "heavyer"], "c": 0},
+  {"type": "fill", "q": "Today is ___ (hot) than yesterday.", "c": ["hotter"], "hint": "Heute ist es heißer als gestern."},
+  {"type": "fill", "q": "This is ___ (easy) exercise in the book.", "c": ["the easiest"]},
+  {"type": "fill", "q": "Ryan is ___ (tall) than Karam.", "c": ["taller"]},
+  {"type": "fill", "q": "The prices are ___ (high) here than in Greenwich!", "c": ["higher"]},
+  {"type": "fill", "q": "Bridges are ___ (cheap) way to see the city.", "c": ["the cheapest"]},
+  {"type": "fill", "q": "Ruby is ___ (funny) person in our class.", "c": ["the funniest"]},
+  {"type": "mc", "q": "Finde den Fehler: „My room is biger than yours.“ Richtig ist:", "opts": ["My room is bigger than yours.", "My room is more big than yours.", "My room is the bigger than yours."], "c": 0},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Greenwich", "is", "smaller", "than", "central", "London."], "c": "Greenwich is smaller than central London."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["This", "is", "the", "coolest", "place", "in", "London."], "c": "This is the coolest place in London."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Today", "is", "hotter", "than", "yesterday."], "c": "Today is hotter than yesterday."},
+ ]
+},
+{
+ id:"q27", num:"QUEST 27 · Henneth Annûn (Unit 2, Klasse 6)", title:"Steigerung II: more / most, good & bad, (not) as … as",
+ desc:"Lange Adjektive mit more und the most, die unregelmäßigen good/better/best und bad/worse/worst – und Vergleiche mit as … as.",
+ card:null, reward:"random",
+ rules:[
+  {"h": "Lange Adjektive (zwei und mehr Silben)", "t": "Komparativ: <b>more</b> + Adjektiv · Superlativ: <b>the most</b> + Adjektiv", "table": [["beautiful", "more beautiful", "the most beautiful"], ["expensive", "more expensive", "the most expensive"], ["interesting", "more interesting", "the most interesting"], ["relaxing", "more relaxing", "the most relaxing"], ["fantastic", "more fantastic", "the most fantastic"]], "ex": "Ausnahme: Zweisilbige auf -y steigern mit -er/-est: easy → easier."},
+  {"h": "Unregelmäßig – auswendig lernen!", "t": "", "table": [["good", "better", "the best"], ["bad", "worse", "the worst"]], "ex": "✗ gooder, the most good, badder → ✓ better, the best, worse"},
+  {"h": "Nie doppelt steigern", "t": "Entweder <b>-er</b> oder <b>more</b> – nie beides.", "ex": "✗ more bigger, the most best → ✓ bigger, the best"},
+  {"h": "Gleich oder nicht gleich: as … as", "t": "<b>as + Grundform + as</b> = genauso … wie · <b>not as … as</b> = nicht so … wie", "table": [["Ruby is as tall as Lily.", "Ruby ist genauso groß wie Lily."], ["The food here isn't as good as my food.", "… nicht so gut wie …"]], "ex": "✗ as better as → ✓ as good as"},
+ ],
+ ex:[
+  {"type": "fill", "q": "beautiful – ___ – the most beautiful", "c": ["more beautiful"]},
+  {"type": "fill", "q": "expensive – more expensive – ___", "c": ["the most expensive", "most expensive"]},
+  {"type": "fill", "q": "interesting – ___ – the most interesting", "c": ["more interesting"]},
+  {"type": "fill", "q": "relaxing – more relaxing – ___", "c": ["the most relaxing", "most relaxing"]},
+  {"type": "fill", "q": "good – ___ – the best", "c": ["better"]},
+  {"type": "fill", "q": "bad – worse – ___", "c": ["the worst", "worst"]},
+  {"type": "mc", "q": "Komparativ von „good“:", "opts": ["better", "gooder", "more good"], "c": 0},
+  {"type": "mc", "q": "Superlativ von „bad“:", "opts": ["the worst", "the baddest", "the most bad"], "c": 0},
+  {"type": "mc", "q": "Komparativ von „wonderful“:", "opts": ["more wonderful", "wonderfuller", "most wonderful"], "c": 0},
+  {"type": "mc", "q": "Komparativ von „exciting“:", "opts": ["more exciting", "excitinger", "the most exciting"], "c": 0},
+  {"type": "mc", "q": "-er oder more? „famous“", "opts": ["more famous", "famouser", "most famouser"], "c": 0},
+  {"type": "mc", "q": "-er oder more? „easy“", "opts": ["easier", "more easy", "easyer"], "c": 0, "hint": "Zweisilbig auf -y → -ier."},
+  {"type": "mc", "q": "-er oder more? „cheap“", "opts": ["cheaper", "more cheap", "cheapper"], "c": 0},
+  {"type": "fill", "q": "For me, St James's is ___ (beautiful) London park.", "c": ["the most beautiful"]},
+  {"type": "fill", "q": "Fish and chips are ___ (good) than Chinese food!", "c": ["better"]},
+  {"type": "fill", "q": "Cabs are ___ (expensive) way to travel.", "c": ["the most expensive"]},
+  {"type": "fill", "q": "Wasting money on a cab is ___ (bad) thing!", "c": ["the worst"]},
+  {"type": "fill", "q": "The Tate Modern is ___ (interesting) art museum.", "c": ["the most interesting"]},
+  {"type": "fill", "q": "My English is ___ (bad) than my German.", "c": ["worse"], "hint": "Mein Englisch ist schlechter als mein Deutsch."},
+  {"type": "fill", "q": "Ruby is as ___ (tall) as Lily.", "c": ["tall"], "hint": "Bei as … as bleibt das Adjektiv in der Grundform."},
+  {"type": "fill", "q": "The food here isn't as ___ (good) as my food.", "c": ["good"]},
+  {"type": "mc", "q": "Greenwich isn't ___ London.", "opts": ["as big as", "as bigger as", "so big than"], "c": 0},
+  {"type": "mc", "q": "Was bedeutet „My bike is as fast as yours“?", "opts": ["Mein Rad ist genauso schnell wie deins.", "Mein Rad ist schneller als deins.", "Mein Rad ist nicht so schnell wie deins."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „This is the most best day!“ Richtig ist:", "opts": ["This is the best day!", "This is the goodest day!", "This is the most good day!"], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „London is more bigger than Greenwich.“ Richtig ist:", "opts": ["London is bigger than Greenwich.", "London is more big than Greenwich.", "London is the biggest than Greenwich."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „The museum is more interesting as the park.“ Richtig ist:", "opts": ["The museum is more interesting than the park.", "The museum is interestinger than the park.", "The museum is the most interesting as the park."], "c": 0},
+  {"type": "order", "q": "Baue den Satz:", "words": ["St", "James's", "is", "the", "most", "beautiful", "park", "in", "London."], "c": "St James's is the most beautiful park in London."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["The", "food", "here", "isn't", "as", "good", "as", "my", "food."], "c": "The food here isn't as good as my food."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Cabs", "are", "more", "expensive", "than", "buses."], "c": "Cabs are more expensive than buses."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["You", "get", "the", "best", "view", "from", "the", "London", "Eye."], "c": "You get the best view from the London Eye."},
+ ]
+},
+{
+ id:"q28", num:"QUEST 28 · Dunharg (Unit 2, Klasse 6)", title:"Unit 2 gemischt: going to & Steigerung",
+ desc:"Die Abschlussprüfung zu Unit 2: going to und Steigerung bunt gemischt. Bei jeder Aufgabe musst du neu entscheiden, was gebraucht wird.",
+ card:null, reward:"random",
+ rules:[
+  {"h": "Warum gemischt?", "t": "Erst Quest 24–27 einzeln, dann diese Quest: Wenn die Themen durcheinander kommen, lernst du, sie <b>auseinanderzuhalten</b> – genau wie in der Klassenarbeit.", "ex": ""},
+  {"h": "Frag dich bei jeder Lücke", "t": "", "table": [["Geht es um einen Plan oder etwas, das gleich passiert?", "→ am/is/are + going to + Grundform"], ["Werden zwei Dinge verglichen (than)?", "→ Komparativ: -er / more / better / worse"], ["Ist etwas das Beste von allen (the)?", "→ Superlativ: the -est / the most / the best / the worst"], ["Genauso … wie?", "→ as + Grundform + as"]], "ex": ""},
+  {"h": "Mini-Spickzettel", "t": "I'm / he's / they're going to <b>go</b> · Are you going to …? – Yes, I am. · big → bigger · easy → easier · nice → nicer · beautiful → more beautiful · good → better → the best · bad → worse → the worst", "ex": ""},
+ ],
+ ex:[
+  {"type": "fill", "q": "Next month Lena's class ___ (be) in London for a week. (going to)", "c": ["is going to be", "'s going to be"]},
+  {"type": "fill", "q": "London is often ___ (expensive) than other cities.", "c": ["more expensive"]},
+  {"type": "fill", "q": "They ___ (visit) three museums. (going to)", "c": ["are going to visit", "'re going to visit"]},
+  {"type": "fill", "q": "The Natural History Museum is ___ (popular) museum for lots of people.", "c": ["the most popular"]},
+  {"type": "fill", "q": "We ___ (not/take) the bus – the Tube is faster. (going to)", "c": ["aren't going to take", "are not going to take", "'re not going to take"]},
+  {"type": "fill", "q": "The Tube is ___ (fast) than the bus.", "c": ["faster"]},
+  {"type": "fill", "q": "„___ you going to come with us?“ „Yes, I am.“", "c": ["are"]},
+  {"type": "fill", "q": "Sightseeing tickets are ___ (cheap) when you buy them online.", "c": ["cheaper"]},
+  {"type": "fill", "q": "This is ___ (good) day of the holidays!", "c": ["the best"]},
+  {"type": "fill", "q": "Look at the sky! It ___ (rain). (going to)", "c": ["is going to rain", "'s going to rain"]},
+  {"type": "fill", "q": "My little brother is ___ (happy) than me today.", "c": ["happier"]},
+  {"type": "fill", "q": "What ___ (you/do) this weekend? (going to)", "c": ["are you going to do"]},
+  {"type": "mc", "q": "Lily ___ show us the art at the Tate Modern.", "opts": ["is going to", "is going", "going to"], "c": 0},
+  {"type": "mc", "q": "The London Eye is ___ than Millennium Bridge.", "opts": ["higher", "the highest", "more high"], "c": 0},
+  {"type": "mc", "q": "„Is Karam going to bring his guitar?“ – „No, ___“", "opts": ["he isn't.", "he doesn't.", "he aren't."], "c": 0},
+  {"type": "mc", "q": "Greenwich isn't ___ central London.", "opts": ["as busy as", "as busier as", "busier as"], "c": 0},
+  {"type": "mc", "q": "He was ___ street artist in London!", "opts": ["the most wonderful", "more wonderful", "the wonderfullest"], "c": 0},
+  {"type": "mc", "q": "We're going to ___ fish and chips for lunch.", "opts": ["have", "having", "had"], "c": 0},
+  {"type": "mc", "q": "Was brauchst du? „The weather is ___ (bad) than yesterday.“", "opts": ["worse", "the worst", "badder"], "c": 0},
+  {"type": "mc", "q": "Was brauchst du? „Tomorrow I ___ (visit) the Tower.“", "opts": ["'m going to visit", "visited", "am visit"], "c": 0},
+  {"type": "mc", "q": "Welcher Satz ist richtig?", "opts": ["She's going to buy the cheapest ticket.", "She going to buy the cheaper ticket.", "She's going to buys the cheapest ticket."], "c": 0},
+  {"type": "mc", "q": "Welcher Satz ist richtig?", "opts": ["Are you going to take the fastest train?", "Do you going to take the fastest train?", "Are you going to take the most fast train?"], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „It's going to be the most hot day of the year.“", "opts": ["It's going to be the hottest day of the year.", "It's going to be the hotest day of the year.", "It's going to be the most hottest day of the year."], "c": 0},
+  {"type": "mc", "q": "Finde den Fehler: „We going to see a more better show.“", "opts": ["We're going to see a better show.", "We're going to see a gooder show.", "We going to see a better show."], "c": 0},
+  {"type": "order", "q": "Baue den Satz:", "words": ["We're", "going", "to", "visit", "the", "most", "famous", "museum", "in", "London."], "c": "We're going to visit the most famous museum in London."},
+  {"type": "order", "q": "Baue die Frage:", "words": ["Are", "you", "going", "to", "take", "the", "cheapest", "ticket?"], "c": "Are you going to take the cheapest ticket?"},
+  {"type": "order", "q": "Baue den Satz:", "words": ["The", "Tube", "is", "faster", "than", "the", "bus."], "c": "The Tube is faster than the bus."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Lena's", "class", "isn't", "going", "to", "see", "all", "three", "museums."], "c": "Lena's class isn't going to see all three museums."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["Tomorrow", "is", "going", "to", "be", "hotter", "than", "today."], "c": "Tomorrow is going to be hotter than today."},
+  {"type": "order", "q": "Baue den Satz:", "words": ["It's", "going", "to", "be", "the", "best", "day", "of", "the", "trip."], "c": "It's going to be the best day of the trip."},
+ ]
 }
 ];
 
@@ -1596,9 +1811,14 @@ const TOPICS = {
  q21:["did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "did-Fragen bilden", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "didn't-Verneinung", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Kurzantworten mit did/didn't", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Subjekt- vs. Objektfragen", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche"],
  q22:["was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "was/were-Fragen bilden", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "wasn't/weren't-Verneinung", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "Kurzantworten mit was/were", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "did oder was/were unterscheiden", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche", "Im Kontext: Tys erste Schulwoche"],
  q23:["did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "did oder was/were entscheiden", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Verneinung gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Kurzantworten gemischt", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "did oder was/were entscheiden", "did oder was/were entscheiden", "Verneinung gemischt"],
+ q24:["Form von to be", "Form von to be", "Form von to be", "Form von to be", "Form von to be", "Form von to be", "Grundform nach going to", "Grundform nach going to", "Grundform nach going to", "Aussagesätze bilden", "Aussagesätze bilden", "Aussagesätze bilden", "Aussagesätze bilden", "Aussagesätze bilden", "Verneinung", "Verneinung", "Verneinung", "Verneinung", "Vorhersage (man sieht es schon)", "Vorhersage (man sieht es schon)", "Vorhersage (man sieht es schon)", "Typische Fehler", "Typische Fehler", "Typische Fehler", "Typische Fehler", "Aussagesätze bilden", "Verneinung", "Aussagesätze bilden", "Aussagesätze bilden", "Verneinung"],
+ q25:["Ja/Nein-Fragen bilden", "Ja/Nein-Fragen bilden", "Ja/Nein-Fragen bilden", "Ja/Nein-Fragen bilden", "Ja/Nein-Fragen bilden", "Ja/Nein-Fragen bilden", "Ja/Nein-Fragen bilden", "Ja/Nein-Fragen bilden", "Kurzantworten", "Kurzantworten", "Kurzantworten", "Kurzantworten", "Kurzantworten", "Kurzantworten", "Fragewort wählen", "Fragewort wählen", "Fragewort wählen", "Fragewort wählen", "Fragewort wählen", "W-Fragen bilden", "W-Fragen bilden", "W-Fragen bilden", "W-Fragen bilden", "Typische Fehler", "Typische Fehler", "Ja/Nein-Fragen bilden", "Ja/Nein-Fragen bilden", "W-Fragen bilden", "W-Fragen bilden", "W-Fragen bilden"],
+ q26:["Komparativ (-er)", "Superlativ (-est)", "Komparativ (-er)", "Superlativ (-est)", "Regel: stummes -e", "Regel: stummes -e", "Regel: y → i", "Regel: y → i", "Regel: y → i", "Regel: Konsonant verdoppeln", "Regel: Konsonant verdoppeln", "Regel: Konsonant verdoppeln", "Regel: stummes -e", "Regel: y → i", "Regel: Konsonant verdoppeln", "Regel: Konsonant verdoppeln", "Regel: Konsonant verdoppeln", "Vergleichen mit than", "Komparativ oder Superlativ?", "Komparativ oder Superlativ?", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden", "Typische Fehler", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden"],
+ q27:["Komparativ mit more", "Superlativ mit most", "Komparativ mit more", "Superlativ mit most", "Unregelmäßig: good / bad", "Unregelmäßig: good / bad", "Unregelmäßig: good / bad", "Unregelmäßig: good / bad", "Komparativ mit more", "Komparativ mit more", "-er oder more?", "-er oder more?", "-er oder more?", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden", "Im Satz anwenden", "(not) as … as", "(not) as … as", "(not) as … as", "(not) as … as", "Typische Fehler", "Typische Fehler", "Typische Fehler", "Im Satz anwenden", "(not) as … as", "Im Satz anwenden", "Im Satz anwenden"],
+ q28:["going to (gemischt)", "Steigerung (gemischt)", "going to (gemischt)", "Steigerung (gemischt)", "going to (gemischt)", "Steigerung (gemischt)", "going to (gemischt)", "Steigerung (gemischt)", "Steigerung (gemischt)", "going to (gemischt)", "Steigerung (gemischt)", "going to (gemischt)", "going to (gemischt)", "Steigerung (gemischt)", "going to (gemischt)", "Steigerung (gemischt)", "Steigerung (gemischt)", "going to (gemischt)", "Was wird gebraucht?", "Was wird gebraucht?", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Fehler finden (gemischt)", "Kombinieren", "Kombinieren", "Steigerung (gemischt)", "going to (gemischt)", "Kombinieren", "Kombinieren"],
 };
 
-let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[], review:{}, tts:{auto:"after", slow:false}};
+let S = {xp:0, done:{}, best:{}, cards:[], stats:{}, extras:[], review:{}, qfinds:{}, tts:{auto:"after", slow:false}};
 /* Kalenderbasierte Wiederholung: Intervall wird nach jedem bestandenen Durchlauf
    verlaengert (wie bei klassischen Karteikasten-Systemen), bei Nichtbestehen zurueckgesetzt. */
 const REVIEW_DAYS = [3, 7, 14, 30, 60];
@@ -1641,6 +1861,7 @@ function normalizeState(){
   S.best    = (S.best    && typeof S.best==="object")    ? S.best    : {};
   S.perfect = (S.perfect && typeof S.perfect==="object") ? S.perfect : {};
   S.review  = (S.review  && typeof S.review==="object" && !Array.isArray(S.review)) ? S.review : {};
+  S.qfinds  = (S.qfinds  && typeof S.qfinds==="object" && !Array.isArray(S.qfinds)) ? S.qfinds : {};
   normalizeTts();
   S.xp = Number(S.xp)||0;
   S.maxStreak = Number(S.maxStreak)||0;
@@ -1984,7 +2205,7 @@ function showHome(){
   run=null;
   const tile=(q,i)=>{
     const done=S.done[q.id], best=S.best[q.id];
-    const hasCard=q.card!=null && S.cards.includes(q.card);
+    const hasCard=q.card!=null ? S.cards.includes(q.card) : (S.qfinds||{})[q.id]!=null;
     const perfect=(S.perfect||{})[q.id];
     return `<div class="quest" onclick="showIntro(${i})">
       ${perfect?'<span class="stamp">🌟</span>':done?'<span class="stamp">✅</span>':''}
@@ -1994,12 +2215,14 @@ function showHome(){
       <div class="meta">
         <span class="pill">${q.ex.length} Übungen</span>
         ${best!=null?`<span class="pill ${best>=85?'done':''}">Beste: ${best}%</span>`:''}
-        ${hasCard?'<span class="pill done">🃏 Karte erhalten</span>':'<span class="pill">🎁 Karte ab 85 %</span>'}
+        ${hasCard?'<span class="pill done">🃏 Karte erhalten</span>':`<span class="pill">🎁 ${q.card==null?"Zufallskarte":"Karte"} ab 85 %</span>`}
       </div>
     </div>`;
   };
   const DEEP = ["q13","q14","q15","q16","q17","q18","q19","q20","q21","q22","q23"];
-  const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q" && !DEEP.includes(x.q.id));
+  const UNIT2 = ["q24","q25","q26","q27","q28"];
+  const grammar = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="q" && !DEEP.includes(x.q.id) && !UNIT2.includes(x.q.id));
+  const unit2   = QUESTS.map((q,i)=>({q,i})).filter(x=>UNIT2.includes(x.q.id));
   const vocab   = QUESTS.map((q,i)=>({q,i})).filter(x=>x.q.id[0]==="v");
   const deep    = QUESTS.map((q,i)=>({q,i})).filter(x=>DEEP.includes(x.q.id));
   const due     = dueQuests();
@@ -2024,7 +2247,10 @@ function showHome(){
     <div class="grid">${vocab.map(x=>tile(x.q,x.i)).join("")}</div>
     <div class="sectionTitle" style="margin-top:20px">🔥 Vertiefungs-Quests</div>
     <div class="hint-sm">Anspruchsvoller und ausführlicher erklärt – genau für die Themen, die erfahrungsgemäß am meisten Übung brauchen.</div>
-    <div class="grid">${deep.map(x=>tile(x.q,x.i)).join("")}</div>`;
+    <div class="grid">${deep.map(x=>tile(x.q,x.i)).join("")}</div>
+    <div class="sectionTitle" style="margin-top:20px">🇬🇧 Unit 2 · Klasse 6: going to & Steigerung</div>
+    <div class="hint-sm">Die Grammatik-Schwerpunkte aus Unit 2 – erst die Themen einzeln, zum Schluss gemischt (Quest 28). Ab 85 % gibt es einmalig eine Zufallskarte.</div>
+    <div class="grid">${unit2.map(x=>tile(x.q,x.i)).join("")}</div>`;
   window.scrollTo(0,0);
 }
 
@@ -2241,9 +2467,19 @@ function finishQuest(){
     S.cards.push(q.card);
     newCards.push({ci:q.card, label:"✦ NEUE QUEST-KARTE ✦"});
   }
+  /* Quests ohne eigenes Kartenbild (ab Quest 24): ab 85 % EINMALIG eine Belohnungskarte aus dem ungesammelten Zusatzkarten-Pool */
+  if(pct>=85 && q.card==null && q.reward==="random" && S.qfinds[q.id]==null){
+    const troph = new Set(reiseTrophies());
+    const pool = EXTRA_CARDS.map((c,i)=>i).filter(i=>!S.extras.includes(i) && !troph.has(EXTRA_CARDS[i].id));
+    if(pool.length){
+      const pick = pool[Math.floor(Math.random()*pool.length)];
+      S.extras.push(pick); S.qfinds[q.id] = pick;
+      newCards.push({extra:pick, label:"🎁 QUEST-BELOHNUNG (85 %)"});
+    }
+  }
   // Sonderkarten für besondere Erfolge prüfen
   // Zufallsfund ab 95 %
-  if(pct>=95){
+  if(pct>=95 && q.reward!=="random"){   /* Quests mit Belohnungs-Zufallskarte (ab Quest 24): kein zusätzlicher Fund ab 95 % – spart Karten */
     const pool = EXTRA_CARDS.map((c,i)=>i).filter(i=>!S.extras.includes(i));
     if(pool.length){
       const pick = pool[Math.floor(Math.random()*pool.length)];
@@ -2476,7 +2712,7 @@ loadState().then(showHome);
 <script>
 /* =========================================================
    GESAMTSICHERUNG – alle Lern-Apps auf einmal sichern / zurückspielen
-   Identischer Block in allen vier Apps. Liest und schreibt nur die bekannten Speicherschlüssel
+   Identischer Block in allen fünf Apps. Liest und schreibt nur die bekannten Speicherschlüssel
    (gleicher Ordner = gleicher Browser-Speicher). Ändert nichts an den einzelnen Spielständen,
    solange man nicht ausdrücklich "einspielen" wählt.
    ========================================================= */
@@ -2486,7 +2722,8 @@ const MB_APPS = [
   ["mittelerde-reise-v1","⚔️ Mittelerde-Reise"],
   ["paris-abenteuer-v1","🇫🇷 Paris-Abenteuer"],
   ["faecher-v1","🌍 Fächer (Lernstand)"],
-  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"]
+  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"],
+  ["raumstation-3d-v1","🛰️ Raumstation (3D-Werkstatt)"]
 ];
 function mbStore(){ try{ return window.localStorage; }catch(e){ return null; } }
 function mbMsg(html, ok){
@@ -2573,7 +2810,7 @@ function mbRestore(text){
 function mbCard(){
   return '<div id="mbCard" style="margin:14px 0;padding:16px;border:1px solid rgba(200,200,200,.35);border-radius:16px;background:rgba(0,0,0,.22)">'
     + '<b style="font-size:17px">🗄️ Gesamtsicherung – alle Apps auf einmal</b>'
-    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris und Fächer gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
+    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris, Fächer und Raumstation gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
     + 'Zum Wiederherstellen oder für ein neues Gerät: <b>einspielen</b> – dabei wird der Stand der Apps ersetzt.</div>'
     + '<div class="btnRow"><button class="btn ghost" onclick="mbShare()">📤 Alles sichern</button>'
     + '<button class="btn ghost" onclick="mbDownload()">💾 Als Datei laden</button>'
