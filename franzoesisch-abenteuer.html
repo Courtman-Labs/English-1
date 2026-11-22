@@ -143,7 +143,7 @@
 <main id="app"></main>
 <script>
 /* =========================================================
-   PARIS-ABENTEUER – Französisch (À plus! Neubearbeitung, S. 176–185)
+   PARIS-ABENTEUER – Französisch (À plus! Neubearbeitung, S. 176–187)
    Eigenständige App, eigener Spielstand, nicht mit Englisch gemischt.
    Lernprinzipien: aktives Abrufen, gemischte Formate, Schwerpunkt ganze Sätze
    (beide Richtungen), Gerüst "erst Bausteine, dann tippen", sofortiges
@@ -153,13 +153,13 @@ const KEY = "paris-abenteuer-v1";
 
 const TAGS = {cp:"C'est parti!", u1:"Unité 1 – Thema Stadt", v1:"Unité 1 – Volet 1", v2:"Unité 1 – Volet 2",
               v3:"Unité 1 – Volet 3", m1:"Module 1",
-              u2:"Unité 2 – Thema Familie", w1:"Unité 2 – Volet 1", w2:"Unité 2 – Volet 2"};
+              u2:"Unité 2 – Thema Familie", w1:"Unité 2 – Volet 1", w2:"Unité 2 – Volet 2", w3:"Unité 2 – Volet 3"};
 const SCOPES = {
-  all:{label:"Alles", tags:["cp","u1","v1","v2","v3","m1","u2","w1","w2"]},
+  all:{label:"Alles", tags:["cp","u1","v1","v2","v3","m1","u2","w1","w2","w3"]},
   cp:{label:"C'est parti!", tags:["cp"]},
   u1:{label:"Unité 1", tags:["u1","v1","v2","v3"]},
   m1:{label:"Module 1", tags:["m1"]},
-  u2:{label:"Unité 2", tags:["u2","w1","w2"]},
+  u2:{label:"Unité 2", tags:["u2","w1","w2","w3"]},
   pages:{label:"📖 Seiten-Auswahl", tags:[], custom:true}
 };
 
@@ -429,6 +429,55 @@ const VOCAB_RAW = [
  ["x201","qui","wer (Fragewort)","w2","Qui est là ?","Wer ist da?"],
  ["x202","ton; ta; tes","dein; deine","w2","Ce sont tes frères ?","Sind das deine Brüder?"],
  ["x203","son; sa; ses","sein; seine; ihr; ihre","w2","Voilà Idriss avec sa mère.","Da ist Idriss mit seiner Mutter."],
+ ["x204","le week-end","das Wochenende; am Wochenende","w2","Le week-end, il est à Paris.","Am Wochenende ist er in Paris."],
+ ["x205","il/elle m'énerve","er/sie nervt (mich)","w2","Mon frère, il m'énerve !","Mein Bruder nervt mich!"],
+ ["x206","une arrière-grand-mère","eine Urgroßmutter","w2","Mon arrière-grand-mère, c'est la grand-mère de ma mère.","Meine Urgroßmutter ist die Großmutter meiner Mutter."],
+ ["x207","un arrière-grand-père","ein Urgroßvater","w2","Mon arrière-grand-père, c'est le grand-père de ma mère.","Mein Urgroßvater ist der Großvater meiner Mutter."],
+ ["x208","il/elle habite","er/sie wohnt","w2","Noé, il habite à Paris.","Noé wohnt in Paris."],
+ ["x209","ils/elles habitent","sie wohnen","w2","Ils habitent près de Francfort.","Sie wohnen in der Nähe von Frankfurt."],
+ ["x210","près","nah; in der Nähe","w2","C'est près.","Das ist nah."],
+ ["x211","près de","bei; in der Nähe von","w2","Meudon, c'est près de Paris.","Meudon liegt in der Nähe von Paris."],
+ ["x212","la pâtisserie","die Konditorei; das Gebäck","w2",null,null],
+ ["x213","Mes parents sont séparés.","Meine Eltern sind getrennt.","w2",null,null],
+ ["x214","la Guadeloupe","Guadeloupe (französisches Überseedépartement)","w2",null,null],
+ ["x215","parfois","manchmal","w2",null,null],
+ ["x216","un peu","ein bisschen","w2","Ma sœur, elle m'énerve un peu.","Meine Schwester nervt mich ein bisschen."],
+ ["x217","quand même","trotzdem; dennoch","w2","J'aime ma sœur quand même.","Ich mag meine Schwester trotzdem."],
+ ["x218","la chambre","das Zimmer; das Schlafzimmer","w2","C'est ma chambre !","Das ist mein Zimmer!"],
+ ["x219","un week-end sur deux","jedes zweite Wochenende","w2","Un week-end sur deux, elle est là.","Jedes zweite Wochenende ist sie da."],
+ ["x220","le problème","das Problem","w2","Tu as un problème ?","Hast du ein Problem?"],
+ ["x221","C'est l'horreur !","Das ist der Horror!","w2",null,null],
+ ["x222","pour moi","für mich","w2","C'est pour moi ?","Ist das für mich?"],
+ ["x223","pendant","während","w2","Pendant le week-end, je suis à Blois.","Während des Wochenendes bin ich in Blois."],
+ ["x224","les vacances","die Ferien","w2","Mes vacances sont super !","Meine Ferien sind super!"],
+ ["x225","la Bretagne","die Bretagne (Region im Westen Frankreichs)","w2","Mon oncle habite en Bretagne.","Mein Onkel wohnt in der Bretagne."],
+ ["y101","Qu'est-ce que tu fais ?","Was machst du?","w3","– Qu'est-ce que tu fais ? – Je dessine.","– Was machst du? – Ich zeichne."],
+ ["y102","Qu'est-ce que … ?","Was …?","w3","Qu'est-ce que tu aimes ?","Was magst du?"],
+ ["y103","est-ce que","Fragepartikel (wird nicht übersetzt)","w3","Est-ce que tu travailles ?","Lernst du?","info"],
+ ["y104","travailler","arbeiten; lernen","w3","Ils travaillent ensemble.","Sie arbeiten zusammen."],
+ ["y105","écouter (qn/qc)","(jdm) zuhören; etw. (an)hören","w3","Tu écoutes en classe ?","Hörst du im Unterricht zu?"],
+ ["y106","écouter de la musique","Musik hören","w3","J'écoute souvent de la musique.","Ich höre oft Musik."],
+ ["y107","regarder qn/qc","jdn/etw. ansehen; jdn/etw. anschauen","w3","On regarde une série ?","Sehen wir uns eine Serie an?"],
+ ["y108","la vidéo","das Video","w3","Tu regardes une vidéo ?","Schaust du ein Video?"],
+ ["y109","raconter qc","etw. erzählen","w3","Qu'est-ce que tu racontes ?","Was erzählst du?"],
+ ["y110","dessiner qc","etw. zeichnen","w3",null,null],
+ ["y111","le manga","der Manga; das Manga (japanischer Comic)","w3","Je dessine souvent des mangas.","Ich zeichne oft Mangas."],
+ ["y112","rigoler","lachen","w3","Les amis rigolent ensemble.","Die Freunde lachen zusammen."],
+ ["y113","aimer qn/qc","jdn/etw. mögen; jdn/etw. lieben","w3","J'aime les séries.","Ich mag Serien."],
+ ["y114","le foot(ball)","Fußball; das Fußballspielen","w3",null,null],
+ ["y115","jouer","spielen","w3","Les enfants jouent.","Die Kinder spielen."],
+ ["y116","jouer à","etw. spielen (Computer- oder Gesellschaftsspiel)","w3","Je joue souvent à Minecraft.","Ich spiele oft Minecraft."],
+ ["y117","parler","sprechen","w3","Tu parles avec qui ?","Mit wem sprichst du?"],
+ ["y118","parler de tout et de rien","über alles Mögliche sprechen","w3",null,null],
+ ["y119","chatter","chatten","w3",null,null],
+ ["y120","Internet","das Internet","w3",null,null],
+ ["y121","sur Internet","im Internet; ins Internet","w3","Elle chatte sur Internet.","Sie chattet im Internet."],
+ ["y122","une école","eine Schule","w3","Noé et Gabin sont à l'école.","Noé und Gabin sind in der Schule."],
+ ["y123","toujours","immer","w3","Avec Idriss, on rigole toujours.","Mit Idriss lachen wir immer."],
+ ["y124","la semaine","die Woche","w3","Pendant la semaine, ils travaillent.","Während der Woche arbeiten sie."],
+ ["y125","beaucoup","sehr; viel","w3","Il m'énerve beaucoup.","Er nervt mich sehr."],
+ ["y126","habiter","wohnen","w3","Marine et Léo habitent à Paris.","Marine und Léo wohnen in Paris."],
+ ["y127","loin","weit (weg)","w3","C'est loin ?","Ist das weit?"],
 ];
 
 /* ---------- Satzdatenbank (Sätze aus dem Buch) ----------
@@ -595,7 +644,49 @@ const SENT_RAW = [
  ["s722","Bandit est encore à Blois.","Bandit ist noch in Blois.|Bandit ist immer noch in Blois.|Bandit ist wieder in Blois.","w1","encore = noch, wieder · à Blois = in Blois (à + Stadt)."],
  ["s801","Qui est là ?","Wer ist da?","w2","qui = wer (Fragewort) · là = da."],
  ["s802","Ce sont tes frères ?","Sind das deine Brüder?|Sind das deine Geschwister?","w2","ton/ta/tes = dein/deine: ton (männlich), ta (weiblich), tes (Plural)."],
- ["s803","Voilà Idriss avec sa mère.","Da ist Idriss mit seiner Mutter.|Hier ist Idriss mit seiner Mutter.|Da ist Idriss mit ihrer Mutter.","w2","son/sa/ses = sein/seine oder ihr/ihre – es richtet sich nach dem Wort dahinter: sa mère (weiblich) = seine/ihre Mutter."],
+ ["s803","Voilà Idriss avec sa mère.","Da ist Idriss mit seiner Mutter.|Hier ist Idriss mit seiner Mutter.|Da ist Idriss mit ihrer Mutter.","w2","son/sa/ses = sein/seine oder ihr/ihre – es richtet sich nach dem Wort dahinter: sa mère (weiblich) = seine/ihre Mutter."],,
+ ["s804","Le week-end, il est à Paris.","Am Wochenende ist er in Paris.","w2","le week-end = am Wochenende (ohne extra Wort für „am“)."],
+ ["s805","Mon frère, il m'énerve !","Mein Bruder nervt mich!|Mein Bruder geht mir auf die Nerven!","w2","il m'énerve = er nervt mich · me (m') = mich."],
+ ["s806","Mon arrière-grand-mère, c'est la grand-mère de ma mère.","Meine Urgroßmutter ist die Großmutter meiner Mutter.|Meine Urgroßmutter ist die Oma meiner Mutter.","w2","l'arrière-grand-mère = die Urgroßmutter · la grand-mère de ma mère = die Großmutter meiner Mutter (de = von)."],
+ ["s807","Mon arrière-grand-père, c'est le grand-père de ma mère.","Mein Urgroßvater ist der Großvater meiner Mutter.|Mein Urgroßvater ist der Opa meiner Mutter.","w2","l'arrière-grand-père = der Urgroßvater."],
+ ["s808","Noé, il habite à Paris.|Noé habite à Paris.","Noé wohnt in Paris.","w2","il habite = er wohnt · à Paris = in Paris (à + Stadt)."],
+ ["s809","Ils habitent près de Francfort.","Sie wohnen in der Nähe von Frankfurt.|Sie wohnen bei Frankfurt.|Sie wohnen nahe Frankfurt.","w2","près de = in der Nähe von · Francfort = Frankfurt."],
+ ["s810","C'est près.","Das ist nah.|Es ist nah.|Das ist in der Nähe.","w2","près = nah · Gegenteil: loin = weit."],
+ ["s811","Meudon, c'est près de Paris.","Meudon liegt in der Nähe von Paris.|Meudon ist in der Nähe von Paris.|Meudon liegt bei Paris.|Meudon ist bei Paris.","w2","près de + Ort = in der Nähe von."],
+ ["s812","Mes parents sont séparés.","Meine Eltern sind getrennt.|Meine Eltern leben getrennt.","w2","séparés = getrennt (Plural, weil es um beide Eltern geht)."],
+ ["s813","Ma sœur, elle m'énerve un peu.","Meine Schwester nervt mich ein bisschen.|Meine Schwester nervt mich ein wenig.","w2","un peu = ein bisschen."],
+ ["s814","J'aime ma sœur quand même.","Ich mag meine Schwester trotzdem.|Ich liebe meine Schwester trotzdem.","w2","quand même = trotzdem – steht oft am Satzende."],
+ ["s815","C'est ma chambre !","Das ist mein Zimmer!","w2","la chambre = das Zimmer → ma chambre (weiblich)."],
+ ["s816","Un week-end sur deux, elle est là.","Jedes zweite Wochenende ist sie da.|Jedes zweite Wochenende ist sie hier.","w2","un week-end sur deux = jedes zweite Wochenende (wörtlich: ein Wochenende von zweien)."],
+ ["s817","Tu as un problème ?","Hast du ein Problem?","w2","le problème = das Problem · tu as = du hast."],
+ ["s818","C'est l'horreur !","Das ist der Horror!|Das ist schrecklich!","w2","C'est l'horreur ! = Das ist der Horror! (umgangssprachlich)."],
+ ["s819","C'est pour moi ?","Ist das für mich?","w2","pour moi = für mich."],
+ ["s820","Pendant le week-end, je suis à Blois.","Während des Wochenendes bin ich in Blois.|Am Wochenende bin ich in Blois.|Übers Wochenende bin ich in Blois.","w2","pendant = während."],
+ ["s821","Mes vacances sont super !","Meine Ferien sind super!|Meine Ferien sind toll!","w2","les vacances = die Ferien – immer Plural, darum mes und sont."],
+ ["s822","Mon oncle habite en Bretagne.","Mein Onkel wohnt in der Bretagne.","w2","en Bretagne = in der Bretagne (en vor weiblichen Regionen und Ländern)."],
+ ["s901","Qu'est-ce que tu fais ? – Je dessine.","Was machst du? – Ich zeichne.","w3","Qu'est-ce que tu fais ? = Was machst du? · je dessine = ich zeichne."],
+ ["s902","Qu'est-ce que tu aimes ?","Was magst du?|Was liebst du?","w3","Qu'est-ce que … ? = Was …?"],
+ ["s903","Est-ce que tu travailles ?|Tu travailles ?","Lernst du?|Arbeitest du?","w3","est-ce que macht aus einem Satz eine Frage und wird nicht übersetzt."],
+ ["s904","Ils travaillent ensemble.","Sie arbeiten zusammen.|Sie lernen zusammen.","w3","travailler: je travaille, tu travailles, il travaille, nous travaillons, vous travaillez, ils travaillent."],
+ ["s905","Léo et Sophie travaillent pour l'école.","Léo und Sophie lernen für die Schule.|Léo und Sophie arbeiten für die Schule.","w3","travailler pour l'école = für die Schule lernen."],
+ ["s906","Tu écoutes en classe ?|Est-ce que tu écoutes en classe ?","Hörst du im Unterricht zu?|Hörst du in der Klasse zu?","w3","écouter = zuhören · en classe = im Unterricht."],
+ ["s907","J'écoute souvent de la musique.","Ich höre oft Musik.","w3","écouter de la musique = Musik hören · souvent = oft."],
+ ["s908","On regarde une série ?","Sehen wir uns eine Serie an?|Schauen wir eine Serie?|Schauen wir uns eine Serie an?|Gucken wir eine Serie?","w3","on = wir (umgangssprachlich) · regarder = ansehen."],
+ ["s909","Tu regardes une vidéo ?","Schaust du ein Video?|Schaust du dir ein Video an?|Siehst du dir ein Video an?|Guckst du ein Video?","w3","la vidéo ist weiblich: une vidéo."],
+ ["s910","Qu'est-ce que tu racontes ?","Was erzählst du?|Was erzählst du da?","w3","raconter = erzählen."],
+ ["s911","Je dessine souvent des mangas.","Ich zeichne oft Mangas.","w3","dessiner = zeichnen · des mangas = Mangas (Plural mit des)."],
+ ["s912","Les amis rigolent ensemble.","Die Freunde lachen zusammen.|Die Freunde lachen miteinander.","w3","rigoler = lachen · ensemble = zusammen."],
+ ["s913","J'aime les séries.","Ich mag Serien.|Ich liebe Serien.|Ich mag die Serien.","w3","aimer + Artikel: j'aime les séries (allgemein: Serien)."],
+ ["s914","Les enfants jouent.","Die Kinder spielen.","w3","jouer = spielen · ils jouent = sie spielen."],
+ ["s915","Je joue souvent à Minecraft.","Ich spiele oft Minecraft.","w3","jouer à + Spiel = ein Spiel spielen."],
+ ["s916","Tu parles avec qui ?|Avec qui tu parles ?|Avec qui est-ce que tu parles ?","Mit wem sprichst du?|Mit wem redest du?","w3","parler avec qn = mit jdm sprechen · qui = wer/wem."],
+ ["s917","Elle chatte sur Internet.","Sie chattet im Internet.","w3","sur Internet = im Internet."],
+ ["s918","Noé et Gabin sont à l'école.","Noé und Gabin sind in der Schule.","w3","à l'école = in der Schule."],
+ ["s919","Avec Idriss, on rigole toujours.|On rigole toujours avec Idriss.","Mit Idriss lachen wir immer.|Mit Idriss lacht man immer.","w3","toujours = immer · on = wir/man."],
+ ["s920","Pendant la semaine, ils travaillent.","Während der Woche arbeiten sie.|Unter der Woche arbeiten sie.|In der Woche arbeiten sie.|Während der Woche lernen sie.","w3","la semaine = die Woche · pendant = während."],
+ ["s921","Il m'énerve beaucoup.","Er nervt mich sehr.|Er geht mir sehr auf die Nerven.","w3","beaucoup = sehr, viel · Gegenteil: un peu."],
+ ["s922","Marine et Léo habitent à Paris.","Marine und Léo wohnen in Paris.","w3","habiter = wohnen · ils habitent = sie wohnen."],
+ ["s923","C'est loin ?","Ist das weit?|Ist es weit?|Ist das weit weg?","w3","loin = weit · Gegenteil: près."]
 ];
 
 /* ---------- Stationen in Paris (Karte 100 × 130) ---------- */
@@ -794,11 +885,12 @@ const VOCAB = VOCAB_RAW.map(r=>({id:r[0], fr:r[1], de:r[2], tag:r[3], exFr:r[4]|
 const SENTS = SENT_RAW.map(r=>({id:r[0], frAlts:r[1].split("|"), deAlts:r[2].split("|"), tag:r[3], note:r[4]||"", deHint:r[5]||"", kind:"s"}));
 const ITEM = {}; VOCAB.forEach(v=>ITEM[v.id]=v); SENTS.forEach(s=>ITEM[s.id]=s);
 /* abfragbar = nicht gesperrt (und keine reine Grammatik-Info) – nur daraus kommen Aufgaben UND Ablenker */
-/* ---------- Buchseiten (À plus! Neubearbeitung, Vokabelverzeichnis S. 176–185) ----------
+/* ---------- Buchseiten (À plus! Neubearbeitung, Vokabelverzeichnis S. 176–187) ----------
    Vokabeln: Bereiche in Buchreihenfolge (erste ID – letzte ID einer Seite). Sätze: Seite nach der Stelle im Buch. */
-const PAGES = [176,177,178,179,180,181,182,183,184,185];
+const PAGES = [176,177,178,179,180,181,182,183,184,185,186,187];
 const VPAGE_RANGES = [[176,"cp01","cp08"],[177,"cp09","cp50"],[178,"cp60","cp87"],[179,"u101","u116"],[180,"u117","v119"],
-                      [181,"v120","v230"],[182,"v231","v320"],[183,"v321","v415"],[184,"t201","x110"],[185,"x111","x203"]];
+                      [181,"v120","v230"],[182,"v231","v320"],[183,"v321","v415"],[184,"t201","x110"],[185,"x111","x203"],
+                      [186,"x204","y104"],[187,"y105","y127"]];
 const VIDX = {}; VOCAB.forEach((v,i)=>{ if(VIDX[v.id]===undefined) VIDX[v.id]=i; });
 const PAGE = {};
 (function(){
@@ -814,10 +906,13 @@ const PAGE = {};
   sp(183, ["s413"].concat(rng("s",501,514)));
   sp(184, ["s601", "s602", "s603", "s604", "s605", "s606", "s607", "s608", "s609", "s610", "s611", "s612", "s613", "s614", "s615", "s616", "s617", "s618", "s701"]);
   sp(185, ["s702", "s703", "s704", "s705", "s706", "s707", "s708", "s709", "s710", "s711", "s712", "s713", "s714", "s715", "s716", "s717", "s718", "s719", "s720", "s721", "s722", "s801", "s802", "s803"]);
+  sp(186, rng("s",804,822).concat(rng("s",901,905)));
+  sp(187, rng("s",906,923));
 })();
 /* Stelle eines Satzes in der Vokabelreihenfolge: Vokabeln, deren Beispielsatz der Satz ist (kleinste/größte Position) */
 const SANCHOR = {s019:["cp16"], s109:["u103"], s110:["u109"], s201:["u117"], s307:["v215"], s319:["v210"], s320:["v206"],
-                 s321:["v232"], s322:["v232"], s323:["v232"], s324:["v233"], s325:["v233"], s326:["v233"], s327:["v233"], s514:["v405"], s703:["x112"], s709:["x118"], s711:["x121"], s717:["x119"], s718:["x127"], s719:["x128"], s720:["x128"]};
+                 s321:["v232"], s322:["v232"], s323:["v232"], s324:["v233"], s325:["v233"], s326:["v233"], s327:["v233"], s514:["v405"], s703:["x112"], s709:["x118"], s711:["x121"], s717:["x119"], s718:["x127"], s719:["x128"], s720:["x128"],
+                 s812:["x213"], s818:["x221"], s901:["y101"], s903:["y103"], s905:["y104"], s916:["y117"], s919:["y123"]};
 const SPOS = {};
 (function(){
   const exMap = {};
@@ -1833,7 +1928,7 @@ showMap();
 <script>
 /* =========================================================
    GESAMTSICHERUNG – alle Lern-Apps auf einmal sichern / zurückspielen
-   Identischer Block in allen vier Apps. Liest und schreibt nur die bekannten Speicherschlüssel
+   Identischer Block in allen fünf Apps. Liest und schreibt nur die bekannten Speicherschlüssel
    (gleicher Ordner = gleicher Browser-Speicher). Ändert nichts an den einzelnen Spielständen,
    solange man nicht ausdrücklich "einspielen" wählt.
    ========================================================= */
@@ -1843,7 +1938,8 @@ const MB_APPS = [
   ["mittelerde-reise-v1","⚔️ Mittelerde-Reise"],
   ["paris-abenteuer-v1","🇫🇷 Paris-Abenteuer"],
   ["faecher-v1","🌍 Fächer (Lernstand)"],
-  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"]
+  ["faecher-packs-v1","🌍 Fächer (eigene Themenpakete)"],
+  ["raumstation-3d-v1","🛰️ Raumstation (3D-Werkstatt)"]
 ];
 function mbStore(){ try{ return window.localStorage; }catch(e){ return null; } }
 function mbMsg(html, ok){
@@ -1930,7 +2026,7 @@ function mbRestore(text){
 function mbCard(){
   return '<div id="mbCard" style="margin:14px 0;padding:16px;border:1px solid rgba(200,200,200,.35);border-radius:16px;background:rgba(0,0,0,.22)">'
     + '<b style="font-size:17px">🗄️ Gesamtsicherung – alle Apps auf einmal</b>'
-    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris und Fächer gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
+    + '<div class="hint-sm" style="margin:6px 0 10px">Sichert Englisch, Mittelerde, Paris, Fächer und Raumstation gemeinsam in <b>einer Datei</b> (gleicher Speicher auf diesem Gerät). '
     + 'Zum Wiederherstellen oder für ein neues Gerät: <b>einspielen</b> – dabei wird der Stand der Apps ersetzt.</div>'
     + '<div class="btnRow"><button class="btn ghost" onclick="mbShare()">📤 Alles sichern</button>'
     + '<button class="btn ghost" onclick="mbDownload()">💾 Als Datei laden</button>'
