@@ -84,6 +84,14 @@
     background:linear-gradient(#fff6dc,#ecd39a);color:#2a1d07;cursor:pointer}
   .tile.on{background:linear-gradient(#dfeaff,#a9c4ec);border-color:#5d8fd6}
   .tile.ghost{opacity:.2;cursor:default}
+  .gGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:12px 0}
+  .gTile{text-align:left;background:var(--card);border:1px solid rgba(217,168,60,.35);border-radius:16px;padding:14px;color:var(--ink);font-family:inherit;cursor:pointer}
+  .gIcon{font-size:30px}.gNum{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+  .gTitle{font-family:'Cinzel',serif;color:var(--gold2);font-size:17px;margin:4px 0}
+  .gMeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .gRule{background:rgba(0,0,0,.22);border:1px solid rgba(217,168,60,.3);border-radius:12px;padding:10px 12px;margin:10px 0;line-height:1.5;font-size:15px}
+  .gTab{border-collapse:collapse;margin-top:8px;width:100%}.gTab td{border:1px solid rgba(217,168,60,.3);padding:5px 8px;font-size:14.5px}
+  .gGap{color:var(--gold2);border-bottom:2px solid var(--gold2);padding:0 6px}
   .fb{margin:12px auto 0;max-width:600px;padding:14px 16px;border-radius:14px;border:2px solid;text-align:center}
   .fb.ok{background:rgba(90,154,90,.18);border-color:rgba(90,154,90,.75)}
   .fb.no{background:rgba(192,69,58,.18);border-color:rgba(192,69,58,.75)}
@@ -950,7 +958,7 @@ function defaultState(){
   return {started:false, scope:"all", mode:"normal", node:0, xp:0, maxStreak:0, answered:0,
           stats:{}, tstats:{}, defeated:[], facts:[], weak:{}, stage:{}, tfail:{}, seen:{}, rd:{}, rounds:{}, miss:{}, discOrder:"book",
           pages:{from:184, to:185, fromWord:"", toWord:"", kinds:"both"},
-          map:0, m2:{node:0, defeated:[]}, m3:{node:0, defeated:[]}, tts:{auto:"after", slow:false}};
+          map:0, m2:{node:0, defeated:[]}, m3:{node:0, defeated:[]}, tts:{auto:"after", slow:false}, gram:{}};
 }
 let S = defaultState();
 function normalizeState(){
@@ -1002,6 +1010,7 @@ function normalizeState(){
     Object.keys(S.rd[k]).forEach(id=>{ if(!ITEM[id]) delete S.rd[k][id]; });
   });
   if(!["book","mix"].includes(S.discOrder)) S.discOrder="book";
+  Object.keys(S.gram).forEach(id=>{ const st=S.gram[id]; if(!st || typeof st!=="object" || Array.isArray(st)) delete S.gram[id]; });
 }
 function store(){ try{ return window.localStorage; }catch(e){ return null; } }
 function loadState(){
@@ -1219,11 +1228,2209 @@ function header(){
 function nav(){
   return `<div class="btnRow">
     <button class="btn ghost" onclick="showMap()">🗺️ Karte</button>
+    <button class="btn ghost" onclick="showGrammar()">📘 Grammatik</button>
     <button class="btn ghost" onclick="showCarnet()">📔 Reisetagebuch</button>
     <button class="btn ghost" onclick="showEval()">📊 Auswertung</button>
     <button class="btn ghost" onclick="showSettings()">⚙️ Einstellungen</button>
     <a class="btn ghost" href="index.html">📚 Englisch</a>
     <a class="btn ghost" href="faecher.html">🌍 Fächer</a></div>`;
+}
+
+/* =========================================================
+   GRAMMATIK-WERKSTATT (Klassenarbeit 04.12.2026)
+   Quests G1–G8: être/avoir + Personalpronomen, bestimmter/unbestimmter Artikel, Possessivbegleiter.
+   Aufbau wie im Englisch-Abenteuer: Regeln → gemischte Aufgaben (Auswahl, Lücke tippen, Satz übersetzen, Bausteine)
+   → sofortiges Feedback mit Erklärung. Erst geblockt (G1, G2 / G4, G5 / G7), dann gemischt (G3, G6, G8).
+   Falsch beantwortete Aufgaben kommen am Ende der Runde noch einmal (zählen nicht mehr für die Wertung).
+   Spielstand: S.gram[id] = {best, runs, done} · done = einmal ≥ 85 %.
+   Neue Quest: Objekt an GRAM anhängen (nie dazwischen einfügen).
+   ========================================================= */
+const GRAM = [
+{
+"id": "g1",
+"icon": "🗼",
+"title": "être – je suis, tu es …",
+"sub": "Das Verb être (sein) und die Personalpronomen",
+"rules": [
+{
+"h": "Die Personalpronomen",
+"t": "je = ich · tu = du · il = er · elle = sie (eine Frau) · <b>on</b> = man / wir (umgangssprachlich) · nous = wir · vous = ihr / Sie · <b>ils</b> = sie (Männer oder gemischt) · <b>elles</b> = sie (nur Frauen/Mädchen)"
+},
+{
+"h": "être = sein",
+"table": [
+[
+"je suis",
+"ich bin"
+],
+[
+"tu es",
+"du bist"
+],
+[
+"il / elle / on est",
+"er / sie / man ist"
+],
+[
+"nous sommes",
+"wir sind"
+],
+[
+"vous êtes",
+"ihr seid / Sie sind"
+],
+[
+"ils / elles sont",
+"sie sind"
+]
+]
+},
+{
+"h": "Stolpersteine",
+"t": "• <b>tu es</b> (du) und <b>il est</b> (er) klingen gleich, werden aber verschieden geschrieben.<br>• <b>vous êtes</b> braucht das <b>ê</b>.<br>• <b>on</b> = wir, aber das Verb steht wie bei il/elle: <b>on est</b>.<br>• Léo et Marine → <b>ils</b> (sobald ein Junge dabei ist)."
+}
+],
+"ex": [
+{
+"t": "mc",
+"q": "Je ___ à Paris.",
+"de": "Ich bin in Paris.",
+"o": [
+"suis",
+"es",
+"est"
+],
+"c": 0,
+"e": "je → suis"
+},
+{
+"t": "mc",
+"q": "Tu ___ où ?",
+"de": "Wo bist du?",
+"o": [
+"es",
+"est",
+"êtes"
+],
+"c": 0,
+"e": "tu → es (mit s)"
+},
+{
+"t": "mc",
+"q": "Noé ___ dans le parc.",
+"de": "Noé ist im Park.",
+"o": [
+"est",
+"es",
+"sont"
+],
+"c": 0,
+"e": "Noé = il → est"
+},
+{
+"t": "mc",
+"q": "Nous ___ au collège.",
+"de": "Wir sind in der Schule.",
+"o": [
+"sommes",
+"sont",
+"êtes"
+],
+"c": 0,
+"e": "nous → sommes"
+},
+{
+"t": "mc",
+"q": "Vous ___ de Berlin ?",
+"de": "Seid ihr aus Berlin?",
+"o": [
+"êtes",
+"etes",
+"sommes"
+],
+"c": 0,
+"e": "vous → êtes – mit ê!"
+},
+{
+"t": "mc",
+"q": "Léa et Marine ___ au café.",
+"de": "Léa und Marine sind im Café.",
+"o": [
+"sont",
+"est",
+"sommes"
+],
+"c": 0,
+"e": "zwei Personen = elles → sont"
+},
+{
+"t": "mc",
+"q": "On ___ à la gare.",
+"de": "Wir sind am Bahnhof.",
+"o": [
+"est",
+"sommes",
+"sont"
+],
+"c": 0,
+"e": "on hat die Verbform von il/elle: on est"
+},
+{
+"t": "mc",
+"q": "Léo et Marine, ___ sont au cinéma.",
+"de": "Léo und Marine, sie sind im Kino.",
+"o": [
+"ils",
+"elles",
+"il"
+],
+"c": 0,
+"e": "Junge + Mädchen → ils"
+},
+{
+"t": "mc",
+"q": "Marine et Léa ? ___ sont en Bretagne.",
+"de": "Marine und Léa? Sie sind in der Bretagne.",
+"o": [
+"Elles",
+"Ils",
+"Elle"
+],
+"c": 0,
+"e": "nur Mädchen → elles"
+},
+{
+"t": "mc",
+"q": "Welches Pronomen bedeutet „ihr“?",
+"de": null,
+"o": [
+"vous",
+"nous",
+"ils"
+],
+"c": 0,
+"e": "vous = ihr (oder höflich: Sie)"
+},
+{
+"t": "fill",
+"q": "Je ___ fan de foot.",
+"de": "Ich bin Fußballfan.",
+"c": [
+"suis"
+],
+"e": "je → suis"
+},
+{
+"t": "fill",
+"q": "Tu ___ dans la chambre ?",
+"de": "Bist du im Zimmer?",
+"c": [
+"es"
+],
+"e": "tu → es"
+},
+{
+"t": "fill",
+"q": "Ma mère ___ à la boulangerie.",
+"de": "Meine Mutter ist in der Bäckerei.",
+"c": [
+"est"
+],
+"e": "ma mère = elle → est"
+},
+{
+"t": "fill",
+"q": "Nous ___ dans le quartier.",
+"de": "Wir sind im Viertel.",
+"c": [
+"sommes"
+],
+"e": "nous → sommes"
+},
+{
+"t": "fill",
+"q": "Vous ___ où ?",
+"de": "Wo seid ihr?",
+"c": [
+"êtes"
+],
+"e": "vous → êtes (Akzent ê!)"
+},
+{
+"t": "fill",
+"q": "Mes parents ___ séparés.",
+"de": "Meine Eltern sind getrennt.",
+"c": [
+"sont"
+],
+"e": "mes parents = ils → sont"
+},
+{
+"t": "tr",
+"de": "Ich bin in Paris.",
+"c": [
+"Je suis à Paris."
+],
+"e": "Stadt → à"
+},
+{
+"t": "tr",
+"de": "Wir sind im Park.",
+"c": [
+"Nous sommes dans le parc.",
+"On est dans le parc."
+],
+"e": "nous sommes / on est · im Park = dans le parc"
+},
+{
+"t": "tiles",
+"de": "Sie sind im Museum. (mehrere Jungen)",
+"c": "Ils sont au musée.",
+"x": [
+"Elles",
+"est"
+],
+"e": "ils → sont · au musée = im Museum"
+},
+{
+"t": "tiles",
+"de": "Bist du am Bahnhof?",
+"c": "Tu es à la gare ?",
+"x": [
+"est",
+"suis"
+],
+"e": "tu → es"
+}
+]
+},
+{
+"id": "g2",
+"icon": "🐶",
+"title": "avoir – j'ai, tu as …",
+"sub": "Das Verb avoir (haben) – auch fürs Alter",
+"rules": [
+{
+"h": "avoir = haben",
+"table": [
+[
+"j'ai",
+"ich habe"
+],
+[
+"tu as",
+"du hast"
+],
+[
+"il / elle / on a",
+"er / sie / man hat"
+],
+[
+"nous avons",
+"wir haben"
+],
+[
+"vous avez",
+"ihr habt / Sie haben"
+],
+[
+"ils / elles ont",
+"sie haben"
+]
+]
+},
+{
+"h": "je → j'",
+"t": "Vor einem Vokal wird <b>je</b> zu <b>j'</b>: <b>j'ai</b> (nicht „je ai“)."
+},
+{
+"h": "Das Alter mit avoir!",
+"t": "Auf Französisch „hat“ man sein Alter: <b>J'ai onze ans.</b> = Ich bin elf Jahre alt.<br>✗ Je suis onze ans."
+},
+{
+"h": "Stolpersteine",
+"t": "• <b>il a</b> ohne Akzent (à mit Akzent heißt „in/nach“).<br>• <b>ils ont</b> (haben) ≠ <b>ils sont</b> (sind) – nur ein Buchstabe Unterschied!"
+}
+],
+"ex": [
+{
+"t": "mc",
+"q": "___ un chien.",
+"de": "Ich habe einen Hund.",
+"o": [
+"J'ai",
+"Je ai",
+"J'as"
+],
+"c": 0,
+"e": "je + ai → j'ai"
+},
+{
+"t": "mc",
+"q": "Tu ___ un frère ?",
+"de": "Hast du einen Bruder?",
+"o": [
+"as",
+"a",
+"ai"
+],
+"c": 0,
+"e": "tu → as"
+},
+{
+"t": "mc",
+"q": "Ma sœur ___ un lapin.",
+"de": "Meine Schwester hat ein Kaninchen.",
+"o": [
+"a",
+"à",
+"as"
+],
+"c": 0,
+"e": "elle → a (ohne Akzent)"
+},
+{
+"t": "mc",
+"q": "Nous ___ une question.",
+"de": "Wir haben eine Frage.",
+"o": [
+"avons",
+"avez",
+"ont"
+],
+"c": 0,
+"e": "nous → avons"
+},
+{
+"t": "mc",
+"q": "Vous ___ un problème ?",
+"de": "Habt ihr ein Problem?",
+"o": [
+"avez",
+"avons",
+"ont"
+],
+"c": 0,
+"e": "vous → avez"
+},
+{
+"t": "mc",
+"q": "Mes cousins ___ un chat.",
+"de": "Meine Cousins haben eine Katze.",
+"o": [
+"ont",
+"sont",
+"a"
+],
+"c": 0,
+"e": "ils → ont (haben). sont = sind!"
+},
+{
+"t": "mc",
+"q": "Wie sagst du: „Ich bin zwölf Jahre alt.“?",
+"de": null,
+"o": [
+"J'ai douze ans.",
+"Je suis douze ans.",
+"J'ai douze."
+],
+"c": 0,
+"e": "Alter mit avoir + ans"
+},
+{
+"t": "mc",
+"q": "On ___ une allergie.",
+"de": "Wir haben eine Allergie.",
+"o": [
+"a",
+"avons",
+"ont"
+],
+"c": 0,
+"e": "on → a (wie il/elle)"
+},
+{
+"t": "fill",
+"q": "J'___ onze ans.",
+"de": "Ich bin elf Jahre alt.",
+"c": [
+"ai"
+],
+"e": "j'ai … ans"
+},
+{
+"t": "fill",
+"q": "Tu ___ quel âge ?",
+"de": "Wie alt bist du?",
+"c": [
+"as"
+],
+"e": "tu → as · Alter mit avoir"
+},
+{
+"t": "fill",
+"q": "Léo ___ une moto.",
+"de": "Léo hat ein Motorrad.",
+"c": [
+"a"
+],
+"e": "il → a"
+},
+{
+"t": "fill",
+"q": "Nous ___ un chat.",
+"de": "Wir haben eine Katze.",
+"c": [
+"avons"
+],
+"e": "nous → avons"
+},
+{
+"t": "fill",
+"q": "Vous ___ des frères et sœurs ?",
+"de": "Habt ihr Geschwister?",
+"c": [
+"avez"
+],
+"e": "vous → avez"
+},
+{
+"t": "fill",
+"q": "Mes grands-parents ___ un chien.",
+"de": "Meine Großeltern haben einen Hund.",
+"c": [
+"ont"
+],
+"e": "ils → ont"
+},
+{
+"t": "tr",
+"de": "Ich bin elf Jahre alt.",
+"c": [
+"J'ai onze ans."
+],
+"e": "Alter mit avoir: j'ai … ans"
+},
+{
+"t": "tr",
+"de": "Er hat einen Bruder.",
+"c": [
+"Il a un frère."
+],
+"e": "il → a"
+},
+{
+"t": "tr",
+"de": "Wir haben ein Kaninchen.",
+"c": [
+"Nous avons un lapin.",
+"On a un lapin."
+],
+"e": "nous avons / on a"
+},
+{
+"t": "tiles",
+"de": "Sie haben eine Katze. (mehrere Mädchen)",
+"c": "Elles ont un chat.",
+"x": [
+"sont",
+"Ils"
+],
+"e": "elles → ont"
+},
+{
+"t": "tiles",
+"de": "Wie alt bist du?",
+"c": "Tu as quel âge ?",
+"x": [
+"es",
+"a"
+],
+"e": "Alter mit avoir → tu as"
+},
+{
+"t": "tiles",
+"de": "Habt ihr einen Hund?",
+"c": "Vous avez un chien ?",
+"x": [
+"êtes",
+"avons"
+],
+"e": "vous → avez"
+}
+]
+},
+{
+"id": "g3",
+"icon": "⚖️",
+"title": "être oder avoir? – gemischt",
+"sub": "Jetzt wird gemischt: In jeder Aufgabe neu entscheiden",
+"rules": [
+{
+"h": "Warum gemischt?",
+"t": "être und avoir einzeln zu können, reicht nicht – in der Arbeit musst du bei jedem Satz entscheiden. Genau das übst du hier."
+},
+{
+"h": "Nebeneinander",
+"table": [
+[
+"être (sein)",
+"avoir (haben)"
+],
+[
+"je suis",
+"j'ai"
+],
+[
+"tu es",
+"tu as"
+],
+[
+"il / elle / on est",
+"il / elle / on a"
+],
+[
+"nous sommes",
+"nous avons"
+],
+[
+"vous êtes",
+"vous avez"
+],
+[
+"ils / elles sont",
+"ils / elles ont"
+]
+]
+},
+{
+"h": "Die Falle",
+"t": "Deutsch „ich bin … Jahre alt“ → Französisch mit <b>avoir</b>: <b>j'ai</b> onze ans.<br>Achtung bei <b>ils sont</b> / <b>ils ont</b> – genau hinschauen!"
+}
+],
+"ex": [
+{
+"t": "mc",
+"q": "Je ___ à la maison.",
+"de": "Ich bin zu Hause.",
+"o": [
+"suis",
+"ai",
+"es"
+],
+"c": 0,
+"e": "sein → être: je suis"
+},
+{
+"t": "mc",
+"q": "J'___ un frère.",
+"de": "Ich habe einen Bruder.",
+"o": [
+"ai",
+"suis",
+"as"
+],
+"c": 0,
+"e": "haben → avoir: j'ai"
+},
+{
+"t": "mc",
+"q": "Ils ___ au stade.",
+"de": "Sie sind im Stadion.",
+"o": [
+"sont",
+"ont",
+"est"
+],
+"c": 0,
+"e": "sein → ils sont"
+},
+{
+"t": "mc",
+"q": "Ils ___ un chien.",
+"de": "Sie haben einen Hund.",
+"o": [
+"ont",
+"sont",
+"a"
+],
+"c": 0,
+"e": "haben → ils ont"
+},
+{
+"t": "mc",
+"q": "Elle ___ douze ans.",
+"de": "Sie ist zwölf Jahre alt.",
+"o": [
+"a",
+"est",
+"as"
+],
+"c": 0,
+"e": "Alter mit avoir → elle a"
+},
+{
+"t": "mc",
+"q": "Elle ___ dans la rue.",
+"de": "Sie ist auf der Straße.",
+"o": [
+"est",
+"a",
+"es"
+],
+"c": 0,
+"e": "sein → elle est"
+},
+{
+"t": "mc",
+"q": "Nous ___ une tante à Paris.",
+"de": "Wir haben eine Tante in Paris.",
+"o": [
+"avons",
+"sommes",
+"avez"
+],
+"c": 0,
+"e": "haben → nous avons"
+},
+{
+"t": "mc",
+"q": "Vous ___ fans de manga ?",
+"de": "Seid ihr Manga-Fans?",
+"o": [
+"êtes",
+"avez",
+"sont"
+],
+"c": 0,
+"e": "sein → vous êtes"
+},
+{
+"t": "mc",
+"q": "Tu ___ quel âge ?",
+"de": "Wie alt bist du?",
+"o": [
+"as",
+"es",
+"est"
+],
+"c": 0,
+"e": "Alter → avoir: tu as"
+},
+{
+"t": "fill",
+"q": "Mon père ___ au supermarché.",
+"de": "Mein Vater ist im Supermarkt.",
+"c": [
+"est"
+],
+"e": "sein → il est"
+},
+{
+"t": "fill",
+"q": "Mon père ___ une moto.",
+"de": "Mein Vater hat ein Motorrad.",
+"c": [
+"a"
+],
+"e": "haben → il a"
+},
+{
+"t": "fill",
+"q": "Nous ___ au musée.",
+"de": "Wir sind im Museum.",
+"c": [
+"sommes"
+],
+"e": "sein → nous sommes"
+},
+{
+"t": "fill",
+"q": "Mes cousins ___ onze ans.",
+"de": "Meine Cousins sind elf Jahre alt.",
+"c": [
+"ont"
+],
+"e": "Alter mit avoir → elles ont"
+},
+{
+"t": "fill",
+"q": "Tu ___ fan de sciences ?",
+"de": "Bist du ein Wissenschaftsfan?",
+"c": [
+"es"
+],
+"e": "sein → tu es"
+},
+{
+"t": "fill",
+"q": "Vous ___ une chambre ?",
+"de": "Habt ihr ein Zimmer?",
+"c": [
+"avez"
+],
+"e": "haben → vous avez"
+},
+{
+"t": "tr",
+"de": "Ich bin zwölf Jahre alt.",
+"c": [
+"J'ai douze ans."
+],
+"e": "Alter mit avoir"
+},
+{
+"t": "tr",
+"de": "Er ist im Kino.",
+"c": [
+"Il est au cinéma."
+],
+"e": "sein → il est"
+},
+{
+"t": "tr",
+"de": "Sie haben eine Katze. (Jungen)",
+"c": [
+"Ils ont un chat."
+],
+"e": "haben → ils ont"
+},
+{
+"t": "tiles",
+"de": "Wir sind in der Bretagne und wir haben einen Hund.",
+"c": "Nous sommes en Bretagne et nous avons un chien.",
+"x": [
+"avez",
+"sont"
+],
+"e": "sommes = sind · avons = haben"
+},
+{
+"t": "tiles",
+"de": "Meine Schwester ist elf Jahre alt.",
+"c": "Ma sœur a onze ans.",
+"x": [
+"est",
+"as"
+],
+"e": "Alter → avoir"
+},
+{
+"t": "tiles",
+"de": "Sie sind am Bahnhof. (Mädchen)",
+"c": "Elles sont à la gare.",
+"x": [
+"ont",
+"Ils"
+],
+"e": "sein → elles sont"
+}
+]
+},
+{
+"id": "g4",
+"icon": "🥐",
+"title": "le, la, l', les – der bestimmte Artikel",
+"sub": "der / die / das auf Französisch",
+"rules": [
+{
+"h": "Bestimmter Artikel = der, die, das",
+"table": [
+[
+"le",
+"männlich Singular",
+"le parc, le frère"
+],
+[
+"la",
+"weiblich Singular",
+"la ville, la sœur"
+],
+[
+"l'",
+"vor Vokal oder stummem h – egal ob männlich oder weiblich",
+"l'école, l'oncle"
+],
+[
+"les",
+"Plural (alle)",
+"les parents, les chiens"
+]
+]
+},
+{
+"h": "Das Geschlecht mitlernen!",
+"t": "Das französische Geschlecht ist oft anders als im Deutschen: <b>le</b> métro (die U-Bahn), <b>la</b> tour (der Turm), <b>le</b> collège (die Schule). Darum Nomen immer <b>mit Artikel</b> lernen."
+},
+{
+"h": "Plural",
+"t": "Im Plural heißt es immer <b>les</b>, und an das Nomen kommt meist ein <b>-s</b>: le chien → les chien<b>s</b>."
+},
+{
+"h": "Nach aimer: bestimmter Artikel",
+"t": "J'aime <b>le</b> foot. Tu aimes <b>les</b> chiens ? (wenn man etwas allgemein mag)"
+}
+],
+"ex": [
+{
+"t": "mc",
+"q": "___ parc",
+"de": "der Park",
+"o": [
+"le",
+"la",
+"l'"
+],
+"c": 0,
+"e": "le parc – männlich"
+},
+{
+"t": "mc",
+"q": "___ ville",
+"de": "die Stadt",
+"o": [
+"la",
+"le",
+"l'"
+],
+"c": 0,
+"e": "la ville – weiblich"
+},
+{
+"t": "mc",
+"q": "___ école",
+"de": "die Schule",
+"o": [
+"l'",
+"la",
+"le"
+],
+"c": 0,
+"e": "Vokal → l'"
+},
+{
+"t": "mc",
+"q": "___ métro",
+"de": "die U-Bahn",
+"o": [
+"le",
+"la",
+"les"
+],
+"c": 0,
+"e": "le métro – im Französischen männlich!"
+},
+{
+"t": "mc",
+"q": "___ tour",
+"de": "der Turm",
+"o": [
+"la",
+"le",
+"l'"
+],
+"c": 0,
+"e": "la tour – im Französischen weiblich!"
+},
+{
+"t": "mc",
+"q": "___ parents",
+"de": "die Eltern",
+"o": [
+"les",
+"le",
+"la"
+],
+"c": 0,
+"e": "Plural → les"
+},
+{
+"t": "mc",
+"q": "___ oncle",
+"de": "der Onkel",
+"o": [
+"l'",
+"le",
+"la"
+],
+"c": 0,
+"e": "Vokal → l'"
+},
+{
+"t": "mc",
+"q": "___ collège",
+"de": "die Schule (Kl. 6–9)",
+"o": [
+"le",
+"la",
+"l'"
+],
+"c": 0,
+"e": "le collège"
+},
+{
+"t": "mc",
+"q": "J'aime ___ chiens.",
+"de": "Ich mag Hunde.",
+"o": [
+"les",
+"des",
+"le"
+],
+"c": 0,
+"e": "Nach aimer: bestimmter Artikel"
+},
+{
+"t": "fill",
+"q": "___ gare",
+"de": "der Bahnhof",
+"c": [
+"la"
+],
+"e": "la gare – weiblich"
+},
+{
+"t": "fill",
+"q": "___ musée",
+"de": "das Museum",
+"c": [
+"le"
+],
+"e": "le musée – männlich"
+},
+{
+"t": "fill",
+"q": "___ enfant",
+"de": "das Kind",
+"c": [
+"l'"
+],
+"e": "Vokal → l'"
+},
+{
+"t": "fill",
+"q": "___ vacances",
+"de": "die Ferien",
+"c": [
+"les"
+],
+"e": "Plural → les"
+},
+{
+"t": "fill",
+"q": "___ boulangerie",
+"de": "die Bäckerei",
+"c": [
+"la"
+],
+"e": "la boulangerie"
+},
+{
+"t": "fill",
+"q": "___ frère de Léa",
+"de": "der Bruder von Léa",
+"c": [
+"le"
+],
+"e": "le frère"
+},
+{
+"t": "fill",
+"q": "J'aime ___ foot.",
+"de": "Ich mag Fußball.",
+"c": [
+"le"
+],
+"e": "le foot · nach aimer: bestimmter Artikel"
+},
+{
+"t": "tr",
+"de": "die Schwester",
+"c": [
+"la sœur",
+"la soeur"
+],
+"e": "la sœur – weiblich"
+},
+{
+"t": "tr",
+"de": "die Hunde",
+"c": [
+"les chiens"
+],
+"e": "Plural: les + -s"
+},
+{
+"t": "tiles",
+"de": "Der Park ist in der Nähe von der Schule.",
+"c": "Le parc est près de l'école.",
+"x": [
+"La",
+"la"
+],
+"e": "le parc · l'école"
+},
+{
+"t": "tiles",
+"de": "Die Eltern sind im Café.",
+"c": "Les parents sont au café.",
+"x": [
+"Le",
+"est"
+],
+"e": "les parents → sont"
+}
+]
+},
+{
+"id": "g5",
+"icon": "🎈",
+"title": "un, une, des – der unbestimmte Artikel",
+"sub": "ein / eine / (mehrere) auf Französisch",
+"rules": [
+{
+"h": "Unbestimmter Artikel = ein, eine",
+"table": [
+[
+"un",
+"männlich",
+"un chien, un frère, un oncle"
+],
+[
+"une",
+"weiblich",
+"une sœur, une école, une question"
+],
+[
+"des",
+"Plural",
+"des chiens, des copains"
+]
+]
+},
+{
+"h": "Kein l' bei un / une!",
+"t": "Vor einem Vokal bleibt es bei <b>un / une</b>: <b>un</b> oncle, <b>une</b> école."
+},
+{
+"h": "des – im Deutschen oft gar kein Wort",
+"t": "J'ai <b>des</b> cousins. = Ich habe Cousins.<br>Im Französischen muss <b>des</b> stehen, auch wenn im Deutschen nichts steht."
+},
+{
+"h": "Nach avoir meist un / une / des",
+"t": "J'ai <b>un</b> chien. Tu as <b>une</b> question ? Il a <b>des</b> frères."
+}
+],
+"ex": [
+{
+"t": "mc",
+"q": "J'ai ___ chien.",
+"de": "Ich habe einen Hund.",
+"o": [
+"un",
+"une",
+"des"
+],
+"c": 0,
+"e": "le chien → un chien"
+},
+{
+"t": "mc",
+"q": "Tu as ___ sœur ?",
+"de": "Hast du eine Schwester?",
+"o": [
+"une",
+"un",
+"des"
+],
+"c": 0,
+"e": "la sœur → une sœur"
+},
+{
+"t": "mc",
+"q": "Il a ___ cousins.",
+"de": "Er hat Cousins.",
+"o": [
+"des",
+"un",
+"les"
+],
+"c": 0,
+"e": "Plural → des (auch wenn im Deutschen nichts steht)"
+},
+{
+"t": "mc",
+"q": "C'est ___ école.",
+"de": "Das ist eine Schule.",
+"o": [
+"une",
+"un",
+"l'"
+],
+"c": 0,
+"e": "l'école ist weiblich → une école (kein l' bei une!)"
+},
+{
+"t": "mc",
+"q": "C'est ___ oncle de Léo.",
+"de": "Das ist ein Onkel von Léo.",
+"o": [
+"un",
+"une",
+"l'"
+],
+"c": 0,
+"e": "l'oncle ist männlich → un oncle"
+},
+{
+"t": "mc",
+"q": "Nous avons ___ question.",
+"de": "Wir haben eine Frage.",
+"o": [
+"une",
+"un",
+"des"
+],
+"c": 0,
+"e": "la question → une"
+},
+{
+"t": "mc",
+"q": "Il y a ___ magasins dans la rue.",
+"de": "Es gibt Geschäfte in der Straße.",
+"o": [
+"des",
+"les",
+"un"
+],
+"c": 0,
+"e": "Plural ohne „die“ → des"
+},
+{
+"t": "mc",
+"q": "Elle a ___ lapin.",
+"de": "Sie hat ein Kaninchen.",
+"o": [
+"un",
+"une",
+"la"
+],
+"c": 0,
+"e": "le lapin → un"
+},
+{
+"t": "fill",
+"q": "J'ai ___ frère.",
+"de": "Ich habe einen Bruder.",
+"c": [
+"un"
+],
+"e": "le frère → un"
+},
+{
+"t": "fill",
+"q": "C'est ___ ville super.",
+"de": "Das ist eine tolle Stadt.",
+"c": [
+"une"
+],
+"e": "la ville → une"
+},
+{
+"t": "fill",
+"q": "Tu as ___ chat ?",
+"de": "Hast du eine Katze?",
+"c": [
+"un"
+],
+"e": "le chat → un chat (im Deutschen: die Katze!)"
+},
+{
+"t": "fill",
+"q": "Mon père a ___ moto.",
+"de": "Mein Vater hat ein Motorrad.",
+"c": [
+"une"
+],
+"e": "la moto → une (im Deutschen: das Motorrad!)"
+},
+{
+"t": "fill",
+"q": "Ils ont ___ animaux.",
+"de": "Sie haben Tiere.",
+"c": [
+"des"
+],
+"e": "Plural → des"
+},
+{
+"t": "fill",
+"q": "C'est ___ problème.",
+"de": "Das ist ein Problem.",
+"c": [
+"un"
+],
+"e": "le problème → un"
+},
+{
+"t": "fill",
+"q": "J'ai ___ allergie.",
+"de": "Ich habe eine Allergie.",
+"c": [
+"une"
+],
+"e": "l'allergie ist weiblich → une"
+},
+{
+"t": "tr",
+"de": "Ich habe einen Hund.",
+"c": [
+"J'ai un chien."
+],
+"e": "un chien"
+},
+{
+"t": "tr",
+"de": "Er hat eine Schwester.",
+"c": [
+"Il a une sœur.",
+"Il a une soeur."
+],
+"e": "une sœur"
+},
+{
+"t": "tr",
+"de": "Wir haben Katzen.",
+"c": [
+"Nous avons des chats.",
+"On a des chats."
+],
+"e": "Plural → des"
+},
+{
+"t": "tiles",
+"de": "Hast du ein Kaninchen?",
+"c": "Tu as un lapin ?",
+"x": [
+"une",
+"le"
+],
+"e": "le lapin → un lapin"
+},
+{
+"t": "tiles",
+"de": "Sie hat Cousins.",
+"c": "Elle a des cousins.",
+"x": [
+"les",
+"une"
+],
+"e": "Plural → des"
+}
+]
+},
+{
+"id": "g6",
+"icon": "🔀",
+"title": "le/la oder un/une? – Artikel gemischt",
+"sub": "Bestimmt oder unbestimmt, Singular oder Plural",
+"rules": [
+{
+"h": "Übersicht",
+"table": [
+[
+"",
+"männlich",
+"weiblich",
+"Plural"
+],
+[
+"bestimmt (der/die/das)",
+"le / l'",
+"la / l'",
+"les"
+],
+[
+"unbestimmt (ein/eine)",
+"un",
+"une",
+"des"
+]
+]
+},
+{
+"h": "Woran erkenne ich, welcher?",
+"t": "Deutsch <b>der/die/das</b> → le, la, l', les.<br>Deutsch <b>ein/eine</b> → un, une.<br>Plural <b>ohne</b> Artikel im Deutschen (Ich habe Cousins) → des.<br>Etwas allgemein mögen: J'aime <b>le</b> foot / <b>les</b> chats."
+}
+],
+"ex": [
+{
+"t": "mc",
+"q": "___ chien de Léa est super.",
+"de": "Der Hund von Léa ist toll.",
+"o": [
+"Le",
+"Un",
+"La"
+],
+"c": 0,
+"e": "der → le"
+},
+{
+"t": "mc",
+"q": "J'ai ___ chien.",
+"de": "Ich habe einen Hund.",
+"o": [
+"un",
+"le",
+"une"
+],
+"c": 0,
+"e": "einen → un"
+},
+{
+"t": "mc",
+"q": "___ école est près de la gare.",
+"de": "Die Schule ist in der Nähe vom Bahnhof.",
+"o": [
+"L'",
+"Une",
+"La"
+],
+"c": 0,
+"e": "die + Vokal → l'"
+},
+{
+"t": "mc",
+"q": "C'est ___ école.",
+"de": "Das ist eine Schule.",
+"o": [
+"une",
+"l'",
+"un"
+],
+"c": 0,
+"e": "eine → une"
+},
+{
+"t": "mc",
+"q": "Tu aimes ___ séries ?",
+"de": "Magst du Serien?",
+"o": [
+"les",
+"des",
+"la"
+],
+"c": 0,
+"e": "allgemein mögen → les"
+},
+{
+"t": "mc",
+"q": "Il regarde ___ séries.",
+"de": "Er schaut Serien.",
+"o": [
+"des",
+"les",
+"une"
+],
+"c": 0,
+"e": "Plural ohne Artikel im Deutschen → des"
+},
+{
+"t": "mc",
+"q": "___ parents de Noé sont séparés.",
+"de": "Die Eltern von Noé sind getrennt.",
+"o": [
+"Les",
+"Des",
+"Le"
+],
+"c": 0,
+"e": "die (Plural) → les"
+},
+{
+"t": "mc",
+"q": "Voilà ___ copine de Léo.",
+"de": "Da ist die Freundin von Léo.",
+"o": [
+"la",
+"une",
+"le"
+],
+"c": 0,
+"e": "die → la"
+},
+{
+"t": "fill",
+"q": "___ ville est super.",
+"de": "Die Stadt ist toll.",
+"c": [
+"la"
+],
+"e": "die → la"
+},
+{
+"t": "fill",
+"q": "C'est ___ ville super.",
+"de": "Das ist eine tolle Stadt.",
+"c": [
+"une"
+],
+"e": "eine → une"
+},
+{
+"t": "fill",
+"q": "J'aime ___ chats.",
+"de": "Ich mag Katzen.",
+"c": [
+"les"
+],
+"e": "allgemein mögen → les"
+},
+{
+"t": "fill",
+"q": "J'ai ___ chats.",
+"de": "Ich habe Katzen.",
+"c": [
+"des"
+],
+"e": "Plural ohne Artikel → des"
+},
+{
+"t": "fill",
+"q": "___ oncle de Léa habite à Paris.",
+"de": "Der Onkel von Léa wohnt in Paris.",
+"c": [
+"l'"
+],
+"e": "der + Vokal → l'"
+},
+{
+"t": "fill",
+"q": "Léa a ___ oncle à Paris.",
+"de": "Léa hat einen Onkel in Paris.",
+"c": [
+"un"
+],
+"e": "einen → un (kein l'!)"
+},
+{
+"t": "tr",
+"de": "Das ist die Schwester von Léo.",
+"c": [
+"C'est la sœur de Léo.",
+"C'est la soeur de Léo."
+],
+"e": "die → la"
+},
+{
+"t": "tr",
+"de": "Ich habe einen Bruder.",
+"c": [
+"J'ai un frère."
+],
+"e": "einen → un"
+},
+{
+"t": "tr",
+"de": "Ich mag Hunde.",
+"c": [
+"J'aime les chiens."
+],
+"e": "allgemein mögen → les"
+},
+{
+"t": "tiles",
+"de": "Die Schule ist in der Nähe.",
+"c": "L'école est près.",
+"x": [
+"La",
+"Une"
+],
+"e": "die + Vokal → l'"
+},
+{
+"t": "tiles",
+"de": "Wir haben eine Frage.",
+"c": "Nous avons une question.",
+"x": [
+"la",
+"un"
+],
+"e": "eine → une"
+},
+{
+"t": "tiles",
+"de": "Hast du Geschwister?",
+"c": "Tu as des frères et sœurs ?",
+"x": [
+"les",
+"un"
+],
+"e": "Plural ohne Artikel → des"
+}
+]
+},
+{
+"id": "g7",
+"icon": "👨‍👩‍👧",
+"title": "mon, ma, mes – die Possessivbegleiter",
+"sub": "mein / dein / sein / ihr – im Singular und Plural",
+"rules": [
+{
+"h": "Übersicht",
+"table": [
+[
+"",
+"männlich",
+"weiblich",
+"Plural"
+],
+[
+"mein",
+"mon frère",
+"ma sœur",
+"mes parents"
+],
+[
+"dein",
+"ton frère",
+"ta sœur",
+"tes parents"
+],
+[
+"sein / ihr",
+"son frère",
+"sa sœur",
+"ses parents"
+]
+]
+},
+{
+"h": "Die wichtigste Regel",
+"t": "Ob <b>mon/ma/mes</b> usw. hängt vom <b>Nomen danach</b> ab – nicht von der Person, der etwas gehört!<br>Léo et <b>sa</b> mère (seine Mutter) · Léa et <b>son</b> père (ihr Vater)."
+},
+{
+"h": "son / sa = sein UND ihr",
+"t": "<b>son</b> père = sein Vater <i>oder</i> ihr Vater · <b>sa</b> sœur = seine Schwester <i>oder</i> ihre Schwester. Man erkennt es am Zusammenhang."
+}
+],
+"ex": [
+{
+"t": "mc",
+"q": "C'est ___ frère.",
+"de": "Das ist mein Bruder.",
+"o": [
+"mon",
+"ma",
+"mes"
+],
+"c": 0,
+"e": "le frère → mon"
+},
+{
+"t": "mc",
+"q": "C'est ___ sœur.",
+"de": "Das ist meine Schwester.",
+"o": [
+"ma",
+"mon",
+"mes"
+],
+"c": 0,
+"e": "la sœur → ma"
+},
+{
+"t": "mc",
+"q": "Ce sont ___ parents.",
+"de": "Das sind meine Eltern.",
+"o": [
+"mes",
+"mon",
+"ma"
+],
+"c": 0,
+"e": "Plural → mes"
+},
+{
+"t": "mc",
+"q": "C'est ___ chien ?",
+"de": "Ist das dein Hund?",
+"o": [
+"ton",
+"ta",
+"tes"
+],
+"c": 0,
+"e": "le chien → ton"
+},
+{
+"t": "mc",
+"q": "C'est ___ chambre ?",
+"de": "Ist das dein Zimmer?",
+"o": [
+"ta",
+"ton",
+"tes"
+],
+"c": 0,
+"e": "la chambre → ta (im Deutschen: das Zimmer!)"
+},
+{
+"t": "mc",
+"q": "Léo et ___ mère",
+"de": "Léo und seine Mutter",
+"o": [
+"sa",
+"son",
+"ses"
+],
+"c": 0,
+"e": "la mère → sa (egal, ob es Léos Mutter ist)"
+},
+{
+"t": "mc",
+"q": "Léa et ___ père",
+"de": "Léa und ihr Vater",
+"o": [
+"son",
+"sa",
+"ses"
+],
+"c": 0,
+"e": "le père → son (auch wenn es Léas Vater ist)"
+},
+{
+"t": "mc",
+"q": "Noé et ___ cousins",
+"de": "Noé und seine Cousins",
+"o": [
+"ses",
+"son",
+"sa"
+],
+"c": 0,
+"e": "Plural → ses"
+},
+{
+"t": "fill",
+"q": "C'est ___ copain.",
+"de": "Das ist mein Freund.",
+"c": [
+"mon"
+],
+"e": "le copain → mon"
+},
+{
+"t": "fill",
+"q": "Voilà ___ grand-mère.",
+"de": "Da ist meine Großmutter.",
+"c": [
+"ma"
+],
+"e": "la grand-mère → ma"
+},
+{
+"t": "fill",
+"q": "Ce sont ___ chats ?",
+"de": "Sind das deine Katzen?",
+"c": [
+"tes"
+],
+"e": "Plural → tes"
+},
+{
+"t": "fill",
+"q": "C'est ___ tante ?",
+"de": "Ist das deine Tante?",
+"c": [
+"ta"
+],
+"e": "la tante → ta"
+},
+{
+"t": "fill",
+"q": "Marine aime ___ frère.",
+"de": "Marine mag ihren Bruder.",
+"c": [
+"son"
+],
+"e": "le frère → son"
+},
+{
+"t": "fill",
+"q": "Léo aime ___ sœur.",
+"de": "Léo mag seine Schwester.",
+"c": [
+"sa"
+],
+"e": "la sœur → sa"
+},
+{
+"t": "fill",
+"q": "Elle habite avec ___ grands-parents.",
+"de": "Sie wohnt bei ihren Großeltern.",
+"c": [
+"ses"
+],
+"e": "Plural → ses"
+},
+{
+"t": "tr",
+"de": "Das ist meine Mutter.",
+"c": [
+"C'est ma mère."
+],
+"e": "la mère → ma"
+},
+{
+"t": "tr",
+"de": "Das sind meine Geschwister.",
+"c": [
+"Ce sont mes frères et sœurs.",
+"Ce sont mes frères et soeurs."
+],
+"e": "Plural → mes · ce sont = das sind"
+},
+{
+"t": "tiles",
+"de": "Léa und ihr Bruder sind in Paris.",
+"c": "Léa et son frère sont à Paris.",
+"x": [
+"sa",
+"est"
+],
+"e": "le frère → son"
+},
+{
+"t": "tiles",
+"de": "Ist das dein Kaninchen?",
+"c": "C'est ton lapin ?",
+"x": [
+"ta",
+"tes"
+],
+"e": "le lapin → ton"
+},
+{
+"t": "tiles",
+"de": "Noé wohnt mit seiner Mutter.",
+"c": "Noé habite avec sa mère.",
+"x": [
+"son",
+"ma"
+],
+"e": "la mère → sa"
+}
+]
+},
+{
+"id": "g8",
+"icon": "📝",
+"title": "Klassenarbeits-Training – alles gemischt",
+"sub": "être/avoir, Artikel und mon/ma/mes durcheinander – so wie in der Arbeit",
+"rules": [
+{
+"h": "Die Generalprobe",
+"t": "Alle drei Grammatik-Themen der Klassenarbeit am 4. Dezember gemischt. Die meisten Aufgaben gehen – wie in der Arbeit – vom <b>Deutschen ins Französische</b>."
+},
+{
+"h": "Frag dich bei jedem Satz",
+"t": "1. Sein oder haben (Alter = avoir)?<br>2. der/die/das (le, la, l', les) oder ein/eine (un, une, des)?<br>3. mein/dein/sein: Welches <b>Nomen</b> kommt danach – männlich, weiblich oder Plural?"
+},
+{
+"h": "Mini-Spickzettel",
+"table": [
+[
+"être",
+"suis · es · est · sommes · êtes · sont"
+],
+[
+"avoir",
+"ai · as · a · avons · avez · ont"
+],
+[
+"Artikel",
+"le · la · l' · les / un · une · des"
+],
+[
+"Possessiv",
+"mon ma mes · ton ta tes · son sa ses"
+]
+]
+}
+],
+"ex": [
+{
+"t": "tr",
+"de": "Ich heiße Lukas und ich bin elf Jahre alt.",
+"c": [
+"Je m'appelle Lukas et j'ai onze ans."
+],
+"e": "Alter mit avoir: j'ai onze ans"
+},
+{
+"t": "tr",
+"de": "Ich habe einen Bruder und eine Schwester.",
+"c": [
+"J'ai un frère et une sœur.",
+"J'ai un frère et une soeur."
+],
+"e": "un frère · une sœur"
+},
+{
+"t": "tr",
+"de": "Meine Eltern sind getrennt.",
+"c": [
+"Mes parents sont séparés."
+],
+"e": "mes parents (Plural) → sont"
+},
+{
+"t": "tr",
+"de": "Mein Bruder ist zwölf Jahre alt.",
+"c": [
+"Mon frère a douze ans."
+],
+"e": "Alter mit avoir"
+},
+{
+"t": "tr",
+"de": "Das ist meine Großmutter.",
+"c": [
+"C'est ma grand-mère."
+],
+"e": "la grand-mère → ma"
+},
+{
+"t": "tr",
+"de": "Wir haben einen Hund und eine Katze.",
+"c": [
+"Nous avons un chien et un chat.",
+"On a un chien et un chat."
+],
+"e": "le chat → un chat"
+},
+{
+"t": "tr",
+"de": "Die Schule ist in der Nähe vom Bahnhof.",
+"c": [
+"L'école est près de la gare."
+],
+"e": "l'école (Vokal) · la gare"
+},
+{
+"t": "tr",
+"de": "Ist das dein Zimmer?",
+"c": [
+"C'est ta chambre ?",
+"Est-ce que c'est ta chambre ?"
+],
+"e": "la chambre → ta"
+},
+{
+"t": "tr",
+"de": "Sie haben Cousins. (die Eltern)",
+"c": [
+"Ils ont des cousins."
+],
+"e": "ils ont · Plural → des"
+},
+{
+"t": "tr",
+"de": "Wir sind in Paris.",
+"c": [
+"Nous sommes à Paris.",
+"On est à Paris."
+],
+"e": "nous sommes / on est"
+},
+{
+"t": "tiles",
+"de": "Léo und seine Schwester sind im Kino.",
+"c": "Léo et sa sœur sont au cinéma.",
+"x": [
+"son",
+"est"
+],
+"e": "la sœur → sa · zwei Personen → sont"
+},
+{
+"t": "tiles",
+"de": "Marine und ihr Vater haben ein Kaninchen.",
+"c": "Marine et son père ont un lapin.",
+"x": [
+"sa",
+"sont"
+],
+"e": "le père → son · haben → ont"
+},
+{
+"t": "tiles",
+"de": "Wie alt bist du?",
+"c": "Tu as quel âge ?",
+"x": [
+"es",
+"est"
+],
+"e": "Alter → avoir"
+},
+{
+"t": "tiles",
+"de": "Sind das deine Eltern?",
+"c": "Ce sont tes parents ?",
+"x": [
+"ton",
+"ta"
+],
+"e": "Plural → tes"
+},
+{
+"t": "fill",
+"q": "Ma tante ___ une moto.",
+"de": "Meine Tante hat ein Motorrad.",
+"c": [
+"a"
+],
+"e": "haben → elle a"
+},
+{
+"t": "fill",
+"q": "Mes cousins ___ au stade.",
+"de": "Meine Cousins sind im Stadion.",
+"c": [
+"sont"
+],
+"e": "sein → ils sont"
+},
+{
+"t": "fill",
+"q": "J'aime ___ mangas.",
+"de": "Ich mag Mangas.",
+"c": [
+"les"
+],
+"e": "allgemein mögen → les"
+},
+{
+"t": "fill",
+"q": "C'est ___ ville super.",
+"de": "Das ist eine tolle Stadt.",
+"c": [
+"une"
+],
+"e": "eine → une"
+},
+{
+"t": "fill",
+"q": "Léa aime ___ frère.",
+"de": "Léa mag ihren Bruder.",
+"c": [
+"son"
+],
+"e": "le frère → son"
+},
+{
+"t": "fill",
+"q": "Vous ___ où ?",
+"de": "Wo seid ihr?",
+"c": [
+"êtes"
+],
+"e": "vous → êtes (ê!)"
+},
+{
+"t": "mc",
+"q": "C'est ___ oncle.",
+"de": "Das ist mein Onkel.",
+"o": [
+"mon",
+"ma",
+"l'"
+],
+"c": 0,
+"e": "l'oncle → mon"
+},
+{
+"t": "mc",
+"q": "Ils ___ un chat.",
+"de": "Sie haben eine Katze.",
+"o": [
+"ont",
+"sont",
+"a"
+],
+"c": 0,
+"e": "haben → ont"
+},
+{
+"t": "mc",
+"q": "___ enfants de Marine sont au collège.",
+"de": "Die Kinder von Marine sind in der Schule.",
+"o": [
+"Les",
+"Des",
+"L'"
+],
+"c": 0,
+"e": "die (Plural) → les"
+},
+{
+"t": "mc",
+"q": "Je ___ fan de foot.",
+"de": "Ich bin Fußballfan.",
+"o": [
+"suis",
+"ai",
+"es"
+],
+"c": 0,
+"e": "sein → je suis"
+}
+]
+}
+];
+let gr = null;
+function grTokens(s){ return String(s).replace(/\s+([?!.,])/g,"$1").split(" ").filter(Boolean); }
+function showGrammar(){
+  const done = GRAM.filter(g=>(S.gram[g.id]||{}).done).length;
+  app.innerHTML = header() + nav() + `
+    <div class="card"><h2 style="font-family:Cinzel,serif;color:var(--gold2);margin:0 0 6px">📘 Grammatik-Werkstatt</h2>
+      <p class="hint-sm">Für die Klassenarbeit am <b>4. Dezember</b>: être und avoir, die Artikel und mon/ma/mes. Am besten der Reihe nach –
+      erst jedes Thema einzeln, dann die gemischten Quests. Ab <b>85 %</b> gibt es eine 🏅 Medaille, bei 100 % einen 🌟.</p>
+      <div class="hint-sm"><b>${done}</b> von ${GRAM.length} Medaillen</div></div>
+    <div class="gGrid">${GRAM.map((g,i)=>{ const st=S.gram[g.id]||{}; const mix=/gemischt|Klassenarbeits/.test(g.title);
+      return `<button class="gTile" onclick="showGIntro(${i})">
+        <div class="gIcon">${g.icon}</div><div class="gNum">Grammatik ${i+1}${mix?" · gemischt":""}</div>
+        <div class="gTitle">${esc(g.title)}</div><div class="hint-sm">${esc(g.sub)}</div>
+        <div class="gMeta"><span class="badge">${g.ex.length} Aufgaben</span>
+          ${st.best!=null?`<span class="badge">${st.best>=100?"🌟":st.done?"🏅":"📈"} Beste: ${st.best} %</span>`:`<span class="badge">neu</span>`}</div></button>`; }).join("")}</div>`;
+  window.scrollTo(0,0);
+}
+function showGIntro(i){
+  const g = GRAM[i];
+  app.innerHTML = header() + `
+    <div class="btnRow"><button class="btn ghost" onclick="showGrammar()">← Grammatik-Werkstatt</button></div>
+    <div class="card"><div class="gNum">${g.icon} Grammatik ${i+1}</div>
+      <h2 style="font-family:Cinzel,serif;color:var(--gold2);margin:4px 0 10px">${esc(g.title)}</h2>
+      ${g.rules.map(r=>`<div class="gRule"><b>${r.h}</b>${r.t?`<div style="margin-top:4px">${r.t}</div>`:""}
+        ${r.table?`<table class="gTab">${r.table.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</table>`:""}</div>`).join("")}
+      <div class="btnRow center"><button class="btn" onclick="startGram(${i})">✏️ Los geht's (${g.ex.length} Aufgaben)</button></div></div>`;
+  window.scrollTo(0,0);
+}
+function startGram(i){
+  const g = GRAM[i];
+  gr = {gi:i, queue: shuffle(g.ex.map((_,k)=>k)).map(k=>({k, again:false})), pos:0, right:0, first:g.ex.length, wrong:[], answered:false, picked:[], tiles:[]};
+  renderGram();
+}
+function grEx(){ return GRAM[gr.gi].ex[gr.queue[gr.pos].k]; }
+function renderGram(){
+  if(gr.pos >= gr.queue.length) return finishGram();
+  const g = GRAM[gr.gi], e = grEx(), it = gr.queue[gr.pos];
+  gr.answered = false;
+  const accBar = `<div class="accBar">${ACCENTS.map((c,i)=>`<button class="acc" type="button" onclick="insertChar(${i})">${esc(c)}</button>`).join("")}</div>`;
+  const enter = `onkeydown="if(event.key==='Enter'){event.preventDefault();checkGType();}"`;
+  const deLine = e.de ? `<div class="hint-sm center" style="margin:-4px 0 10px">${esc(e.de)}</div>` : "";
+  let q = "";
+  if(e.t==="mc"){
+    gr.opts = shuffle(e.o.map((o,i)=>({o,i})));
+    q = `<div class="qLabel">Welche Form passt?</div><div class="qText fr">${esc(e.q).replace(/___/g,'<span class="gGap">___</span>')}</div>${deLine}
+      <div class="opts">${gr.opts.map((x,j)=>`<button class="opt" onclick="answerGMC(${j})">${esc(x.o)}</button>`).join("")}</div>`;
+  } else if(e.t==="fill"){
+    q = `<div class="qLabel">Tippe das fehlende Wort</div><div class="qText fr">${esc(e.q).replace(/___/g,'<span class="gGap">___</span>')}</div>${deLine}
+      <input class="fillIn" id="typeIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="fehlendes Wort …" ${enter}>
+      ${accBar}<div class="btnRow center"><button class="btn" onclick="checkGType()">Prüfen ✔</button></div>`;
+  } else if(e.t==="tr"){
+    q = `<div class="qLabel">Übersetze ins Französische</div><div class="qText">${esc(e.de)}</div>
+      <input class="fillIn" id="typeIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Französisch …" ${enter}>
+      ${accBar}<div class="btnRow center"><button class="btn" onclick="checkGType()">Prüfen ✔</button></div>
+      <div class="hint-sm center">Akzente und Apostrophe zählen. Groß-/Kleinschreibung und Satzzeichen nicht.</div>`;
+  } else {
+    const words = grTokens(e.c);
+    gr.tiles = shuffle(words.concat(e.x||[]).map(t=>({t, used:false}))); gr.picked = [];
+    q = `<div class="qLabel">Übersetze ins Französische – lege die Bausteine</div><div class="qText">${esc(e.de)}</div>
+      <div class="line" id="line"></div><div class="bank" id="bank"></div>
+      <div class="btnRow center"><button class="btn ghost" onclick="gReset()">↺ Zurücksetzen</button><button class="btn" onclick="checkGTiles()">Prüfen ✔</button></div>
+      <div class="hint-sm center">Achtung: Zwei Bausteine gehören nicht in den Satz.</div>`;
+  }
+  const total = gr.queue.length, pct = Math.round(gr.pos/total*100);
+  app.innerHTML = header() + `
+    <div class="card"><div class="gNum">${g.icon} ${esc(g.title)}</div>
+      <div class="seenBar" style="margin:8px 0 4px"><div style="width:${pct}%"></div></div>
+      <div class="hint-sm">${it.again ? "🔁 Noch einmal – diese Aufgabe war vorhin falsch" : `Aufgabe ${Math.min(gr.pos+1,gr.first)} von ${gr.first}`} · richtig: ${gr.right}</div></div>
+    <div class="card">${q}</div>
+    <div id="feedback"></div>
+    <div class="btnRow center"><button class="btn ghost" onclick="gr=null;showGrammar()">✕ Abbrechen</button></div>`;
+  if(e.t==="tiles") renderGTiles();
+  const inp = document.getElementById("typeIn"); if(inp) setTimeout(()=>{ try{ inp.focus(); }catch(err){} }, 0);
+  window.scrollTo(0,0);
+}
+function renderGTiles(){
+  const line = document.getElementById("line"), bank = document.getElementById("bank"); if(!line||!bank) return;
+  line.innerHTML = gr.picked.length ? gr.picked.map((ti,j)=>`<button class="tile on" onclick="gUnpick(${j})">${esc(gr.tiles[ti].t)}</button>`).join("")
+    : `<span class="lineHint">Tippe die Bausteine in der richtigen Reihenfolge an …</span>`;
+  bank.innerHTML = gr.tiles.map((t,i)=> t.used ? `<span class="tile ghost">${esc(t.t)}</span>` : `<button class="tile" onclick="gPick(${i})">${esc(t.t)}</button>`).join("");
+}
+function gPick(i){ if(gr.answered) return; const t=gr.tiles[i]; if(!t||t.used) return; t.used=true; gr.picked.push(i); renderGTiles(); }
+function gUnpick(j){ if(gr.answered) return; const i=gr.picked[j]; if(i==null) return; gr.tiles[i].used=false; gr.picked.splice(j,1); renderGTiles(); }
+function gReset(){ if(gr.answered) return; gr.tiles.forEach(t=>t.used=false); gr.picked=[]; renderGTiles(); }
+function answerGMC(j){
+  if(gr.answered) return; const e = grEx(), x = gr.opts[j], ok = x.i===e.c;
+  document.querySelectorAll(".opt").forEach((b,k)=>{ b.disabled=true; if(gr.opts[k].i===e.c) b.classList.add("correct"); else if(k===j) b.classList.add("wrong"); });
+  gResolve(ok, x.o, e.o[e.c], null);
+}
+function checkGType(){
+  if(gr.answered) return; const inp = document.getElementById("typeIn"); if(!inp || !inp.value.trim()) return;
+  const e = grEx(), r = checkAnswer(inp.value, e.c, "fr");
+  inp.disabled = true; inp.classList.add(r.ok?"correct":"wrong");
+  gResolve(r.ok, inp.value, r.best || e.c[0], r.why);
+}
+function checkGTiles(){
+  if(gr.answered || !gr.picked.length) return; const e = grEx();
+  const given = gr.picked.map(i=>gr.tiles[i].t).join(" ");
+  gResolve(normFr(given)===normFr(e.c), given, e.c, null);
+}
+function gResolve(ok, given, correct, why){
+  gr.answered = true;
+  const e = grEx(), it = gr.queue[gr.pos], g = GRAM[gr.gi];
+  if(!it.again){
+    if(ok){ gr.right++; S.xp += 5; }
+    else gr.wrong.push(it.k);
+    bump(S.gram[g.id] = S.gram[g.id] || {}, "_n", ok);   /* Zähler für die Auswertung */
+  }
+  if(!ok && !it.again) gr.queue.push({k:it.k, again:true});
+  saveState();
+  const full = e.t==="fill" ? e.q.replace("___", correct) : (e.t==="mc" ? e.q.replace("___", correct) : correct);
+  const typed = e.t!=="mc";
+  const fb = document.getElementById("feedback");
+  fb.innerHTML = `<div class="fb ${ok?"ok":"no"}">
+    <div class="fbTitle">${ok ? "✔ Richtig! +5 XP" : why==="accent" ? "Fast! Nur die Akzente stimmen nicht." : "✘ Leider falsch"}</div>
+    ${!ok && typed ? `<div class="fbLine sub">Deine Antwort: <span class="yours">${markExtra(given, correct, "fr")}</span></div>` : ""}
+    ${!ok ? `<div class="fbLine">Richtig: <span class="fbWord">${typed ? highlight(correct, given, "fr") : esc(correct)}</span></div>` : ""}
+    <div class="fbLine ex"><span class="fr">${esc(full)}</span>${TTS.ok?` <button class="spk" type="button" onclick="speakFr(${esc(JSON.stringify(full))},false)">🔊</button>`:""}${e.de?`<br>${esc(e.de)}`:""}</div>
+    <div class="fbLine note">💡 ${esc(e.e)}</div>
+    ${!ok && !it.again ? `<div class="fbLine sub">Diese Aufgabe kommt am Ende noch einmal.</div>` : ""}
+    <div class="btnRow center"><button class="btn" id="gNext" onclick="gr.pos++;renderGram()">Weiter →</button></div></div>`;
+  setTimeout(()=>{ const b=document.getElementById("gNext"); if(b) try{ b.focus(); }catch(err){} }, 0);
+}
+function finishGram(){
+  const g = GRAM[gr.gi], st = S.gram[g.id] = S.gram[g.id] || {};
+  const pct = Math.round(gr.right/gr.first*100), firstMedal = pct>=85 && !st.done;
+  st.runs = (st.runs||0)+1; st.best = Math.max(st.best||0, pct); if(pct>=85) st.done = true;
+  if(firstMedal) S.xp += 30;
+  saveState();
+  const weakList = gr.wrong.map(k=>g.ex[k]);
+  app.innerHTML = header() + `
+    <div class="card center"><div class="bigStamp">${pct>=100?"🌟":pct>=85?"🏅":"📘"}</div>
+      <h2 style="font-family:Cinzel,serif;color:var(--gold2);margin:4px 0">${gr.right} von ${gr.first} richtig (${pct} %)</h2>
+      <p>${pct>=100?"Parfait ! Fehlerfrei!":pct>=85?"Très bien ! Medaille verdient.":pct>=60?"Gut! Für die Medaille brauchst du 85 % – lies die Regeln noch einmal und probier's nochmal.":"Lies dir die Regeln in Ruhe noch einmal durch und versuch es dann nochmal – du schaffst das!"}</p>
+      ${firstMedal?`<p class="hint-sm">🏅 Erste Medaille für dieses Thema: +30 XP</p>`:""}
+      ${weakList.length?`<div class="gRule" style="text-align:left"><b>Das solltest du dir noch einmal ansehen:</b>
+        ${weakList.map(e=>`<div class="hint-sm" style="margin-top:5px">• ${esc(e.t==="mc"||e.t==="fill" ? e.q.replace("___", e.t==="mc"?e.o[e.c]:e.c[0]) : (e.t==="tr"?e.c[0]:e.c))} – ${esc(e.e)}</div>`).join("")}</div>`:""}
+      <div class="btnRow center"><button class="btn" onclick="startGram(${gr.gi})">🔁 Nochmal</button>
+        ${GRAM[gr.gi+1]?`<button class="btn blue" onclick="showGIntro(${gr.gi+1})">Nächstes Thema →</button>`:""}
+        <button class="btn ghost" onclick="showGrammar()">📘 Übersicht</button></div></div>`;
+  gr = null; window.scrollTo(0,0);
 }
 
 function showStart(){
